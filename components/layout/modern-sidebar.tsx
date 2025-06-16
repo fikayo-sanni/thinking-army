@@ -1,0 +1,226 @@
+"use client"
+
+import type React from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import {
+  Coins,
+  LayoutDashboard,
+  ShoppingCart,
+  Users,
+  TrendingUp,
+  Trophy,
+  Wallet,
+  ChevronRight,
+  Zap,
+  BarChart3,
+} from "lucide-react"
+import { useState } from "react"
+
+const navigationItems = [
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    badge: null,
+    gradient: "from-[#00E5FF] to-[#0099CC]",
+  },
+  {
+    name: "Purchases",
+    href: "/purchases",
+    icon: ShoppingCart,
+    badge: "156",
+    gradient: "from-[#00FFC8] to-[#00CC99]",
+  },
+  {
+    name: "My Network",
+    href: "/network",
+    icon: Users,
+    badge: "12",
+    gradient: "from-[#6F00FF] to-[#5500CC]",
+  },
+  {
+    name: "Commissions",
+    href: "/commissions",
+    icon: TrendingUp,
+    badge: "New",
+    gradient: "from-[#FFD700] to-[#FFA500]",
+  },
+  {
+    name: "Ranks",
+    href: "/ranks",
+    icon: Trophy,
+    badge: null,
+    gradient: "from-[#FF6B6B] to-[#FF5252]",
+  },
+  {
+    name: "Payouts",
+    href: "/payouts",
+    icon: Wallet,
+    badge: null,
+    gradient: "from-[#4ECDC4] to-[#26A69A]",
+  },
+]
+
+const quickStats = [
+  {
+    label: "Total Earned",
+    value: "45.7 ETH",
+    icon: TrendingUp,
+    color: "text-[#00E5FF]",
+  },
+  {
+    label: "Active Referrals",
+    value: "12",
+    icon: Users,
+    color: "text-[#00FFC8]",
+  },
+  {
+    label: "Current Rank",
+    value: "Gold",
+    icon: Trophy,
+    color: "text-[#FFD700]",
+  },
+]
+
+interface ModernSidebarProps {
+  children: React.ReactNode
+}
+
+export function ModernSidebar({ children }: ModernSidebarProps) {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const pathname = usePathname()
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0D0F1A] via-[#1A1E2D] to-[#0D0F1A] dark:from-[#0D0F1A] dark:via-[#1A1E2D] dark:to-[#0D0F1A] light:from-slate-50 light:via-white light:to-slate-50">
+      <div className="flex">
+        {/* Modern Sidebar */}
+        <aside
+          className={`${
+            isCollapsed ? "w-20" : "w-80"
+          } transition-all duration-300 ease-in-out bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#2C2F3C]/50 min-h-screen sticky top-0 hidden lg:block`}
+        >
+          <div className="p-6">
+            {/* Logo Section */}
+            <div className="flex items-center space-x-4 mb-8">
+              <div className="relative">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#00E5FF] to-[#6F00FF] flex items-center justify-center shadow-lg shadow-[#00E5FF]/25">
+                  <Coins className="h-7 w-7 text-white font-bold" />
+                </div>
+                <div className="absolute -top-1 -right-1 h-4 w-4 bg-[#00FFC8] rounded-full flex items-center justify-center">
+                  <Zap className="h-2.5 w-2.5 text-black" />
+                </div>
+              </div>
+              {!isCollapsed && (
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
+                    GAMESCOIN
+                  </h1>
+                  <p className="text-xs text-[#A0AFC0] uppercase tracking-wider font-medium">Web3 NFT Platform</p>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Stats */}
+            {!isCollapsed && (
+              <div className="mb-8 p-4 rounded-2xl bg-gradient-to-br from-[#1A1E2D]/80 to-[#2C2F3C]/40 backdrop-blur border border-[#2C2F3C]/50">
+                <h3 className="text-white font-semibold mb-4 flex items-center">
+                  <BarChart3 className="h-4 w-4 mr-2 text-[#00E5FF]" />
+                  Quick Stats
+                </h3>
+                <div className="space-y-3">
+                  {quickStats.map((stat) => (
+                    <div key={stat.label} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                        <span className="text-[#A0AFC0] text-sm">{stat.label}</span>
+                      </div>
+                      <span className="text-white font-semibold text-sm">{stat.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Navigation */}
+            <nav className="space-y-2">
+              <div className="text-[#A0AFC0] text-xs uppercase tracking-wider font-semibold mb-4 px-3">
+                {isCollapsed ? "•••" : "Navigation"}
+              </div>
+              {navigationItems.map((item) => {
+                const isActive = pathname === item.href
+                return (
+                  <Link key={item.name} href={item.href}>
+                    <div
+                      className={`group relative flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                        isActive
+                          ? "bg-gradient-to-r from-[#00E5FF]/20 to-[#6F00FF]/20 border border-[#00E5FF]/30 shadow-lg shadow-[#00E5FF]/10"
+                          : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#2C2F3C]/50"
+                      }`}
+                    >
+                      <div
+                        className={`relative p-2 rounded-lg ${isActive ? `bg-gradient-to-br ${item.gradient}` : "bg-[#2C2F3C]/50 group-hover:bg-[#2C2F3C]"} transition-all duration-200`}
+                      >
+                        <item.icon
+                          className={`h-5 w-5 ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
+                        />
+                      </div>
+                      {!isCollapsed && (
+                        <>
+                          <div className="flex-1">
+                            <span
+                              className={`font-medium text-sm ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
+                            >
+                              {item.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {item.badge && (
+                              <Badge
+                                className={`text-xs px-2 py-0.5 ${
+                                  item.badge === "New"
+                                    ? "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30"
+                                    : "bg-[#2C2F3C] text-[#A0AFC0]"
+                                }`}
+                              >
+                                {item.badge}
+                              </Badge>
+                            )}
+                            {isActive && <ChevronRight className="h-4 w-4 text-[#00E5FF]" />}
+                          </div>
+                        </>
+                      )}
+                      {isActive && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#00E5FF] to-[#6F00FF] rounded-r-full" />
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
+            </nav>
+          </div>
+
+          {/* Bottom Section */}
+          <div className="absolute bottom-6 left-6 right-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="w-full justify-center bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#2C2F3C]/50 text-[#A0AFC0] hover:text-white"
+            >
+              <ChevronRight
+                className={`h-4 w-4 transition-transform duration-200 ${isCollapsed ? "rotate-0" : "rotate-180"}`}
+              />
+              {!isCollapsed && <span className="ml-2">Collapse</span>}
+            </Button>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 min-h-screen">{children}</main>
+      </div>
+    </div>
+  )
+}
