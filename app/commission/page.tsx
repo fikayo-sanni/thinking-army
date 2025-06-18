@@ -1,3 +1,13 @@
+import React from "react";
+import { ModernSidebar } from "@/components/layout/modern-sidebar";
+import { ModernHeader } from "@/components/layout/modern-header";
+import { PageHeader } from "@/components/layout/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function CommissionPage() {
+  // TODO: Replace with real loading logic
+  const isLoading = true;
+
   if (isLoading) {
     return (
       <ModernSidebar>
@@ -45,4 +55,8 @@
         </div>
       </ModernSidebar>
     )
-  } 
+  }
+
+  // TODO: Add main content for when not loading
+  return null;
+} 
