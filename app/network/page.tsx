@@ -10,129 +10,75 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { NetworkNode } from "@/components/network/network-node"
-import { Users, TrendingUp } from "lucide-react"
-
-// Mock data for network structure
-const currentUser = {
-  id: "current",
-  name: "YOU",
-  username: "currentuser",
-  level: 0,
-  joinDate: "2023-06-15",
-  rank: "GOLD",
-  isActive: true,
-  totalReferrals: 12,
-}
-
-const uplineData = [
-  {
-    id: "upline1",
-    name: "SARAH JOHNSON",
-    username: "sarahj",
-    level: 1,
-    joinDate: "2023-05-10",
-    rank: "PLATINUM",
-    isActive: true,
-    totalReferrals: 45,
-    children: [
-      {
-        id: "upline2",
-        name: "MICHAEL CHEN",
-        username: "mchen",
-        level: 2,
-        joinDate: "2023-03-22",
-        rank: "DIAMOND",
-        isActive: true,
-        totalReferrals: 128,
-        children: [
-          {
-            id: "upline3",
-            name: "ALEX RODRIGUEZ",
-            username: "alexr",
-            level: 3,
-            joinDate: "2023-01-15",
-            rank: "DIAMOND",
-            isActive: true,
-            totalReferrals: 256,
-          },
-        ],
-      },
-    ],
-  },
-]
-
-const downlineData = [
-  {
-    id: "down1",
-    name: "EMMA WILSON",
-    username: "emmaw",
-    level: 1,
-    joinDate: "2023-07-20",
-    rank: "SILVER",
-    isActive: true,
-    totalReferrals: 8,
-    children: [
-      {
-        id: "down1-1",
-        name: "JAMES BROWN",
-        username: "jbrown",
-        level: 2,
-        joinDate: "2023-08-15",
-        rank: "BRONZE",
-        isActive: true,
-        totalReferrals: 3,
-      },
-      {
-        id: "down1-2",
-        name: "LISA GARCIA",
-        username: "lisag",
-        level: 2,
-        joinDate: "2023-09-01",
-        rank: "SILVER",
-        isActive: false,
-        totalReferrals: 5,
-      },
-    ],
-  },
-  {
-    id: "down2",
-    name: "DAVID MILLER",
-    username: "dmiller",
-    level: 1,
-    joinDate: "2023-08-05",
-    rank: "GOLD",
-    isActive: true,
-    totalReferrals: 15,
-    children: [
-      {
-        id: "down2-1",
-        name: "SOPHIA DAVIS",
-        username: "sophiad",
-        level: 2,
-        joinDate: "2023-09-10",
-        rank: "BRONZE",
-        isActive: true,
-        totalReferrals: 2,
-      },
-    ],
-  },
-  {
-    id: "down3",
-    name: "RYAN TAYLOR",
-    username: "rtaylor",
-    level: 1,
-    joinDate: "2023-09-15",
-    rank: "BRONZE",
-    isActive: true,
-    totalReferrals: 1,
-  },
-]
+import { Users, TrendingUp, User } from "lucide-react"
+import { useNetworkData, useNetworkStats } from '@/hooks/use-network'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function NetworkPage() {
   const [activeTab, setActiveTab] = useState("downlines")
-  const [levelFilter, setLevelFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [timeFilter, setTimeFilter] = useState("all")
+  const { data: networkData, isLoading, isError } = useNetworkData()
+  const { data: statsData, isLoading: isStatsLoading, isError: isStatsError } = useNetworkStats()
+
+  if (isLoading || isStatsLoading) {
+    return (
+      <ModernSidebar>
+        <div className="min-h-screen">
+          <ModernHeader />
+          <div className="p-6 space-y-6">
+            <PageHeader title="MY NETWORK" description="Manage and track your referral network structure" />
+            {/* Summary Cards Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1,2,3].map(i => (
+                <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
+              ))}
+            </div>
+            {/* Main Content Area Skeleton */}
+            <div className="space-y-6">
+              {/* Tab Navigation Skeleton */}
+              <div className="grid w-full grid-cols-2 gap-4 mb-4">
+                <Skeleton className="h-10 w-full bg-[#2C2F3C] rounded-lg" />
+                <Skeleton className="h-10 w-full bg-[#2C2F3C] rounded-lg" />
+              </div>
+              {/* Sponsor Card Skeleton */}
+              <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6 w-full mb-6">
+                <div className="flex flex-col items-center space-y-6">
+                  <Skeleton className="h-16 w-1/2 bg-[#2C2F3C] rounded-lg mb-2" />
+                  <Skeleton className="h-10 w-1/3 bg-[#2C2F3C] rounded-lg" />
+                </div>
+              </div>
+              {/* Downlines Card Skeleton */}
+              <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6 w-full">
+                <div className="flex flex-col items-center space-y-6">
+                  <Skeleton className="h-16 w-1/2 bg-[#2C2F3C] rounded-lg mb-2" />
+                  <div className="space-y-4 w-full">
+                    {[1,2,3].map(i => (
+                      <Skeleton key={i} className="h-14 w-full bg-[#2C2F3C] rounded-lg" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ModernSidebar>
+    )
+  }
+  if (isError || isStatsError || !networkData || !statsData) {
+    return (
+      <ModernSidebar>
+        <div className="min-h-screen">
+          <ModernHeader />
+          <div className="p-6 space-y-6">
+            <PageHeader title="MY NETWORK" description="Manage and track your referral network structure" />
+            <div className="text-red-500">Failed to load network data.</div>
+          </div>
+        </div>
+      </ModernSidebar>
+    )
+  }
+  const { structure } = networkData
+  const { currentUser, sponsor, downlines } = structure
+  const { totalDownlines, activeMembers } = statsData
 
   const getNetworkStats = (data: any[]) => {
     const flattenNetwork = (nodes: any[]): any[] => {
@@ -156,8 +102,7 @@ export default function NetworkPage() {
     }
   }
 
-  const downlineStats = getNetworkStats(downlineData)
-  const uplineStats = getNetworkStats(uplineData)
+  const downlineStats = getNetworkStats(downlines)
 
   return (
     <ModernSidebar>
@@ -171,121 +116,141 @@ export default function NetworkPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <SummaryCard title="TOTAL DOWNLINES" value={downlineStats.total} color="text-[#00E5FF]" />
             <SummaryCard title="ACTIVE MEMBERS" value={downlineStats.active} color="text-[#00FFC8]" />
-            <SummaryCard title="UPLINE LEVELS" value={uplineStats.total} color="text-[#6F00FF]" />
+            <SummaryCard title="SPONSOR" value="1" color="text-[#6F00FF]" />
           </div>
 
-          {/* Tab Navigation Block */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-[#1A1E2D] border border-[#2C2F3C]">
-              <TabsTrigger
-                value="uplines"
-                className="data-[state=active]:bg-[#00E5FF] data-[state=active]:text-black text-[#A0AFC0] uppercase tracking-wide"
-              >
-                UPLINES
-              </TabsTrigger>
-              <TabsTrigger
-                value="downlines"
-                className="data-[state=active]:bg-[#00E5FF] data-[state=active]:text-black text-[#A0AFC0] uppercase tracking-wide"
-              >
-                DOWNLINES
-              </TabsTrigger>
-            </TabsList>
+          {/* Main Content Area */}
+          <div className="space-y-6">
+            {/* Tab Navigation Block */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-[#1A1E2D] border border-[#2C2F3C]">
+                <TabsTrigger
+                  value="sponsor"
+                  className="data-[state=active]:bg-[#00E5FF] data-[state=active]:text-black text-[#A0AFC0] uppercase tracking-wide"
+                >
+                  SPONSOR
+                </TabsTrigger>
+                <TabsTrigger
+                  value="downlines"
+                  className="data-[state=active]:bg-[#00E5FF] data-[state=active]:text-black text-[#A0AFC0] uppercase tracking-wide"
+                >
+                  DOWNLINES
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Filter Controls Block */}
-            <FilterControls
-              levelFilter={levelFilter}
-              setLevelFilter={setLevelFilter}
-              statusFilter={statusFilter}
-              setStatusFilter={setStatusFilter}
-              timeFilter={timeFilter}
-              setTimeFilter={setTimeFilter}
-            />
+              {/* Filter Controls Block */}
+              <FilterControls>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Filter controls can be added here in the future */}
+                </div>
+              </FilterControls>
 
-            {/* Tree View Block */}
-            <TabsContent value="uplines" className="mt-6">
-              <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
-                <CardHeader>
-                  <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                    <TrendingUp className="h-5 w-5 text-[#00E5FF]" />
-                    <span>UPLINE STRUCTURE</span>
-                  </CardTitle>
-                  <p className="text-[#A0AFC0] text-sm">Your referral chain going upward</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Current User Node */}
-                  <div className="flex justify-center">
-                    <Card className="bg-[#00E5FF]/10 border-[#00E5FF]">
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-4">
-                          <div className="h-10 w-10 rounded-full bg-[#00E5FF] flex items-center justify-center">
-                            <span className="text-black font-bold text-sm">YOU</span>
-                          </div>
-                          <div>
-                            <h3 className="text-white font-medium uppercase text-sm">{currentUser.name}</h3>
-                            <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
-                              <span>@{currentUser.username}</span>
-                              <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
-                                {currentUser.rank}
-                              </Badge>
+              {/* Sponsor View Block */}
+              <TabsContent value="sponsor" className="mt-6">
+                <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+                  <CardHeader>
+                    <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
+                      <User className="h-5 w-5 text-[#00E5FF]" />
+                      <span>YOUR SPONSOR</span>
+                    </CardTitle>
+                    <p className="text-[#A0AFC0] text-sm">Your direct sponsor information</p>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Current User Node */}
+                    <div className="flex justify-center">
+                      <Card className="bg-[#00E5FF]/10 border-[#00E5FF]">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-4">
+                            <div className="h-10 w-10 rounded-full bg-[#00E5FF] flex items-center justify-center">
+                              <span className="text-black font-bold text-sm">YOU</span>
+                            </div>
+                            <div>
+                              <h3 className="text-white font-medium uppercase text-sm">{currentUser.nickname || "YOU"}</h3>
+                              <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
+                                <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
+                                  {currentUser.rank}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                        </CardContent>
+                      </Card>
+                    </div>
 
-                  {/* Upline Tree */}
-                  <div className="space-y-4">
-                    {uplineData.map((upline) => (
-                      <NetworkNode key={upline.id} user={upline} direction="up" isExpanded={true} />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                    {/* Connection Line */}
+                    <div className="flex justify-center">
+                      <div className="w-px h-8 bg-[#2C2F3C]" />
+                    </div>
 
-            <TabsContent value="downlines" className="mt-6">
-              <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
-                <CardHeader>
-                  <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                    <Users className="h-5 w-5 text-[#00E5FF]" />
-                    <span>DOWNLINE STRUCTURE</span>
-                  </CardTitle>
-                  <p className="text-[#A0AFC0] text-sm">Your referral network going downward</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Current User Node */}
-                  <div className="flex justify-center">
-                    <Card className="bg-[#00E5FF]/10 border-[#00E5FF]">
-                      <CardContent className="p-4">
-                        <div className="flex items-center space-x-4">
-                          <div className="h-10 w-10 rounded-full bg-[#00E5FF] flex items-center justify-center">
-                            <span className="text-black font-bold text-sm">YOU</span>
-                          </div>
-                          <div>
-                            <h3 className="text-white font-medium uppercase text-sm">{currentUser.name}</h3>
-                            <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
-                              <span>@{currentUser.username}</span>
-                              <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
-                                {currentUser.rank}
-                              </Badge>
+                    {/* Sponsor Node */}
+                    <div className="flex justify-center">
+                      <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-4">
+                            <div className="h-10 w-10 rounded-full bg-[#6F00FF] flex items-center justify-center">
+                              <span className="text-white font-bold text-sm">
+                                {sponsor.name.split(" ").map((n) => n[0]).join("")}
+                              </span>
+                            </div>
+                            <div>
+                              <h3 className="text-white font-medium uppercase text-sm">{sponsor.name}</h3>
+                              <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
+                                <span>@{sponsor.username}</span>
+                                <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
+                                  {sponsor.rank}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-                  {/* Downline Tree */}
-                  <div className="space-y-4">
-                    {downlineData.map((downline) => (
-                      <NetworkNode key={downline.id} user={downline} direction="down" isExpanded={true} />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="downlines" className="mt-6">
+                <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+                  <CardHeader>
+                    <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
+                      <Users className="h-5 w-5 text-[#00E5FF]" />
+                      <span>DOWNLINE STRUCTURE</span>
+                    </CardTitle>
+                    <p className="text-[#A0AFC0] text-sm">Your referral network going downward</p>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Current User Node */}
+                    <div className="flex justify-center">
+                      <Card className="bg-[#00E5FF]/10 border-[#00E5FF]">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-4">
+                            <div className="h-10 w-10 rounded-full bg-[#00E5FF] flex items-center justify-center">
+                              <span className="text-black font-bold text-sm">YOU</span>
+                            </div>
+                            <div>
+                              <h3 className="text-white font-medium uppercase text-sm">{currentUser.nickname || "YOU"}</h3>
+                              <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
+                                <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
+                                  {currentUser.rank}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Downline Tree */}
+                    <div className="space-y-4">
+                      {downlines.map((downline) => (
+                        <NetworkNode key={downline.id} user={downline} direction="down" isExpanded={true} />
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
     </ModernSidebar>

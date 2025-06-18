@@ -98,6 +98,11 @@
   .light body {
     @apply bg-slate-50 text-slate-900;
   }
+
+  html, body {
+    background: #0D0F1A !important;
+    color-scheme: dark;
+  }
 }
 
 @layer utilities {

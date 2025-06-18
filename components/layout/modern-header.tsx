@@ -72,7 +72,7 @@ export function ModernHeader() {
               placeholder="Search transactions, users, or NFTs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-[#1A1E2D]/50 border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] h-10"
+              className="pl-10 bg-[#1A1E2D]/50 border-[#2C2F3C] text-white placeholder-[white] focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] h-10"
             />
           </div>
         </div>

@@ -8,135 +8,74 @@ import { Badge } from "@/components/ui/badge"
 import { RankBadge } from "@/components/ranks/rank-badge"
 import { ProgressBar } from "@/components/ranks/progress-bar"
 import { Trophy, TrendingUp, Calendar, CheckCircle, Target, Gift } from "lucide-react"
-
-// Mock data for current user rank
-const currentRank = {
-  name: "GOLD",
-  achievedDate: "2023-08-15",
-  totalVolume: 45.7,
-  teamSize: 12,
-  directReferrals: 8,
-  monthsAtRank: 5,
-}
-
-// Requirements for next rank (Platinum)
-const nextRankRequirements = {
-  name: "PLATINUM",
-  volumeRequired: 100,
-  currentVolume: 45.7,
-  directReferralsRequired: 15,
-  currentDirectReferrals: 8,
-  teamSizeRequired: 25,
-  currentTeamSize: 12,
-  monthlyVolumeRequired: 10,
-  currentMonthlyVolume: 8.5,
-}
-
-// Rank history data
-const rankHistory = [
-  {
-    rank: "GOLD",
-    achievedDate: "2023-08-15",
-    duration: "5 months",
-    isCurrent: true,
-  },
-  {
-    rank: "SILVER",
-    achievedDate: "2023-05-20",
-    duration: "3 months",
-    isCurrent: false,
-  },
-  {
-    rank: "BRONZE",
-    achievedDate: "2023-03-10",
-    duration: "2 months",
-    isCurrent: false,
-  },
-]
-
-// All available ranks with requirements and benefits
-const allRanks = [
-  {
-    name: "BRONZE",
-    requirements: {
-      volume: "5 ETH",
-      directReferrals: "2",
-      teamSize: "3",
-    },
-    benefits: {
-      commission: "5%",
-      bonus: "Welcome Bonus",
-      perks: "Basic Support",
-    },
-  },
-  {
-    name: "SILVER",
-    requirements: {
-      volume: "15 ETH",
-      directReferrals: "5",
-      teamSize: "8",
-    },
-    benefits: {
-      commission: "7%",
-      bonus: "Monthly Bonus",
-      perks: "Priority Support",
-    },
-  },
-  {
-    name: "GOLD",
-    requirements: {
-      volume: "35 ETH",
-      directReferrals: "8",
-      teamSize: "12",
-    },
-    benefits: {
-      commission: "10%",
-      bonus: "Quarterly Bonus",
-      perks: "VIP Support",
-    },
-  },
-  {
-    name: "PLATINUM",
-    requirements: {
-      volume: "100 ETH",
-      directReferrals: "15",
-      teamSize: "25",
-    },
-    benefits: {
-      commission: "12%",
-      bonus: "Leadership Bonus",
-      perks: "Exclusive Events",
-    },
-  },
-  {
-    name: "DIAMOND",
-    requirements: {
-      volume: "250 ETH",
-      directReferrals: "25",
-      teamSize: "50",
-    },
-    benefits: {
-      commission: "15%",
-      bonus: "Diamond Bonus",
-      perks: "Personal Manager",
-    },
-  },
-  {
-    name: "ELITE",
-    requirements: {
-      volume: "500 ETH",
-      directReferrals: "50",
-      teamSize: "100",
-    },
-    benefits: {
-      commission: "20%",
-      bonus: "Elite Rewards",
-      perks: "All Benefits",
-    },
-  },
-]
+import { formatDate } from "@/lib/utils"
+import { useRanksData } from '@/hooks/use-ranks'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function RanksPage() {
+  const { data, isLoading, isError } = useRanksData()
+  if (isLoading) {
+    return (
+      <ModernSidebar>
+        <div className="min-h-screen">
+          <ModernHeader />
+          <div className="p-6 space-y-6">
+            <PageHeader title="RANKS" description="Track your rank progression and unlock new benefits" />
+            {/* Summary/Metric Cards Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1,2,3].map(i => (
+                <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
+              ))}
+            </div>
+            {/* Progress Tracker Skeleton */}
+            <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6 w-full">
+              <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
+              <Skeleton className="h-8 w-1/2 mb-4 bg-[#2C2F3C]" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  {[1,2].map(i => (
+                    <Skeleton key={i} className="h-6 w-full bg-[#2C2F3C]" />
+                  ))}
+                </div>
+                <div className="space-y-3">
+                  {[1,2].map(i => (
+                    <Skeleton key={i} className="h-6 w-full bg-[#2C2F3C]" />
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Rank History Skeleton */}
+            <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6 w-full space-y-4">
+              {[1,2,3].map(i => (
+                <Skeleton key={i} className="h-14 w-full bg-[#2C2F3C]" />
+              ))}
+            </div>
+            {/* All Ranks & Benefits Skeleton */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              {[1,2,3,4,5,6].map(i => (
+                <Skeleton key={i} className="h-48 w-full bg-[#2C2F3C] rounded-lg" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </ModernSidebar>
+    )
+  }
+  if (isError || !data) {
+    return (
+      <ModernSidebar>
+        <div className="min-h-screen">
+          <ModernHeader />
+          <div className="p-6 space-y-6">
+            <PageHeader title="RANKS" description="Track your rank progression and unlock new benefits" />
+            <div className="text-red-500">Failed to load rank data.</div>
+          </div>
+        </div>
+      </ModernSidebar>
+    )
+  }
+  const { currentRank, nextRankRequirements, rankHistory, allRanks } = data
+
   return (
     <ModernSidebar>
       <div className="min-h-screen">
@@ -163,7 +102,7 @@ export default function RanksPage() {
                         <div className="text-white text-lg font-bold">RANK ACHIEVED</div>
                         <div className="flex items-center space-x-2 text-[#A0AFC0] text-sm">
                           <Calendar className="h-4 w-4" />
-                          <span>{new Date(currentRank.achievedDate).toLocaleDateString()}</span>
+                          <span>{formatDate(currentRank.achievedDate)}</span>
                           <span>({currentRank.monthsAtRank} months ago)</span>
                         </div>
                       </div>
@@ -204,7 +143,7 @@ export default function RanksPage() {
                       label="TOTAL VOLUME"
                       current={nextRankRequirements.currentVolume}
                       target={nextRankRequirements.volumeRequired}
-                      unit="ETH"
+                      unit="USDC"
                       color="bg-[#00E5FF]"
                     />
                     <ProgressBar
@@ -227,7 +166,7 @@ export default function RanksPage() {
                       label="MONTHLY VOLUME"
                       current={nextRankRequirements.currentMonthlyVolume}
                       target={nextRankRequirements.monthlyVolumeRequired}
-                      unit="ETH"
+                      unit="USDC"
                       color="bg-yellow-500"
                     />
                   </div>
@@ -266,7 +205,7 @@ export default function RanksPage() {
                               {entry.isCurrent ? "Current Rank" : "Achieved"}
                             </div>
                             <div className="text-[#A0AFC0] text-sm">
-                              {new Date(entry.achievedDate).toLocaleDateString()}
+                              {formatDate(entry.achievedDate)}
                             </div>
                           </div>
                         </div>

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Wallet, Plus, Trash2, Copy, ExternalLink, Shield, AlertTriangle } from "lucide-react"
+import { formatDate } from "@/lib/utils"
 
 // Mock wallet data
 const connectedWallets = [
@@ -18,7 +19,7 @@ const connectedWallets = [
     id: "1",
     name: "MetaMask",
     address: "0x1234567890abcdef1234567890abcdef12345678",
-    balance: "12.45 ETH",
+    balance: "12.45 USDC",
     status: "connected",
     isPrimary: true,
     lastUsed: "2024-01-15T10:30:00Z",
@@ -27,7 +28,7 @@ const connectedWallets = [
     id: "2",
     name: "WalletConnect",
     address: "0xabcdef1234567890abcdef1234567890abcdef12",
-    balance: "8.32 ETH",
+    balance: "8.32 USDC",
     status: "connected",
     isPrimary: false,
     lastUsed: "2024-01-10T14:20:00Z",
@@ -36,7 +37,7 @@ const connectedWallets = [
     id: "3",
     name: "Coinbase Wallet",
     address: "0x9876543210fedcba9876543210fedcba98765432",
-    balance: "0.00 ETH",
+    balance: "0.00 USDC",
     status: "disconnected",
     isPrimary: false,
     lastUsed: "2024-01-05T09:15:00Z",
@@ -188,7 +189,7 @@ export default function WalletSettingsPage() {
                               )}
                             </div>
                             <p className="text-[#A0AFC0] text-sm">
-                              Last used: {new Date(wallet.lastUsed).toLocaleDateString()}
+                              Last used: {formatDate(wallet.lastUsed)}
                             </p>
                           </div>
                         </div>

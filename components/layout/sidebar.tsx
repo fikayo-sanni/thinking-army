@@ -69,7 +69,7 @@ export function Sidebar({ children }: SidebarProps) {
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#2C2F3C] bg-[#0D0F1A]">
         <div className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg bg-[#00E5FF] flex items-center justify-center">
-            <Coins className="h-5 w-5 text-black font-bold" />
+            <img src="/GCs.svg" alt="Gamescoin Logo" className="h-5 w-5" />
           </div>
           <div>
             <h1 className="text-lg font-bold tracking-wide">GAMESCOIN</h1>
@@ -96,12 +96,11 @@ export function Sidebar({ children }: SidebarProps) {
             {/* Logo Section */}
             <div className="flex items-center space-x-3 mb-8">
               <div className="h-10 w-10 rounded-lg bg-[#00E5FF] flex items-center justify-center">
-                <Coins className="h-6 w-6 text-black font-bold" />
+                <img src="/GCs.svg" alt="Gamescoin Logo" className="h-6 w-6" />
               </div>
               {!isCollapsed && (
                 <div>
                   <h1 className="text-xl font-bold tracking-wide">GAMESCOIN</h1>
-                  <p className="text-xs text-[#A0AFC0] uppercase tracking-wider">WEB3 NFT PLATFORM</p>
                 </div>
               )}
             </div>
@@ -172,11 +171,10 @@ export function Sidebar({ children }: SidebarProps) {
                 {/* Logo Section */}
                 <div className="flex items-center space-x-3 mb-8">
                   <div className="h-10 w-10 rounded-lg bg-[#00E5FF] flex items-center justify-center">
-                    <Coins className="h-6 w-6 text-black font-bold" />
+                    <img src="/GCs.svg" alt="Gamescoin Logo" className="h-6 w-6" />
                   </div>
                   <div>
                     <h1 className="text-xl font-bold tracking-wide">GAMESCOIN</h1>
-                    <p className="text-xs text-[#A0AFC0] uppercase tracking-wider">WEB3 NFT PLATFORM</p>
                   </div>
                 </div>
 

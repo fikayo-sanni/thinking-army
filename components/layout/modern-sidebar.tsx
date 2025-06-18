@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,8 @@ import {
   ChevronRight,
   Zap,
   BarChart3,
+  Menu,
+  X,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -28,7 +30,7 @@ const navigationItems = [
     gradient: "from-[#00E5FF] to-[#0099CC]",
   },
   {
-    name: "Purchases",
+    name: "Network Purchases",
     href: "/purchases",
     icon: ShoppingCart,
     badge: "156",
@@ -53,7 +55,7 @@ const navigationItems = [
     href: "/ranks",
     icon: Trophy,
     badge: null,
-    gradient: "from-[#FF6B6B] to-[#FF5252]",
+    gradient: "from-[#6B7280] to-[#4B5563]",
   },
   {
     name: "Payouts",
@@ -67,7 +69,7 @@ const navigationItems = [
 const quickStats = [
   {
     label: "Total Earned",
-    value: "45.7 ETH",
+    value: "45.7 USDC",
     icon: TrendingUp,
     color: "text-[#00E5FF]",
   },
@@ -91,12 +93,47 @@ interface ModernSidebarProps {
 
 export function ModernSidebar({ children }: ModernSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
   const pathname = usePathname()
+
+  // Prevent background scroll when mobile sidebar is open
+  React.useEffect(() => {
+    if (isMobileOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [isMobileOpen])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0D0F1A] via-[#1A1E2D] to-[#0D0F1A] dark:from-[#0D0F1A] dark:via-[#1A1E2D] dark:to-[#0D0F1A] light:from-slate-50 light:via-white light:to-slate-50">
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#2C2F3C] bg-[#0D0F1A]">
+        <div className="flex items-center space-x-3">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#00E5FF] to-[#6F00FF] flex items-center justify-center">
+            <img src="/GCs.svg" alt="Gamescoin Logo" className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
+              GAMESCOIN
+            </h1>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="text-[#A0AFC0] hover:text-white hover:bg-[#1A1E2D]"
+        >
+          {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      </div>
+
       <div className="flex">
-        {/* Modern Sidebar */}
+        {/* Desktop Sidebar */}
         <aside
           className={`${
             isCollapsed ? "w-20" : "w-80"
@@ -107,7 +144,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
             <div className="flex items-center space-x-4 mb-8">
               <div className="relative">
                 <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#00E5FF] to-[#6F00FF] flex items-center justify-center shadow-lg shadow-[#00E5FF]/25">
-                  <Coins className="h-7 w-7 text-white font-bold" />
+                  <img src="/GCs.svg" alt="Gamescoin Logo" className="h-7 w-7" />
                 </div>
                 <div className="absolute -top-1 -right-1 h-4 w-4 bg-[#00FFC8] rounded-full flex items-center justify-center">
                   <Zap className="h-2.5 w-2.5 text-black" />
@@ -118,7 +155,6 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
                     GAMESCOIN
                   </h1>
-                  <p className="text-xs text-[#A0AFC0] uppercase tracking-wider font-medium">Web3 NFT Platform</p>
                 </div>
               )}
             </div>
@@ -217,6 +253,107 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
             </Button>
           </div>
         </aside>
+
+        {/* Mobile Sidebar Overlay */}
+        {isMobileOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex" onClick={() => setIsMobileOpen(false)}>
+            <aside
+              className="w-4/5 max-w-xs bg-[#0D0F1A]/95 backdrop-blur-xl border-r border-[#2C2F3C]/50 min-h-screen"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="p-6">
+                {/* Logo Section */}
+                <div className="flex items-center space-x-4 mb-8">
+                  <div className="relative">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#00E5FF] to-[#6F00FF] flex items-center justify-center shadow-lg shadow-[#00E5FF]/25">
+                      <img src="/GCs.svg" alt="Gamescoin Logo" className="h-7 w-7" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 h-4 w-4 bg-[#00FFC8] rounded-full flex items-center justify-center">
+                      <Zap className="h-2.5 w-2.5 text-black" />
+                    </div>
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
+                      GAMESCOIN
+                    </h1>
+                  </div>
+                </div>
+
+                {/* Quick Stats */}
+                <div className="mb-8 p-4 rounded-2xl bg-gradient-to-br from-[#1A1E2D]/80 to-[#2C2F3C]/40 backdrop-blur border border-[#2C2F3C]/50">
+                  <h3 className="text-white font-semibold mb-4 flex items-center">
+                    <BarChart3 className="h-4 w-4 mr-2 text-[#00E5FF]" />
+                    Quick Stats
+                  </h3>
+                  <div className="space-y-3">
+                    {quickStats.map((stat) => (
+                      <div key={stat.label} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                          <span className="text-[#A0AFC0] text-sm">{stat.label}</span>
+                        </div>
+                        <span className="text-white font-semibold text-sm">{stat.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <nav className="space-y-2">
+                  <div className="text-[#A0AFC0] text-xs uppercase tracking-wider font-semibold mb-4 px-3">
+                    Navigation
+                  </div>
+                  {navigationItems.map((item) => {
+                    const isActive = pathname === item.href
+                    return (
+                      <Link key={item.name} href={item.href} onClick={() => setIsMobileOpen(false)}>
+                        <div
+                          className={`group relative flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${
+                            isActive
+                              ? "bg-gradient-to-r from-[#00E5FF]/20 to-[#6F00FF]/20 border border-[#00E5FF]/30 shadow-lg shadow-[#00E5FF]/10"
+                              : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#2C2F3C]/50"
+                          }`}
+                        >
+                          <div
+                            className={`relative p-2 rounded-lg ${isActive ? `bg-gradient-to-br ${item.gradient}` : "bg-[#2C2F3C]/50 group-hover:bg-[#2C2F3C]"} transition-all duration-200`}
+                          >
+                            <item.icon
+                              className={`h-5 w-5 ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <span
+                              className={`font-medium text-sm ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
+                            >
+                              {item.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {item.badge && (
+                              <Badge
+                                className={`text-xs px-2 py-0.5 ${
+                                  item.badge === "New"
+                                    ? "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30"
+                                    : "bg-[#2C2F3C] text-[#A0AFC0]"
+                                }`}
+                              >
+                                {item.badge}
+                              </Badge>
+                            )}
+                            {isActive && <ChevronRight className="h-4 w-4 text-[#00E5FF]" />}
+                          </div>
+                          {isActive && (
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#00E5FF] to-[#6F00FF] rounded-r-full" />
+                          )}
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </nav>
+              </div>
+            </aside>
+          </div>
+        )}
 
         {/* Main Content */}
         <main className="flex-1 min-h-screen">{children}</main>

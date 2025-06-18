@@ -7,82 +7,49 @@ import { PageHeader } from "@/components/layout/page-header"
 import { FilterControls } from "@/components/layout/filter-controls"
 import { DataTableCard } from "@/components/ui/data-table-card"
 import { SummaryCard } from "@/components/ui/summary-card"
+import { ChartCard } from "@/components/dashboard/chart-card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CalendarDays, Filter } from "lucide-react"
+import {
+  ChartContainer,
+  ChartTooltip,
+} from "@/components/ui/chart"
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts"
+import { usePurchasesData, usePurchaseHistory } from "@/hooks"
+import { Skeleton } from "@/components/ui/skeleton"
 
-// Mock data for purchases
-const purchasesData = [
-  {
-    id: "1",
-    date: "2024-01-15",
-    tokenId: "COSMIC WARRIOR #1234",
-    amount: 2.5,
-    status: "completed",
-    source: "OpenSea",
+const chartConfig = {
+  purchases: {
+    label: "Purchases",
+    color: "#00E5FF",
   },
-  {
-    id: "2",
-    date: "2024-01-14",
-    tokenId: "DIGITAL DRAGON #5678",
-    amount: 1.8,
-    status: "completed",
-    source: "Rarible",
+  volume: {
+    label: "Volume (USDC)",
+    color: "#00FFC8",
   },
-  {
-    id: "3",
-    date: "2024-01-13",
-    tokenId: "PIXEL ART #9999",
-    amount: 3.2,
-    status: "pending",
-    source: "Foundation",
-  },
-  {
-    id: "4",
-    date: "2024-01-12",
-    tokenId: "CYBER PUNK #4567",
-    amount: 1.5,
-    status: "completed",
-    source: "SuperRare",
-  },
-  {
-    id: "5",
-    date: "2024-01-11",
-    tokenId: "ABSTRACT MIND #7890",
-    amount: 4.1,
-    status: "failed",
-    source: "OpenSea",
-  },
-  {
-    id: "6",
-    date: "2024-01-10",
-    tokenId: "NEON CITY #2345",
-    amount: 2.8,
-    status: "completed",
-    source: "Async Art",
-  },
-  {
-    id: "7",
-    date: "2024-01-09",
-    tokenId: "SPACE ODYSSEY #6789",
-    amount: 5.2,
-    status: "completed",
-    source: "Foundation",
-  },
-  {
-    id: "8",
-    date: "2024-01-08",
-    tokenId: "DIGITAL DREAMS #3456",
-    amount: 1.9,
-    status: "pending",
-    source: "Rarible",
-  },
-]
+}
 
 export default function PurchasesPage() {
-  const [timeRange, setTimeRange] = useState("30")
+  const [timeRange, setTimeRange] = useState("last-month")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 8;
+
+  // Fetch data using custom hooks
+  const { data: purchasesData, isLoading: isDataLoading, error: dataError } = usePurchasesData(timeRange)
+  const { data: historyData, isLoading: isHistoryLoading, error: historyError } = usePurchaseHistory(
+    { timeRange, status: statusFilter !== "all" ? statusFilter : undefined },
+    currentPage,
+    itemsPerPage
+  )
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -97,12 +64,67 @@ export default function PurchasesPage() {
     }
   }
 
-  const filteredPurchases = purchasesData.filter((purchase) => {
-    if (statusFilter !== "all" && purchase.status !== statusFilter) {
-      return false
-    }
-    return true
-  })
+  // Loading states
+  if (isDataLoading || isHistoryLoading) {
+    return (
+      <ModernSidebar>
+        <div className="min-h-screen">
+          <ModernHeader />
+          <div className="p-6 space-y-6">
+            <PageHeader title="NETWORK PURCHASES" description="Track and manage your NFT purchase history" />
+            
+            {/* Loading skeleton for summary stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6">
+                  <Skeleton className="h-4 w-24 mb-2 bg-[#2C2F3C]" />
+                  <Skeleton className="h-8 w-32 bg-[#2C2F3C]" />
+                </div>
+              ))}
+            </div>
+
+            {/* Loading skeleton for chart */}
+            <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6">
+              <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
+              <Skeleton className="h-64 w-full bg-[#2C2F3C]" />
+            </div>
+
+            {/* Loading skeleton for table */}
+            <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6">
+              <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-12 w-full bg-[#2C2F3C]" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ModernSidebar>
+    )
+  }
+
+  // Error states
+  if (dataError || historyError) {
+    return (
+      <ModernSidebar>
+        <div className="min-h-screen">
+          <ModernHeader />
+          <div className="p-6">
+            <div className="text-center py-12">
+              <div className="text-red-400 text-lg mb-2">Error loading data</div>
+              <div className="text-[#A0AFC0] text-sm">Please try refreshing the page</div>
+            </div>
+          </div>
+        </div>
+      </ModernSidebar>
+    )
+  }
+
+  const purchases = historyData?.purchases || []
+  const overview = purchasesData?.overview
+  const chartData = purchasesData?.chartData || []
+  const totalPages = historyData?.totalPages || 1;
 
   return (
     <ModernSidebar>
@@ -110,7 +132,26 @@ export default function PurchasesPage() {
         <ModernHeader />
         <div className="p-6 space-y-6">
           {/* Page Title Block */}
-          <PageHeader title="PURCHASES" description="Track and manage your NFT purchase history" />
+          <PageHeader title="NETWORK PURCHASES" description="Track and manage your NFT purchase history" />
+
+          {/* Summary Stats - Moved to top for better hierarchy */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <SummaryCard
+              title="TOTAL SPENT"
+              value={`${overview?.totalSpent.toFixed(1) || '0.0'} ${overview?.currency || 'USDC'}`}
+              color="text-[#00E5FF]"
+            />
+            <SummaryCard 
+              title="TOTAL PURCHASES" 
+              value={overview?.totalPurchases || 0} 
+              color="text-[#00FFC8]" 
+            />
+            <SummaryCard
+              title="SUCCESS RATE"
+              value={`${overview?.successRate.toFixed(0) || '0'}%`}
+              color="text-[#6F00FF]"
+            />
+          </div>
 
           {/* Filter Controls Block */}
           <FilterControls>
@@ -121,53 +162,91 @@ export default function PurchasesPage() {
                   <SelectValue placeholder="Select time range" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
-                  <SelectItem value="7" className="text-white hover:bg-[#2C2F3C]">
-                    Last 7 days
+                  <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
+                    Last Week
                   </SelectItem>
-                  <SelectItem value="30" className="text-white hover:bg-[#2C2F3C]">
-                    Last 30 days
+                  <SelectItem value="last-month" className="text-white hover:bg-[#2C2F3C]">
+                    Last Month
                   </SelectItem>
-                  <SelectItem value="90" className="text-white hover:bg-[#2C2F3C]">
-                    Last 90 days
-                  </SelectItem>
-                  <SelectItem value="365" className="text-white hover:bg-[#2C2F3C]">
-                    Last year
-                  </SelectItem>
-                  <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
-                    All time
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-[#A0AFC0]" />
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
-                  <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
-                    All Statuses
-                  </SelectItem>
-                  <SelectItem value="completed" className="text-white hover:bg-[#2C2F3C]">
-                    Completed
-                  </SelectItem>
-                  <SelectItem value="pending" className="text-white hover:bg-[#2C2F3C]">
-                    Pending
-                  </SelectItem>
-                  <SelectItem value="failed" className="text-white hover:bg-[#2C2F3C]">
-                    Failed
+                  <SelectItem value="last-quarter" className="text-white hover:bg-[#2C2F3C]">
+                    Last Quarter
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </FilterControls>
 
+          {/* Network Purchases Over Time Chart */}
+          <div style={{ width: "70%", transform: "scale(0.9)", transformOrigin: "top left" }} className="mb-4">
+            <ChartCard title="NETWORK PURCHASES OVER TIME" description="Daily purchase activity and volume trends">
+              <ChartContainer config={chartConfig}>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
+                  <XAxis
+                    dataKey="date"
+                    stroke="#A0AFC0"
+                    tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  />
+                  <YAxis
+                    yAxisId="left"
+                    stroke="#A0AFC0"
+                    tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    stroke="#A0AFC0"
+                    tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  />
+                  <ChartTooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-3 shadow-lg">
+                            <div className="text-white font-medium mb-2">{label}</div>
+                            <div className="space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[#00E5FF]">Purchases:</span>
+                                <span className="text-white font-medium">{payload[0]?.value}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[#00FFC8]">Volume:</span>
+                                <span className="text-white font-medium">{payload[1]?.value} USDC</span>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      }
+                      return null
+                    }}
+                  />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="purchases"
+                    stroke="#00E5FF"
+                    strokeWidth={1.5}
+                    dot={{ fill: "#00E5FF", strokeWidth: 1, r: 3 }}
+                    activeDot={{ r: 4, stroke: "#00E5FF", strokeWidth: 1 }}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="volume"
+                    stroke="#00FFC8"
+                    strokeWidth={1.5}
+                    dot={{ fill: "#00FFC8", strokeWidth: 1, r: 3 }}
+                    activeDot={{ r: 4, stroke: "#00FFC8", strokeWidth: 1 }}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </ChartCard>
+          </div>
+
           {/* Purchases Table Block */}
           <DataTableCard
-            title="PURCHASE HISTORY"
-            subtitle={`Showing ${filteredPurchases.length} of ${purchasesData.length} purchases`}
+            title="NETWORK PURCHASE HISTORY"
+            subtitle={`Showing ${purchases.length} of ${historyData?.total || 0} purchases`}
             showExport
             onExport={() => console.log("Export data")}
           >
@@ -178,12 +257,11 @@ export default function PurchasesPage() {
                     <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">DATE</TableHead>
                     <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">TOKEN ID</TableHead>
                     <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">AMOUNT</TableHead>
-                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">STATUS</TableHead>
                     <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">SOURCE</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredPurchases.map((purchase) => (
+                  {purchases.map((purchase) => (
                     <TableRow key={purchase.id} className="border-[#2C2F3C] hover:bg-[#1A1E2D]/30">
                       <TableCell className="text-[#A0AFC0]">
                         {new Date(purchase.date).toLocaleDateString("en-US", {
@@ -193,8 +271,7 @@ export default function PurchasesPage() {
                         })}
                       </TableCell>
                       <TableCell className="text-white font-medium uppercase">{purchase.tokenId}</TableCell>
-                      <TableCell className="text-[#00E5FF] font-bold">{purchase.amount} ETH</TableCell>
-                      <TableCell>{getStatusBadge(purchase.status)}</TableCell>
+                      <TableCell className="text-[#00E5FF] font-bold">{purchase.amount.toFixed(2)} {purchase.currency}</TableCell>
                       <TableCell className="text-[#A0AFC0]">{purchase.source}</TableCell>
                     </TableRow>
                   ))}
@@ -202,28 +279,49 @@ export default function PurchasesPage() {
               </Table>
             </div>
 
-            {filteredPurchases.length === 0 && (
+            {purchases.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-[#A0AFC0] text-lg mb-2">No purchases found</div>
                 <div className="text-[#A0AFC0] text-sm">Try adjusting your filters to see more results</div>
               </div>
             )}
-          </DataTableCard>
 
-          {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <SummaryCard
-              title="TOTAL SPENT"
-              value={`${filteredPurchases.reduce((sum, p) => sum + p.amount, 0).toFixed(1)} ETH`}
-              color="text-[#00E5FF]"
-            />
-            <SummaryCard title="TOTAL PURCHASES" value={filteredPurchases.length} color="text-[#00FFC8]" />
-            <SummaryCard
-              title="SUCCESS RATE"
-              value={`${((filteredPurchases.filter((p) => p.status === "completed").length / filteredPurchases.length) * 100).toFixed(0)}%`}
-              color="text-[#6F00FF]"
-            />
-          </div>
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex-1 text-[#A0AFC0] text-sm">
+                Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
+              </div>
+              <div className="flex items-center space-x-2 justify-end">
+                <button
+                  className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition
+                      ${page === currentPage
+                        ? 'bg-[#00E5FF] text-black border-[#00E5FF]'
+                        : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}
+                    `}
+                    onClick={() => setCurrentPage(page)}
+                    disabled={page === currentPage}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </DataTableCard>
         </div>
       </div>
     </ModernSidebar>

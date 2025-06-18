@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { User, Mail, Phone, Camera, Save, Shield } from "lucide-react"
+import { formatDate } from "@/lib/utils"
 
 export default function ProfileSettingsPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +27,7 @@ export default function ProfileSettingsPage() {
     bio: "Passionate NFT collector and blockchain enthusiast. Building the future of digital assets.",
     joinDate: "2023-03-15",
     rank: "GOLD",
-    totalEarnings: "45.7 ETH",
+    totalEarnings: "45.7 USDC",
     referrals: 12,
   })
 
@@ -102,7 +103,7 @@ export default function ProfileSettingsPage() {
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-lg bg-[#0D0F1A] border border-[#2C2F3C]">
                     <span className="text-[#A0AFC0] text-sm">Member Since</span>
-                    <span className="text-white font-bold">{new Date(profileData.joinDate).toLocaleDateString()}</span>
+                    <span className="text-white font-bold">{formatDate(profileData.joinDate)}</span>
                   </div>
                 </div>
               </CardContent>

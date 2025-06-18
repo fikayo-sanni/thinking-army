@@ -9,8 +9,10 @@ import { useState } from "react"
 
 interface NetworkUser {
   id: string
-  name: string
-  username: string
+  name?: string
+  username?: string
+  nickname?: string
+  anonymizedEmail?: string
   level: number
   joinDate: string
   rank: string
@@ -37,6 +39,16 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
 
   const hasChildren = user.children && user.children.length > 0
 
+  // Handle both old and new data structures
+  const displayName = user.nickname || user.name || "Unknown"
+  const displayIdentifier = user.anonymizedEmail || `@${user.username}` || "Unknown"
+  
+  // Generate avatar fallback from nickname or name
+  const avatarFallback = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+
   return (
     <div className="relative">
       {/* Connection Line */}
@@ -62,17 +74,14 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
             <Avatar className="h-10 w-10 ring-2 ring-[#2C2F3C]">
               <AvatarImage src={user.avatar || "/placeholder.svg?height=40&width=40"} />
               <AvatarFallback className="bg-[#0D0F1A] text-[#00E5FF]">
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {avatarFallback}
               </AvatarFallback>
             </Avatar>
 
             {/* User Info */}
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
-                <h3 className="text-white font-medium uppercase text-sm">{user.name}</h3>
+                <h3 className="text-white font-medium uppercase text-sm">{displayName}</h3>
                 <Badge
                   className={`text-xs ${
                     user.isActive
@@ -84,7 +93,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
                 </Badge>
               </div>
               <div className="flex items-center space-x-4 text-xs text-[#A0AFC0]">
-                <span className="font-mono">@{user.username}</span>
+                <span className="font-mono">{displayIdentifier}</span>
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-3 w-3" />
                   <span>{user.joinDate}</span>

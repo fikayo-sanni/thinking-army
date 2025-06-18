@@ -12,118 +12,27 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react"
-
-// Mock data for commissions
-const commissionsData = [
-  {
-    id: "1",
-    date: "2024-01-15",
-    sourceUser: "EMMA WILSON",
-    sourceUserId: "emmaw",
-    type: "C1",
-    amount: 0.25,
-    status: "paid",
-    transactionId: "0x1a2b3c4d5e6f7890",
-  },
-  {
-    id: "2",
-    date: "2024-01-14",
-    sourceUser: "DAVID MILLER",
-    sourceUserId: "dmiller",
-    type: "C2",
-    amount: 0.15,
-    status: "paid",
-    transactionId: "0x2b3c4d5e6f789012",
-  },
-  {
-    id: "3",
-    date: "2024-01-13",
-    sourceUser: "JAMES BROWN",
-    sourceUserId: "jbrown",
-    type: "C1",
-    amount: 0.3,
-    status: "pending",
-    transactionId: "0x3c4d5e6f78901234",
-  },
-  {
-    id: "4",
-    date: "2024-01-12",
-    sourceUser: "LISA GARCIA",
-    sourceUserId: "lisag",
-    type: "C3",
-    amount: 0.08,
-    status: "paid",
-    transactionId: "0x4d5e6f7890123456",
-  },
-  {
-    id: "5",
-    date: "2024-01-11",
-    sourceUser: "SOPHIA DAVIS",
-    sourceUserId: "sophiad",
-    type: "C1",
-    amount: 0.22,
-    status: "pending",
-    transactionId: "0x5e6f789012345678",
-  },
-  {
-    id: "6",
-    date: "2024-01-10",
-    sourceUser: "RYAN TAYLOR",
-    sourceUserId: "rtaylor",
-    type: "C2",
-    amount: 0.18,
-    status: "paid",
-    transactionId: "0x6f78901234567890",
-  },
-  {
-    id: "7",
-    date: "2024-01-09",
-    sourceUser: "EMMA WILSON",
-    sourceUserId: "emmaw",
-    type: "C1",
-    amount: 0.35,
-    status: "paid",
-    transactionId: "0x789012345678901a",
-  },
-  {
-    id: "8",
-    date: "2024-01-08",
-    sourceUser: "MICHAEL CHEN",
-    sourceUserId: "mchen",
-    type: "C3",
-    amount: 0.12,
-    status: "processing",
-    transactionId: "0x89012345678901ab",
-  },
-  {
-    id: "9",
-    date: "2024-01-07",
-    sourceUser: "DAVID MILLER",
-    sourceUserId: "dmiller",
-    type: "C2",
-    amount: 0.2,
-    status: "paid",
-    transactionId: "0x9012345678901abc",
-  },
-  {
-    id: "10",
-    date: "2024-01-06",
-    sourceUser: "SARAH JOHNSON",
-    sourceUserId: "sarahj",
-    type: "C1",
-    amount: 0.28,
-    status: "paid",
-    transactionId: "0xa012345678901bcd",
-  },
-]
+import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight, Coins } from "lucide-react"
+import { useCommissionData, useCommissionHistory } from "@/hooks/use-commission"
+import { Skeleton } from "@/components/ui/skeleton"
+import type { CommissionHistory } from "@/lib/services/commission-service"
 
 export default function CommissionsPage() {
   const [typeFilter, setTypeFilter] = useState("all")
-  const [timeRange, setTimeRange] = useState("30")
+  const [timeRange, setTimeRange] = useState("last-month")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [currencyFilter, setCurrencyFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
+
+  const { data: summaryData, isLoading: isSummaryLoading, isError: isSummaryError } = useCommissionData(timeRange)
+  const { data: historyData, isLoading: isHistoryLoading, isError: isHistoryError } = useCommissionHistory(timeRange, typeFilter !== "all" ? typeFilter : undefined, statusFilter !== "all" ? statusFilter : undefined, currentPage, itemsPerPage)
+
+  const commissionsData: CommissionHistory[] = historyData?.commissions || []
+  const earnings = summaryData?.earnings
+  const stats = summaryData?.stats
+  const pending = summaryData?.pending
+  const chartData = summaryData?.chartData
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -138,74 +47,116 @@ export default function CommissionsPage() {
     }
   }
 
-  const getTypeBadge = (type: string) => {
-    const colors = {
-      C1: "bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30",
-      C2: "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30",
-      C3: "bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30",
+  const getTypeLabelAndColor = (type: string) => {
+    switch (type) {
+      case "direct":
+        return { label: "C1", color: "bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30" };
+      case "indirect":
+        return { label: "C2", color: "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30" };
+      case "bonus":
+        return { label: "C3", color: "bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30" };
+      default:
+        return { label: type.toUpperCase(), color: "bg-[#2C2F3C] text-[#A0AFC0]" };
     }
-    return <Badge className={colors[type as keyof typeof colors] || "bg-[#2C2F3C] text-[#A0AFC0]"}>{type}</Badge>
   }
 
-  const filteredCommissions = commissionsData.filter((commission) => {
-    if (typeFilter !== "all" && commission.type !== typeFilter) return false
-    if (statusFilter !== "all" && commission.status !== statusFilter) return false
-    return true
-  })
+  const getCurrencyBadge = (currency: string) => {
+    const colors = {
+      USDC: "bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30",
+      USDT: "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30",
+    }
+    return <Badge className={colors[currency as keyof typeof colors] || "bg-[#2C2F3C] text-[#A0AFC0]"}>{currency}</Badge>
+  }
 
   // Calculate summary stats
-  const totalEarned = commissionsData.reduce((sum, c) => sum + c.amount, 0)
-  const c1Total = commissionsData.filter((c) => c.type === "C1").reduce((sum, c) => sum + c.amount, 0)
-  const c2Total = commissionsData.filter((c) => c.type === "C2").reduce((sum, c) => sum + c.amount, 0)
-  const c3Total = commissionsData.filter((c) => c.type === "C3").reduce((sum, c) => sum + c.amount, 0)
-  const pendingTotal = commissionsData.filter((c) => c.status === "pending").reduce((sum, c) => sum + c.amount, 0)
-  const withdrawnTotal = commissionsData.filter((c) => c.status === "paid").reduce((sum, c) => sum + c.amount, 0)
+  const totalEarned = earnings?.totalEarnings ?? 0
+  const pendingAmount = stats?.pendingAmount ?? 0
+  const withdrawnAmount = stats?.totalWithdrawals ?? 0
+  const c1Total = commissionsData.filter((c: CommissionHistory) => c.type === "direct").reduce((sum, c) => sum + c.amount, 0)
+  const c2Total = commissionsData.filter((c: CommissionHistory) => c.type === "indirect").reduce((sum, c) => sum + c.amount, 0)
+  const c3Total = commissionsData.filter((c: CommissionHistory) => c.type === "bonus").reduce((sum, c) => sum + c.amount, 0)
+  const currency = earnings?.currency || 'ETH'
+  const monthlyGrowth = stats?.monthlyGrowth ?? 0
 
   // Pagination
-  const totalPages = Math.ceil(filteredCommissions.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const paginatedCommissions = filteredCommissions.slice(startIndex, startIndex + itemsPerPage)
+  const totalPages = historyData?.totalPages || 1
+  const paginatedCommissions = commissionsData
 
   return (
     <ModernSidebar>
       <div className="min-h-screen">
         <ModernHeader />
         <div className="p-6 space-y-6">
-          {/* Page Title Block */}
           <PageHeader title="COMMISSIONS" description="Track your earnings and commission breakdown" />
 
-          {/* Summary Cards Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard
-              title="TOTAL EARNED"
-              value={`${totalEarned.toFixed(2)} ETH`}
-              icon={TrendingUp}
-              change={{ value: "+12%", type: "positive" }}
-            />
-            {/* Keep the existing commission types card as is */}
-            <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
-              <CardContent className="p-6">
-                <div className="space-y-3">
-                  <div className="text-lg font-bold text-white mb-2">COMMISSION TYPES</div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#00E5FF] text-sm">C1 (Direct)</span>
-                      <span className="text-white font-medium">{c1Total.toFixed(2)} ETH</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#00FFC8] text-sm">C2 (Level 2)</span>
-                      <span className="text-white font-medium">{c2Total.toFixed(2)} ETH</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-[#6F00FF] text-sm">C3 (Level 3)</span>
-                      <span className="text-white font-medium">{c3Total.toFixed(2)} ETH</span>
-                    </div>
+          {/* Summary Cards Layout - Restored */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Total Earned */}
+            <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+              <CardContent className="p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
+                    <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
+                  </div>
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">+{monthlyGrowth}%</Badge>
+                </div>
+                <div className="text-3xl font-bold mb-1 text-white">{Number(totalEarned).toFixed(2)} {currency}</div>
+                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">TOTAL EARNED</div>
+              </CardContent>
+            </Card>
+            {/* Commission Types Breakdown */}
+            <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1 flex flex-col justify-center">
+              <CardContent className="p-6 flex flex-col h-full justify-center">
+                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider mb-2">COMMISSION TYPES</div>
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center space-x-2">
+                      <span className="inline-block w-2 h-2 rounded-full bg-[#00E5FF] mr-2"></span>
+                      <span className="text-[#00E5FF] font-bold">C1 (Direct)</span>
+                    </span>
+                    <span className="text-white font-medium">{Number(c1Total).toFixed(2)} {currency}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center space-x-2">
+                      <span className="inline-block w-2 h-2 rounded-full bg-[#00FFC8] mr-2"></span>
+                      <span className="text-[#00FFC8] font-bold">C2 (Level 2)</span>
+                    </span>
+                    <span className="text-white font-medium">{Number(c2Total).toFixed(2)} {currency}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center space-x-2">
+                      <span className="inline-block w-2 h-2 rounded-full bg-[#6F00FF] mr-2"></span>
+                      <span className="text-[#6F00FF] font-bold">C3 (Level 3)</span>
+                    </span>
+                    <span className="text-white font-medium">{Number(c3Total).toFixed(2)} {currency}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            <MetricCard title="PENDING" value={`${pendingTotal.toFixed(2)} ETH`} icon={Clock} />
-            <MetricCard title="WITHDRAWN" value={`${withdrawnTotal.toFixed(2)} ETH`} icon={CheckCircle} />
+            {/* Pending */}
+            <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+              <CardContent className="p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
+                    <Clock className="h-6 w-6 text-[#00E5FF]" />
+                  </div>
+                </div>
+                <div className="text-3xl font-bold mb-1 text-white">{Number(pendingAmount).toFixed(2)} {currency}</div>
+                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">PENDING</div>
+              </CardContent>
+            </Card>
+            {/* Withdrawn */}
+            <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+              <CardContent className="p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
+                    <CheckCircle className="h-6 w-6 text-[#00E5FF]" />
+                  </div>
+                </div>
+                <div className="text-3xl font-bold mb-1 text-white">{Number(withdrawnAmount).toFixed(2)} {currency}</div>
+                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">WITHDRAWN</div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Filter Controls Block */}
@@ -235,26 +186,40 @@ export default function CommissionsPage() {
               </div>
 
               <div className="flex items-center space-x-2">
+                <Coins className="h-4 w-4 text-[#A0AFC0]" />
+                <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
+                  <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                    <SelectValue placeholder="Currency" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                    <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
+                      All Currencies
+                    </SelectItem>
+                    <SelectItem value="USDC" className="text-white hover:bg-[#2C2F3C]">
+                      USDC
+                    </SelectItem>
+                    <SelectItem value="USDT" className="text-white hover:bg-[#2C2F3C]">
+                      USDT
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-2">
                 <CalendarDays className="h-4 w-4 text-[#A0AFC0]" />
                 <Select value={timeRange} onValueChange={setTimeRange}>
                   <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
                     <SelectValue placeholder="Time range" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
-                    <SelectItem value="7" className="text-white hover:bg-[#2C2F3C]">
-                      Last 7 days
+                    <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
+                      Last Week
                     </SelectItem>
-                    <SelectItem value="30" className="text-white hover:bg-[#2C2F3C]">
-                      Last 30 days
+                    <SelectItem value="last-month" className="text-white hover:bg-[#2C2F3C]">
+                      Last Month
                     </SelectItem>
-                    <SelectItem value="90" className="text-white hover:bg-[#2C2F3C]">
-                      Last 90 days
-                    </SelectItem>
-                    <SelectItem value="365" className="text-white hover:bg-[#2C2F3C]">
-                      Last year
-                    </SelectItem>
-                    <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
-                      All time
+                    <SelectItem value="last-quarter" className="text-white hover:bg-[#2C2F3C]">
+                      Last Quarter
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -285,117 +250,121 @@ export default function CommissionsPage() {
             </div>
           </FilterControls>
 
-          {/* Commissions Table Block */}
-          <DataTableCard
-            title="COMMISSION HISTORY"
-            subtitle={`Showing ${paginatedCommissions.length} of ${filteredCommissions.length} commissions`}
-            showExport
-            onExport={() => console.log("Export data")}
-          >
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-[#2C2F3C] hover:bg-[#1A1E2D]/30">
-                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">DATE</TableHead>
-                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">SOURCE USER</TableHead>
-                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">TYPE</TableHead>
-                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">AMOUNT</TableHead>
-                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">STATUS</TableHead>
-                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">TRANSACTION ID</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedCommissions.map((commission) => (
-                    <TableRow key={commission.id} className="border-[#2C2F3C] hover:bg-[#1A1E2D]/30">
-                      <TableCell className="text-[#A0AFC0]">
-                        {new Date(commission.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="text-white font-medium uppercase text-sm">{commission.sourceUser}</div>
-                          <div className="text-[#A0AFC0] text-xs font-mono">@{commission.sourceUserId}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getTypeBadge(commission.type)}</TableCell>
-                      <TableCell className="text-[#00E5FF] font-bold">{commission.amount.toFixed(2)} ETH</TableCell>
-                      <TableCell>{getStatusBadge(commission.status)}</TableCell>
-                      <TableCell>
-                        <div
-                          className="font-mono text-xs text-[#A0AFC0] max-w-32 truncate"
-                          title={commission.transactionId}
-                        >
-                          {commission.transactionId}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+          {/* Table Block */}
+          {isHistoryLoading ? (
+            <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-0 w-full">
+              <div className="px-6 pt-6 pb-2">
+                <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-[#2C2F3C]">
+                  <thead>
+                    <tr>
+                      {["Date","Source User","Type","Amount","Status","Transaction ID"].map((col) => (
+                        <th key={col} className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">
+                          <Skeleton className="h-4 w-20 bg-[#2C2F3C]" />
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#2C2F3C]">
+                    {[1,2,3,4,5,6,7,8].map(i => (
+                      <tr key={i}>
+                        {[1,2,3,4,5,6].map(j => (
+                          <td key={j} className="px-4 py-2 whitespace-nowrap">
+                            <Skeleton className="h-6 w-full bg-[#2C2F3C]" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-
-            {filteredCommissions.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-[#A0AFC0] text-lg mb-2">No commissions found</div>
-                <div className="text-[#A0AFC0] text-sm">Try adjusting your filters to see more results</div>
-              </div>
-            )}
-          </DataTableCard>
-
-          {/* Pagination Block */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <div className="text-[#A0AFC0] text-sm">
-                Page {currentPage} of {totalPages} ({filteredCommissions.length} total results)
-              </div>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] disabled:opacity-50"
-                >
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  Previous
-                </Button>
-
-                <div className="flex items-center space-x-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const pageNum = i + 1
-                    return (
-                      <Button
-                        key={pageNum}
-                        variant={currentPage === pageNum ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={
-                          currentPage === pageNum
-                            ? "bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90"
-                            : "border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF]"
-                        }
-                      >
-                        {pageNum}
-                      </Button>
-                    )
-                  })}
+          ) : isHistoryError ? (
+            <div className="text-red-500">Failed to load commission history.</div>
+          ) : (
+            <DataTableCard
+              title="COMMISSION HISTORY"
+              subtitle={`Showing ${paginatedCommissions.length} of ${historyData?.total || 0} commissions`}
+              showExport
+              onExport={() => console.log("Export data")}
+            >
+              <table className="min-w-full divide-y divide-[#2C2F3C]">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Date</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Source User</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Type</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Amount</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Status</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Transaction ID</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#2C2F3C]">
+                  {paginatedCommissions.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="text-center py-12 text-[#A0AFC0]">No commissions found</td>
+                    </tr>
+                  ) : (
+                    paginatedCommissions.map((c) => (
+                      <tr key={c.id}>
+                        <td className="px-4 py-2 whitespace-nowrap">{c.date}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          <div className="font-bold text-white">{c.source}</div>
+                        </td>
+                        <td className="px-4 py-2 whitespace-nowrap">{
+                          (() => {
+                            const { label, color } = getTypeLabelAndColor(c.type)
+                            return <span className={`px-3 py-1 rounded-full text-xs font-bold border ${color}`}>{label}</span>
+                          })()
+                        }</td>
+                        <td className="px-4 py-2 whitespace-nowrap text-[#00E5FF] font-bold">{c.amount.toFixed(2)} {c.currency}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">{getStatusBadge(c.status)}</td>
+                        <td className="px-4 py-2 whitespace-nowrap font-mono text-xs text-[#A0AFC0] max-w-32 truncate" title={c.transactionId}>
+                          {c.transactionId}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex-1 text-[#A0AFC0] text-sm">
+                  Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
                 </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] disabled:opacity-50"
-                >
-                  Next
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
+                <div className="flex items-center space-x-2 justify-end">
+                  <button
+                    className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  >
+                    Previous
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition
+                        ${page === currentPage
+                          ? 'bg-[#00E5FF] text-black border-[#00E5FF]'
+                          : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}
+                      `}
+                      onClick={() => setCurrentPage(page)}
+                      disabled={page === currentPage}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
-            </div>
+            </DataTableCard>
           )}
         </div>
       </div>
