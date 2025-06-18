@@ -162,6 +162,15 @@ export default function PurchasesPage() {
                   <SelectValue placeholder="Select time range" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                  <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
+                    This Week
+                  </SelectItem>
+                  <SelectItem value="this-month" className="text-white hover:bg-[#2C2F3C]">
+                    This Month
+                  </SelectItem>
+                  <SelectItem value="this-quarter" className="text-white hover:bg-[#2C2F3C]">
+                    This Quarter
+                  </SelectItem>
                   <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
                     Last Week
                   </SelectItem>

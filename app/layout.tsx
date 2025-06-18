@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <QueryProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
         </QueryProvider>
       </body>
     </html>

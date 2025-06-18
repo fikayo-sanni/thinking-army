@@ -15,6 +15,13 @@ export interface DashboardStats {
   monthlyGrowth: number
   totalNetworkSize: number
   successRate: number
+  immediateDownlines?: Array<{
+    id: string
+    nickname: string
+    revenue: number
+    status: 'active' | 'inactive'
+    rank: string
+  }>
 }
 
 export interface ChartData {
@@ -34,9 +41,29 @@ export interface ActivityItem {
 }
 
 export interface DashboardCharts {
-  earningsOverTime: ChartData[]
-  referralsOverTime: ChartData[]
-  purchasesOverTime: ChartData[]
+  purchasesOverTime: Array<{
+    date: string
+    purchases: number
+    volume: number
+  }>
+  commissionSources: Array<{
+    name: string
+    value: number
+    color: string
+  }>
+  commissionBreakdown: Array<{
+    month: string
+    c1: number
+    c2: number
+    c3: number
+    bonuses: number
+  }>
+  networkGrowth: Array<{
+    date: string
+    totalMembers: number
+    activeMembers: number
+    newReferrals: number
+  }>
 }
 
 // Generic API request function with mock fallback
@@ -152,6 +179,13 @@ export const dashboardService = {
     stats: DashboardStats
     charts: DashboardCharts
     recentActivity: ActivityItem[]
+    immediateDownlines: Array<{
+      id: string
+      nickname: string
+      revenue: number
+      status: 'active' | 'inactive'
+      rank: string
+    }>
   }> {
     try {
       const [overview, stats, charts, recentActivity] = await Promise.all([
@@ -166,6 +200,7 @@ export const dashboardService = {
         stats,
         charts,
         recentActivity,
+        immediateDownlines: mockDashboardData.immediateDownlines,
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data, using mock data:', error)
@@ -175,6 +210,7 @@ export const dashboardService = {
         stats: mockDashboardData.stats,
         charts: mockDashboardData.charts,
         recentActivity: mockDashboardData.overview.recentActivity,
+        immediateDownlines: mockDashboardData.immediateDownlines,
       }
     }
   },

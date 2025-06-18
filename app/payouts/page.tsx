@@ -90,26 +90,26 @@ export default function PayoutsPage() {
           ) : isStatsError ? (
             <div className="text-red-500">Failed to load payout stats.</div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <MetricCard
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <MetricCard
                 title="TOTAL PAYOUTS"
                 value={`${statsData?.totalPayouts ?? 0}`}
-                icon={TrendingUp}
+              icon={TrendingUp}
                 change={{ value: `+${statsData?.monthlyGrowth ?? 0}%`, type: "positive" }}
-              />
-              <MetricCard
+            />
+            <MetricCard
                 title="TOTAL AMOUNT"
                 value={`${statsData?.totalAmount ?? 0} USDC`}
-                icon={CheckCircle}
+              icon={CheckCircle}
                 change={{ value: `+${statsData?.monthlyGrowth ?? 0}%`, type: "positive" }}
-              />
-              <MetricCard
-                title="PENDING PAYOUTS"
+            />
+            <MetricCard
+              title="PENDING PAYOUTS"
                 value={`${statsData?.pendingAmount ?? 0} USDC`}
-                icon={Clock}
-                change={{ value: "PROCESSING", type: "neutral" }}
-              />
-            </div>
+              icon={Clock}
+              change={{ value: "PROCESSING", type: "neutral" }}
+            />
+          </div>
           )}
 
           {/* Action Block */}
@@ -175,6 +175,15 @@ export default function PayoutsPage() {
                     <SelectValue placeholder="Select time range" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                    <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
+                      This Week
+                    </SelectItem>
+                    <SelectItem value="this-month" className="text-white hover:bg-[#2C2F3C]">
+                      This Month
+                    </SelectItem>
+                    <SelectItem value="this-quarter" className="text-white hover:bg-[#2C2F3C]">
+                      This Quarter
+                    </SelectItem>
                     <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
                       Last Week
                     </SelectItem>
@@ -195,8 +204,8 @@ export default function PayoutsPage() {
             <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-0 w-full">
               <div className="px-6 pt-6 pb-2">
                 <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
-              </div>
-              <div className="overflow-x-auto">
+                </div>
+                <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-[#2C2F3C]">
                   <thead>
                     <tr>
@@ -219,8 +228,8 @@ export default function PayoutsPage() {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
+                              </div>
+                            </div>
           ) : isHistoryError ? (
             <div className="text-red-500">Failed to load payout history.</div>
           ) : (
@@ -279,10 +288,10 @@ export default function PayoutsPage() {
                 <div className="flex items-center space-x-2 justify-end">
                   <button
                     className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
-                    disabled={currentPage === 1}
+                  disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  >
-                    Previous
+                >
+                  Previous
                   </button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <button

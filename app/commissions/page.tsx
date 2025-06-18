@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ModernSidebar } from "@/components/layout/modern-sidebar"
 import { ModernHeader } from "@/components/layout/modern-header"
 import { PageHeader } from "@/components/layout/page-header"
@@ -25,6 +25,11 @@ export default function CommissionsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
 
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [typeFilter, currencyFilter, statusFilter, timeRange])
+
   const { data: summaryData, isLoading: isSummaryLoading, isError: isSummaryError } = useCommissionData(timeRange)
   const { data: historyData, isLoading: isHistoryLoading, isError: isHistoryError } = useCommissionHistory(timeRange, typeFilter !== "all" ? typeFilter : undefined, statusFilter !== "all" ? statusFilter : undefined, currentPage, itemsPerPage)
 
@@ -33,6 +38,49 @@ export default function CommissionsPage() {
   const stats = summaryData?.stats
   const pending = summaryData?.pending
   const chartData = summaryData?.chartData
+
+  // Apply filters to commissions data
+  const filteredCommissions = commissionsData.filter((c) => {
+    // Type filter
+    if (typeFilter !== "all") {
+      const typeMapping = {
+        "C1": "direct",
+        "C2": "indirect", 
+        "C3": "bonus"
+      }
+      if (c.type !== typeMapping[typeFilter as keyof typeof typeMapping]) {
+        return false
+      }
+    }
+
+    // Currency filter
+    if (currencyFilter !== "all" && c.currency !== currencyFilter) {
+      return false
+    }
+
+    // Status filter
+    if (statusFilter !== "all" && c.status !== statusFilter) {
+      return false
+    }
+
+    return true
+  })
+
+  // Calculate summary stats from filtered data
+  const totalEarned = earnings?.totalEarnings ?? 0
+  const pendingAmount = stats?.pendingAmount ?? 0
+  const withdrawnAmount = stats?.totalWithdrawals ?? 0
+  const c1Total = filteredCommissions.filter((c: CommissionHistory) => c.type === "direct").reduce((sum, c) => sum + c.amount, 0)
+  const c2Total = filteredCommissions.filter((c: CommissionHistory) => c.type === "indirect").reduce((sum, c) => sum + c.amount, 0)
+  const c3Total = filteredCommissions.filter((c: CommissionHistory) => c.type === "bonus").reduce((sum, c) => sum + c.amount, 0)
+  const currency = earnings?.currency || 'ETH'
+  const monthlyGrowth = stats?.monthlyGrowth ?? 0
+
+  // Pagination for filtered data
+  const totalPages = Math.ceil(filteredCommissions.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedCommissions = filteredCommissions.slice(startIndex, endIndex)
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -68,20 +116,6 @@ export default function CommissionsPage() {
     return <Badge className={colors[currency as keyof typeof colors] || "bg-[#2C2F3C] text-[#A0AFC0]"}>{currency}</Badge>
   }
 
-  // Calculate summary stats
-  const totalEarned = earnings?.totalEarnings ?? 0
-  const pendingAmount = stats?.pendingAmount ?? 0
-  const withdrawnAmount = stats?.totalWithdrawals ?? 0
-  const c1Total = commissionsData.filter((c: CommissionHistory) => c.type === "direct").reduce((sum, c) => sum + c.amount, 0)
-  const c2Total = commissionsData.filter((c: CommissionHistory) => c.type === "indirect").reduce((sum, c) => sum + c.amount, 0)
-  const c3Total = commissionsData.filter((c: CommissionHistory) => c.type === "bonus").reduce((sum, c) => sum + c.amount, 0)
-  const currency = earnings?.currency || 'ETH'
-  const monthlyGrowth = stats?.monthlyGrowth ?? 0
-
-  // Pagination
-  const totalPages = historyData?.totalPages || 1
-  const paginatedCommissions = commissionsData
-
   return (
     <ModernSidebar>
       <div className="min-h-screen">
@@ -90,7 +124,7 @@ export default function CommissionsPage() {
           <PageHeader title="COMMISSIONS" description="Track your earnings and commission breakdown" />
 
           {/* Summary Cards Layout - Restored */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Total Earned */}
             <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
               <CardContent className="p-6 flex flex-col h-full justify-between">
@@ -99,7 +133,7 @@ export default function CommissionsPage() {
                     <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
                   </div>
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30">+{monthlyGrowth}%</Badge>
-                </div>
+                    </div>
                 <div className="text-3xl font-bold mb-1 text-white">{Number(totalEarned).toFixed(2)} {currency}</div>
                 <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">TOTAL EARNED</div>
               </CardContent>
@@ -112,40 +146,28 @@ export default function CommissionsPage() {
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-[#00E5FF] mr-2"></span>
-                      <span className="text-[#00E5FF] font-bold">C1 (Direct)</span>
+                      <span className="text-[#00E5FF] font-bold">C1</span>
                     </span>
                     <span className="text-white font-medium">{Number(c1Total).toFixed(2)} {currency}</span>
-                  </div>
+                    </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-[#00FFC8] mr-2"></span>
-                      <span className="text-[#00FFC8] font-bold">C2 (Level 2)</span>
+                      <span className="text-[#00FFC8] font-bold">C2</span>
                     </span>
                     <span className="text-white font-medium">{Number(c2Total).toFixed(2)} {currency}</span>
-                  </div>
+                    </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-[#6F00FF] mr-2"></span>
-                      <span className="text-[#6F00FF] font-bold">C3 (Level 3)</span>
+                      <span className="text-[#6F00FF] font-bold">C3</span>
                     </span>
                     <span className="text-white font-medium">{Number(c3Total).toFixed(2)} {currency}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            {/* Pending */}
-            <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
-              <CardContent className="p-6 flex flex-col h-full justify-between">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <Clock className="h-6 w-6 text-[#00E5FF]" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold mb-1 text-white">{Number(pendingAmount).toFixed(2)} {currency}</div>
-                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">PENDING</div>
-              </CardContent>
-            </Card>
-            {/* Withdrawn */}
+            {/* Paid */}
             <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
               <CardContent className="p-6 flex flex-col h-full justify-between">
                 <div className="flex items-center justify-between mb-2">
@@ -154,7 +176,7 @@ export default function CommissionsPage() {
                   </div>
                 </div>
                 <div className="text-3xl font-bold mb-1 text-white">{Number(withdrawnAmount).toFixed(2)} {currency}</div>
-                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">WITHDRAWN</div>
+                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">PAID</div>
               </CardContent>
             </Card>
           </div>
@@ -173,13 +195,13 @@ export default function CommissionsPage() {
                       All Types
                     </SelectItem>
                     <SelectItem value="C1" className="text-white hover:bg-[#2C2F3C]">
-                      C1 (Direct)
+                      C1
                     </SelectItem>
                     <SelectItem value="C2" className="text-white hover:bg-[#2C2F3C]">
-                      C2 (Level 2)
+                      C2
                     </SelectItem>
                     <SelectItem value="C3" className="text-white hover:bg-[#2C2F3C]">
-                      C3 (Level 3)
+                      C3
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -212,6 +234,15 @@ export default function CommissionsPage() {
                     <SelectValue placeholder="Time range" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                    <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
+                      This Week
+                    </SelectItem>
+                    <SelectItem value="this-month" className="text-white hover:bg-[#2C2F3C]">
+                      This Month
+                    </SelectItem>
+                    <SelectItem value="this-quarter" className="text-white hover:bg-[#2C2F3C]">
+                      This Quarter
+                    </SelectItem>
                     <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
                       Last Week
                     </SelectItem>
@@ -260,7 +291,7 @@ export default function CommissionsPage() {
                 <table className="min-w-full divide-y divide-[#2C2F3C]">
                   <thead>
                     <tr>
-                      {["Date","Source User","Type","Amount","Status","Transaction ID"].map((col) => (
+                      {["Date","Source User","Type","Amount","Description"].map((col) => (
                         <th key={col} className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">
                           <Skeleton className="h-4 w-20 bg-[#2C2F3C]" />
                         </th>
@@ -270,7 +301,7 @@ export default function CommissionsPage() {
                   <tbody className="divide-y divide-[#2C2F3C]">
                     {[1,2,3,4,5,6,7,8].map(i => (
                       <tr key={i}>
-                        {[1,2,3,4,5,6].map(j => (
+                        {[1,2,3,4,5].map(j => (
                           <td key={j} className="px-4 py-2 whitespace-nowrap">
                             <Skeleton className="h-6 w-full bg-[#2C2F3C]" />
                           </td>
@@ -284,12 +315,12 @@ export default function CommissionsPage() {
           ) : isHistoryError ? (
             <div className="text-red-500">Failed to load commission history.</div>
           ) : (
-            <DataTableCard
-              title="COMMISSION HISTORY"
-              subtitle={`Showing ${paginatedCommissions.length} of ${historyData?.total || 0} commissions`}
-              showExport
-              onExport={() => console.log("Export data")}
-            >
+          <DataTableCard
+            title="COMMISSION HISTORY"
+            subtitle={`Showing ${paginatedCommissions.length} of ${filteredCommissions.length} commissions`}
+            showExport
+            onExport={() => console.log("Export data")}
+          >
               <table className="min-w-full divide-y divide-[#2C2F3C]">
                 <thead>
                   <tr>
@@ -297,14 +328,13 @@ export default function CommissionsPage() {
                     <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Source User</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Type</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Amount</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Status</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Transaction ID</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Description</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#2C2F3C]">
                   {paginatedCommissions.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-12 text-[#A0AFC0]">No commissions found</td>
+                      <td colSpan={5} className="text-center py-12 text-[#A0AFC0]">No commissions found</td>
                     </tr>
                   ) : (
                     paginatedCommissions.map((c) => (
@@ -320,9 +350,8 @@ export default function CommissionsPage() {
                           })()
                         }</td>
                         <td className="px-4 py-2 whitespace-nowrap text-[#00E5FF] font-bold">{c.amount.toFixed(2)} {c.currency}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{getStatusBadge(c.status)}</td>
-                        <td className="px-4 py-2 whitespace-nowrap font-mono text-xs text-[#A0AFC0] max-w-32 truncate" title={c.transactionId}>
-                          {c.transactionId}
+                        <td className="px-4 py-2 whitespace-nowrap text-[#A0AFC0] text-sm max-w-48 truncate" title={c.description}>
+                          {c.description}
                         </td>
                       </tr>
                     ))
@@ -331,15 +360,15 @@ export default function CommissionsPage() {
               </table>
               <div className="flex items-center justify-between mt-4">
                 <div className="flex-1 text-[#A0AFC0] text-sm">
-                  Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
-                </div>
+                Page {currentPage} of {totalPages} ({filteredCommissions.length} total results)
+              </div>
                 <div className="flex items-center space-x-2 justify-end">
                   <button
                     className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
-                    disabled={currentPage === 1}
+                  disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  >
-                    Previous
+                >
+                  Previous
                   </button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <button
