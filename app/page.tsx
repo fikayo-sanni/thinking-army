@@ -1,71 +1,22 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React from "react"
 import { AuthLayout } from "@/components/auth/auth-layout"
-import { AuthInput } from "@/components/auth/auth-input"
-import { AuthButton } from "@/components/auth/auth-button"
-import { AuthLink } from "@/components/auth/auth-link"
+import { useAuth } from "@/lib/auth/AuthProvider"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Handle login logic here
-    console.log("Login attempt:", { email, password })
-    setIsLoading(false)
-  }
+  const { login } = useAuth();
 
   return (
-    <AuthLayout title="SIGN IN" description="Enter your credentials to access your dashboard">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Input Fields Block */}
-        <div className="space-y-4">
-          <AuthInput
-            id="email"
-            label="EMAIL ADDRESS"
-            type="email"
-            value={email}
-            onChange={setEmail}
-            placeholder="Enter your email"
-            required
-          />
-
-          <AuthInput
-            id="password"
-            label="PASSWORD"
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="Enter your password"
-            required
-            showPasswordToggle
-          />
-        </div>
-
-        {/* Action Button Block */}
-        <AuthButton type="submit" isLoading={isLoading} loadingText="SIGNING IN...">
-          SIGN IN
-        </AuthButton>
-
-        {/* Auxiliary Links Block */}
-        <div className="space-y-4 text-center">
-          <AuthLink href="/forgot-password">Forgot password?</AuthLink>
-
-          <div className="text-sm text-[#A0AFC0]">
-            Don't have an account? <AuthLink href="/signup">Sign up</AuthLink>
-          </div>
-        </div>
-      </form>
+    <AuthLayout title="SIGN IN" description="Sign in with your YOURE.ID account to access your dashboard">
+      <div className="flex flex-col items-center justify-center min-h-[300px]">
+        <button
+          onClick={login}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition"
+        >
+          Login with YOURE.ID
+        </button>
+      </div>
     </AuthLayout>
   )
 }

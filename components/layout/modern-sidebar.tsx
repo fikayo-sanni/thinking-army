@@ -20,6 +20,9 @@ import {
   X,
 } from "lucide-react"
 import { useState } from "react"
+import { useDashboardStats } from "@/hooks/use-dashboard"
+import { useNetworkStats } from "@/hooks/use-network"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const navigationItems = [
   {
@@ -69,7 +72,7 @@ const navigationItems = [
 const quickStats = [
   {
     label: "Total Earned",
-    value: "45.7 USDC",
+    value: "45700 VP",
     icon: TrendingUp,
     color: "text-[#00E5FF]",
   },
@@ -96,6 +99,78 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const pathname = usePathname()
 
+  // Fetch live stats
+  const { data: dashboardStats, isLoading: isDashboardLoading } = useDashboardStats();
+  const { data: networkStats, isLoading: isNetworkLoading } = useNetworkStats();
+
+  // Prepare live quick stats
+  const quickStats = [
+    {
+      label: "Total Earned",
+      value: isDashboardLoading ? <Skeleton className="h-4 w-16 bg-[#2C2F3C] rounded" /> : `${dashboardStats?.monthlyEarnings?.toLocaleString() ?? 0} USDC`,
+      icon: TrendingUp,
+      color: "text-[#00E5FF]",
+    },
+    {
+      label: "Active Referrals",
+      value: isNetworkLoading ? <Skeleton className="h-4 w-8 bg-[#2C2F3C] rounded" /> : networkStats?.activeMembers?.toLocaleString() ?? 0,
+      icon: Users,
+      color: "text-[#00FFC8]",
+    },
+    {
+      label: "Current Rank",
+      value: isDashboardLoading ? <Skeleton className="h-4 w-12 bg-[#2C2F3C] rounded" /> : (dashboardStats?.immediateDownlines?.[0]?.rank ?? "-"),
+      icon: Trophy,
+      color: "text-[#FFD700]",
+    },
+  ];
+
+  // Optionally update navigationItems badges with live data
+  const navigationItemsLive = [
+    {
+      name: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      badge: null,
+      gradient: "from-[#00E5FF] to-[#0099CC]",
+    },
+    {
+      name: "Network Purchases",
+      href: "/purchases",
+      icon: ShoppingCart,
+      badge: null, // Replace with live data if available
+      gradient: "from-[#00FFC8] to-[#00CC99]",
+    },
+    {
+      name: "My Network",
+      href: "/network",
+      icon: Users,
+      badge: isNetworkLoading ? null : networkStats?.totalDownlines?.toLocaleString() ?? null,
+      gradient: "from-[#6F00FF] to-[#5500CC]",
+    },
+    {
+      name: "Commissions",
+      href: "/commissions",
+      icon: TrendingUp,
+      badge: "New",
+      gradient: "from-[#FFD700] to-[#FFA500]",
+    },
+    {
+      name: "Ranks",
+      href: "/ranks",
+      icon: Trophy,
+      badge: null,
+      gradient: "from-[#6B7280] to-[#4B5563]",
+    },
+    {
+      name: "Payouts",
+      href: "/payouts",
+      icon: Wallet,
+      badge: null,
+      gradient: "from-[#4ECDC4] to-[#26A69A]",
+    },
+  ];
+
   // Prevent background scroll when mobile sidebar is open
   React.useEffect(() => {
     if (isMobileOpen) {
@@ -111,14 +186,14 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0D0F1A] via-[#1A1E2D] to-[#0D0F1A] dark:from-[#0D0F1A] dark:via-[#1A1E2D] dark:to-[#0D0F1A] light:from-slate-50 light:via-white light:to-slate-50">
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#2C2F3C] bg-[#0D0F1A]">
+      <div className="lg:hidden flex items-center justify-between p-4">
         <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#00E5FF] to-[#6F00FF] flex items-center justify-center">
-            <img src="/GCs.svg" alt="Gamescoin Logo" className="h-5 w-5" />
+          <div className="h-8 w-8 flex items-center justify-center">
+            <img src="/logo-dark-mode.svg" alt="GC Universe Logo" className="h-20 w-20" />
           </div>
           <div>
             <h1 className="text-lg font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
-              GAMESCOIN
+              GC UNIVERSE
             </h1>
           </div>
         </div>
@@ -143,17 +218,14 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
             {/* Logo Section */}
             <div className="flex items-center space-x-4 mb-8">
               <div className="relative">
-                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#00E5FF] to-[#6F00FF] flex items-center justify-center shadow-lg shadow-[#00E5FF]/25">
-                  <img src="/GCs.svg" alt="Gamescoin Logo" className="h-7 w-7" />
-                </div>
-                <div className="absolute -top-1 -right-1 h-4 w-4 bg-[#00FFC8] rounded-full flex items-center justify-center">
-                  <Zap className="h-2.5 w-2.5 text-black" />
+                <div className="h-12 w-12 rounded-2xl flex items-center justify-center">
+                  <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-20 w-20" />
                 </div>
               </div>
               {!isCollapsed && (
                 <div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
-                    GAMESCOIN
+                    GC UNIVERSE
                   </h1>
                 </div>
               )}
@@ -185,7 +257,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
               <div className="text-[#A0AFC0] text-xs uppercase tracking-wider font-semibold mb-4 px-3">
                 {isCollapsed ? "•••" : "Navigation"}
               </div>
-              {navigationItems.map((item) => {
+              {navigationItemsLive.map((item) => {
                 const isActive = pathname === item.href
                 return (
                   <Link key={item.name} href={item.href}>
@@ -265,16 +337,13 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                 {/* Logo Section */}
                 <div className="flex items-center space-x-4 mb-8">
                   <div className="relative">
-                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#00E5FF] to-[#6F00FF] flex items-center justify-center shadow-lg shadow-[#00E5FF]/25">
-                      <img src="/GCs.svg" alt="Gamescoin Logo" className="h-7 w-7" />
-                    </div>
-                    <div className="absolute -top-1 -right-1 h-4 w-4 bg-[#00FFC8] rounded-full flex items-center justify-center">
-                      <Zap className="h-2.5 w-2.5 text-black" />
+                    <div className="h-12 w-12 rounded-2xl flex items-center justify-center">
+                      <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-20 w-20" />
                     </div>
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
-                      GAMESCOIN
+                      GC UNIVERSE
                     </h1>
                   </div>
                 </div>
@@ -303,7 +372,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                   <div className="text-[#A0AFC0] text-xs uppercase tracking-wider font-semibold mb-4 px-3">
                     Navigation
                   </div>
-                  {navigationItems.map((item) => {
+                  {navigationItemsLive.map((item) => {
                     const isActive = pathname === item.href
                     return (
                       <Link key={item.name} href={item.href} onClick={() => setIsMobileOpen(false)}>

@@ -41,7 +41,7 @@ export default function PurchasesPage() {
   const [timeRange, setTimeRange] = useState("last-month")
   const [statusFilter, setStatusFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 8;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Fetch data using custom hooks
   const { data: purchasesData, isLoading: isDataLoading, error: dataError } = usePurchasesData(timeRange)
@@ -71,7 +71,7 @@ export default function PurchasesPage() {
         <div className="min-h-screen">
           <ModernHeader />
           <div className="p-6 space-y-6">
-            <PageHeader title="NETWORK PURCHASES" description="Track and manage your NFT purchase history" />
+            <PageHeader title="NETWORK ACTIVITY" description="Tracking my network's activity" />
             
             {/* Loading skeleton for summary stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -137,19 +137,14 @@ export default function PurchasesPage() {
           {/* Summary Stats - Moved to top for better hierarchy */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <SummaryCard
-              title="TOTAL SPENT"
-              value={`${overview?.totalSpent.toFixed(1) || '0.0'} ${overview?.currency || 'USDC'}`}
+              title="TOTAL VOLUME POINTS IN PERIOD"
+              value={`${overview?.totalSpent.toFixed(1) || '0.0'} ${overview?.currency || 'VP'}`}
               color="text-[#00E5FF]"
             />
             <SummaryCard 
               title="TOTAL PURCHASES" 
               value={overview?.totalPurchases || 0} 
               color="text-[#00FFC8]" 
-            />
-            <SummaryCard
-              title="SUCCESS RATE"
-              value={`${overview?.successRate.toFixed(0) || '0'}%`}
-              color="text-[#6F00FF]"
             />
           </div>
 
@@ -220,7 +215,7 @@ export default function PurchasesPage() {
                               </div>
                               <div className="flex justify-between text-sm">
                                 <span className="text-[#00FFC8]">Volume:</span>
-                                <span className="text-white font-medium">{payload[1]?.value} USDC</span>
+                                <span className="text-white font-medium">{payload[1]?.value} VP</span>
                               </div>
                             </div>
                           </div>
@@ -254,7 +249,7 @@ export default function PurchasesPage() {
 
           {/* Purchases Table Block */}
           <DataTableCard
-            title="NETWORK PURCHASE HISTORY"
+            title="NETWORK ACTIVITY HISTORY"
             subtitle={`Showing ${purchases.length} of ${historyData?.total || 0} purchases`}
             showExport
             onExport={() => console.log("Export data")}
@@ -266,7 +261,7 @@ export default function PurchasesPage() {
                     <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">DATE</TableHead>
                     <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">TOKEN ID</TableHead>
                     <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">AMOUNT</TableHead>
-                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">SOURCE</TableHead>
+                    <TableHead className="text-[#A0AFC0] uppercase text-xs tracking-wider">BUYER</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -299,7 +294,19 @@ export default function PurchasesPage() {
               <div className="flex-1 text-[#A0AFC0] text-sm">
                 Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
               </div>
-              <div className="flex items-center space-x-2 justify-end">
+              <div className="flex items-center space-x-4 justify-end">
+                {/* Items per page dropdown */}
+                <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-24 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                    {[5, 10, 20, 50].map(opt => (
+                      <SelectItem key={opt} value={String(opt)} className="text-white hover:bg-[#2C2F3C]">{opt} / page</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {/* Pagination controls */}
                 <button
                   className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
                   disabled={currentPage === 1}
@@ -307,20 +314,37 @@ export default function PurchasesPage() {
                 >
                   Previous
                 </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                {/* First page */}
+                <button
+                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  1
+                </button>
+                {/* Ellipsis if needed */}
+                {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
+                {/* Current page (if not first/last) */}
+                {currentPage !== 1 && currentPage !== totalPages && (
                   <button
-                    key={page}
-                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition
-                      ${page === currentPage
-                        ? 'bg-[#00E5FF] text-black border-[#00E5FF]'
-                        : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}
-                    `}
-                    onClick={() => setCurrentPage(page)}
-                    disabled={page === currentPage}
+                    className="px-3 py-2 rounded-lg border text-sm font-medium bg-[#00E5FF] text-black border-[#00E5FF]"
+                    disabled
                   >
-                    {page}
+                    {currentPage}
                   </button>
-                ))}
+                )}
+                {/* Ellipsis if needed */}
+                {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
+                {/* Last page */}
+                {totalPages > 1 && (
+                  <button
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                  >
+                    {totalPages}
+                  </button>
+                )}
                 <button
                   className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
                   disabled={currentPage === totalPages}

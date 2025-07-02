@@ -16,6 +16,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Search, Bell, Settings, User, LogOut, Wallet, TrendingUp, Gift, MessageSquare } from "lucide-react"
 import Link from "next/link"
+import { useAuth } from '@/hooks/use-auth'
+import { useRouter } from 'next/navigation'
 
 const notifications = [
   {
@@ -47,6 +49,8 @@ const notifications = [
 export function ModernHeader() {
   const [searchQuery, setSearchQuery] = useState("")
   const unreadCount = notifications.filter((n) => n.unread).length
+  const { logout } = useAuth()
+  const router = useRouter()
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -59,6 +63,11 @@ export function ModernHeader() {
       default:
         return <MessageSquare className="h-4 w-4 text-[#A0AFC0]" />
     }
+  }
+
+  const handleLogout = () => {
+    logout()
+    router.replace('/login')
   }
 
   return (
@@ -188,6 +197,10 @@ export function ModernHeader() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Button variant="outline" onClick={handleLogout} className="ml-4">
+            Logout
+          </Button>
         </div>
       </div>
     </header>

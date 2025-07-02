@@ -143,4 +143,19 @@ export const authService = {
     localStorage.setItem('authToken', token)
     localStorage.setItem('refreshToken', refreshToken)
   },
+
+  // Login with youre_id (for reports-service placeholder auth)
+  async loginWithYoureId(youre_id: string): Promise<{ token: string }> {
+    const response = await apiRequest<{ token: string }>(AUTH_ENDPOINTS.LOGIN, {
+      method: HTTP_METHODS.POST,
+      body: JSON.stringify({ youre_id }),
+    });
+    localStorage.setItem('authToken', response.token);
+    return response;
+  },
+
+  // Clear stored token
+  clearToken(): void {
+    localStorage.removeItem('authToken');
+  },
 } 

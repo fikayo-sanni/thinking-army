@@ -69,10 +69,10 @@ export function Sidebar({ children }: SidebarProps) {
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#2C2F3C] bg-[#0D0F1A]">
         <div className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg bg-[#00E5FF] flex items-center justify-center">
-            <img src="/GCs.svg" alt="Gamescoin Logo" className="h-5 w-5" />
+            <img src="/logo-dark-mode.svg" alt="GC Universe Logo" className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold tracking-wide">GAMESCOIN</h1>
+            <h1 className="text-lg font-bold tracking-wide">GC Universe</h1>
           </div>
         </div>
         <Button
@@ -96,11 +96,11 @@ export function Sidebar({ children }: SidebarProps) {
             {/* Logo Section */}
             <div className="flex items-center space-x-3 mb-8">
               <div className="h-10 w-10 rounded-lg bg-[#00E5FF] flex items-center justify-center">
-                <img src="/GCs.svg" alt="Gamescoin Logo" className="h-6 w-6" />
+                <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-6 w-6" />
               </div>
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-xl font-bold tracking-wide">GAMESCOIN</h1>
+                  <h1 className="text-xl font-bold tracking-wide">GC UNIVERSE</h1>
                 </div>
               )}
             </div>
@@ -171,10 +171,10 @@ export function Sidebar({ children }: SidebarProps) {
                 {/* Logo Section */}
                 <div className="flex items-center space-x-3 mb-8">
                   <div className="h-10 w-10 rounded-lg bg-[#00E5FF] flex items-center justify-center">
-                    <img src="/GCs.svg" alt="Gamescoin Logo" className="h-6 w-6" />
+                    <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-6 w-6" />
                   </div>
                   <div>
-                    <h1 className="text-xl font-bold tracking-wide">GAMESCOIN</h1>
+                    <h1 className="text-xl font-bold tracking-wide">GC UNIVERSE</h1>
                   </div>
                 </div>
 

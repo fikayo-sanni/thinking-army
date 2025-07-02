@@ -1,5 +1,5 @@
 // API Base URL - Update this based on your backend environment
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
 // Debug logging for API configuration
 console.log('API Configuration:', {
@@ -19,60 +19,61 @@ export const AUTH_ENDPOINTS = {
 
 // Dashboard endpoints
 export const DASHBOARD_ENDPOINTS = {
-  OVERVIEW: '/dashboard/overview',
-  STATS: '/dashboard/stats',
-  CHARTS: '/dashboard/charts',
-  RECENT_ACTIVITY: '/dashboard/recent-activity',
+  OVERVIEW: '/api/v1/dashboard/overview',
+  STATS: '/api/v1/dashboard/stats',
+  CHARTS: '/api/v1/dashboard/charts',
+  RECENT_ACTIVITY: '/api/v1/dashboard/recent-activity',
 } as const
 
 // Network endpoints
 export const NETWORK_ENDPOINTS = {
-  STRUCTURE: '/network/structure',
-  SPONSOR: '/network/sponsor',
-  DOWNLINES: '/network/downlines',
-  STATS: '/network/stats',
-  INVITE: '/network/invite',
+  STRUCTURE: '/api/v1/network/structure',
+  SPONSOR: '/api/v1/network/sponsor',
+  DOWNLINES: '/api/v1/network/downlines',
+  STATS: '/api/v1/network/stats',
+  INVITE: '/api/v1/network/invite',
 } as const
 
 // Commission endpoints
 export const COMMISSION_ENDPOINTS = {
-  HISTORY: '/commission/history',
-  EARNINGS: '/commission/earnings',
-  PENDING: '/commission/pending',
-  WITHDRAWALS: '/commission/withdrawals',
-  STATS: '/commission/stats',
+  HISTORY: '/api/v1/commission/history',
+  EARNINGS: '/api/v1/commission/earnings',
+  PENDING: '/api/v1/commission/pending',
+  WITHDRAWALS: '/api/v1/commission/withdrawals',
+  STATS: '/api/v1/commission/stats',
+  CHARTS: '/api/v1/commission/chart-data',
 } as const
 
 // Purchases endpoints
 export const PURCHASES_ENDPOINTS = {
-  HISTORY: '/purchases/history',
-  OVERVIEW: '/purchases/overview',
-  STATS: '/purchases/stats',
-  CHARTS: '/purchases/charts',
+  HISTORY: '/api/v1/purchases/history',
+  OVERVIEW: '/api/v1/purchases/overview',
+  STATS: '/api/v1/purchases/stats',
+  CHARTS: '/api/v1/purchases/charts',
 } as const
 
 // Payouts endpoints
 export const PAYOUTS_ENDPOINTS = {
-  HISTORY: '/payouts/history',
-  REQUEST: '/payouts/request',
-  PENDING: '/payouts/pending',
-  STATS: '/payouts/stats',
+  HISTORY: '/api/v1/payouts/history',
+  REQUEST: '/api/v1/payouts/request',
+  PENDING: '/api/v1/payouts/pending',
+  STATS: '/api/v1/payouts/stats',
 } as const
 
 // User endpoints
 export const USER_ENDPOINTS = {
-  PROFILE: '/user/profile',
-  SETTINGS: '/user/settings',
-  PREFERENCES: '/user/preferences',
-  SECURITY: '/user/security',
+  PROFILE: '/api/v1/user/profile',
+  SETTINGS: '/api/v1/user/settings',
+  PREFERENCES: '/api/v1/user/preferences',
+  SECURITY: '/api/v1/user/security',
 } as const
 
 // NFT endpoints
 export const NFT_ENDPOINTS = {
-  COLLECTION: '/nft/collection',
-  DETAILS: '/nft/details',
-  TRANSACTIONS: '/nft/transactions',
-  MARKETPLACE: '/nft/marketplace',
+  COLLECTION: '/api/v1/nft/collection',
+  DETAILS: '/api/v1/nft/details',
+  TRANSACTIONS: '/api/v1/nft/transactions',
+  MARKETPLACE: '/api/v1/nft/marketplace',
 } as const
 
 // Utility function to build full API URLs

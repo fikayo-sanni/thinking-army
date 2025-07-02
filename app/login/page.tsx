@@ -1,71 +1,56 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { AuthLayout } from "@/components/auth/auth-layout"
-import { AuthInput } from "@/components/auth/auth-input"
-import { AuthButton } from "@/components/auth/auth-button"
-import { AuthLink } from "@/components/auth/auth-link"
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { authService } from "@/lib/services/auth-service";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [youreId, setYoureId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Handle login logic here
-    console.log("Login attempt:", { email, password })
-    setIsLoading(false)
-  }
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      await authService.loginWithYoureId(youreId);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError("Login failed. Please check your YoureID and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <AuthLayout title="SIGN IN" description="Enter your credentials to access your dashboard">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Input Fields Block */}
-        <div className="space-y-4">
-          <AuthInput
-            id="email"
-            label="EMAIL ADDRESS"
-            type="email"
-            value={email}
-            onChange={setEmail}
-            placeholder="Enter your email"
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm space-y-6 rounded-lg bg-card p-8 shadow-lg"
+      >
+        <h1 className="text-2xl font-bold mb-4 text-center">Login</h1>
+        <div>
+          <label htmlFor="youreid" className="block mb-2 text-sm font-medium">
+            YoureID
+          </label>
+          <Input
+            id="youreid"
+            type="text"
+            value={youreId}
+            onChange={(e) => setYoureId(e.target.value)}
+            placeholder="Enter your YoureID"
             required
-          />
-
-          <AuthInput
-            id="password"
-            label="PASSWORD"
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="Enter your password"
-            required
-            showPasswordToggle
+            disabled={loading}
           />
         </div>
-
-        {/* Action Button Block */}
-        <AuthButton type="submit" isLoading={isLoading} loadingText="SIGNING IN...">
-          SIGN IN
-        </AuthButton>
-
-        {/* Auxiliary Links Block */}
-        <div className="space-y-4 text-center">
-          <AuthLink href="/forgot-password">Forgot password?</AuthLink>
-
-          <div className="text-sm text-[#A0AFC0]">
-            Don't have an account? <AuthLink href="/signup">Sign up</AuthLink>
-          </div>
-        </div>
+        {error && <div className="text-red-500 text-sm">{error}</div>}
+        <Button type="submit" className="w-full" disabled={loading || !youreId}>
+          {loading ? "Logging in..." : "Login"}
+        </Button>
       </form>
-    </AuthLayout>
-  )
-}
+    </div>
+  );
+} 

@@ -17,7 +17,7 @@ export function ProgressBar({ label, current, target, unit = "", color = "bg-[#0
       <div className="flex justify-between items-center">
         <span className="text-[#A0AFC0] text-sm uppercase tracking-wider">{label}</span>
         <span className={`text-sm font-medium ${isComplete ? "text-green-400" : "text-white"}`}>
-          {current.toLocaleString()} / {target.toLocaleString()} {unit}
+          {current != null ? current.toLocaleString() : 0} / {target != null ? target.toLocaleString() : 0} {unit}
         </span>
       </div>
       <div className="relative">

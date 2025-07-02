@@ -27,9 +27,11 @@ import {
 } from "recharts"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useProtectedRoute } from "@/hooks/use-protected-route"
 
 export default function DashboardPage() {
-  const [timeFilter, setTimeFilter] = useState("last-week")
+  useProtectedRoute()
+  const [timeFilter, setTimeFilter] = useState("this-week")
   const { data, isLoading, isError } = useDashboardData(timeFilter)
 
   // Extract data safely
@@ -51,7 +53,7 @@ export default function DashboardPage() {
         <div className="min-h-screen">
           <ModernHeader />
           <div className="p-6 space-y-6">
-            <PageHeader title="DASHBOARD" description="Overview of your account and activity" />
+            <PageHeader title="MY DASHBOARD" description="Overview of my network performance" />
             {/* Metric Cards Skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[1,2,3,4].map(i => (
@@ -170,7 +172,7 @@ export default function DashboardPage() {
 
           {/* Middle Section - 2 Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ChartCard title="PURCHASES OVER TIME" description="Your NFT purchase activity">
+            <ChartCard title="PURCHASES IN PERIOD" description="My network's activity in selected period">
               {isError ? (
                 <div className="text-red-500">Failed to load chart data.</div>
               ) : (
@@ -224,7 +226,7 @@ export default function DashboardPage() {
               )}
             </ChartCard>
 
-            <ChartCard title="COMMISSION SOURCES" description="Breakdown of commission types">
+            <ChartCard title="COMMISSION SOURCES" description="Breakdown by commission type for selected period">
               {isError ? (
                 <div className="text-red-500">Failed to load chart data.</div>
               ) : (
@@ -300,7 +302,7 @@ export default function DashboardPage() {
                     <Bar dataKey="c1" fill={chartColors.primary} name="C1" />
                     <Bar dataKey="c2" fill={chartColors.secondary} name="C2" />
                     <Bar dataKey="c3" fill={chartColors.tertiary} name="C3" />
-                    <Bar dataKey="bonuses" fill={chartColors.accent} name="Bonuses" />
+                    <Bar dataKey="campaigns" fill={chartColors.accent} name="Campaigns" />
                   </BarChart>
                 </ResponsiveContainer>
               )}

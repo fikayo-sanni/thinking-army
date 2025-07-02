@@ -1,5 +1,4 @@
 import { buildApiUrl, PURCHASES_ENDPOINTS, HTTP_METHODS } from '../api-constants'
-import { mockPurchasesData, simulateApiDelay } from '../mock-data'
 
 // Types for purchases data
 export interface PurchaseHistory {
@@ -47,16 +46,11 @@ export interface PurchaseFilters {
   maxAmount?: number
 }
 
-// Generic API request function with mock fallback
 const apiRequest = async <T>(
   endpoint: string,
-  options: RequestInit = {},
-  mockData: T
+  options: RequestInit = {}
 ): Promise<T> => {
   const url = buildApiUrl(endpoint)
-  
-  console.log(`Attempting API request to: ${url}`)
-  
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -64,8 +58,6 @@ const apiRequest = async <T>(
     },
     ...options,
   }
-
-  // Add auth token if available
   const token = localStorage.getItem('authToken')
   if (token) {
     config.headers = {
@@ -73,45 +65,9 @@ const apiRequest = async <T>(
       Authorization: `Bearer ${token}`,
     }
   }
-
-  try {
-    // Add timeout to prevent hanging requests
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
-    
-    const response = await fetch(url, {
-      ...config,
-      signal: controller.signal,
-    })
-    
-    clearTimeout(timeoutId)
-    
-    console.log(`API request successful: ${url} (Status: ${response.status})`)
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    
-    const data = await response.json()
-    console.log(`API response data:`, data)
-    return data
-  } catch (error) {
-    console.error(`API request failed for ${url}:`, error)
-    
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.log('Request timed out, using mock data')
-      } else if (error.message.includes('Failed to fetch')) {
-        console.log('Network error (no backend server), using mock data')
-      } else {
-        console.log('API error, using mock data')
-      }
-    }
-    
-    console.log('Falling back to mock data...')
-    await simulateApiDelay(2000)
-    return mockData
-  }
+  const response = await fetch(url, config)
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+  return response.json()
 }
 
 // Purchases service
@@ -143,17 +99,7 @@ export const purchasesService = {
     }
 
     const url = `${PURCHASES_ENDPOINTS.HISTORY}?${params.toString()}`
-    return apiRequest(
-      url,
-      { method: HTTP_METHODS.GET },
-      {
-        purchases: mockPurchasesData.history,
-        total: mockPurchasesData.history.length,
-        page,
-        limit,
-        totalPages: Math.ceil(mockPurchasesData.history.length / limit),
-      }
-    )
+    return apiRequest(url, { method: HTTP_METHODS.GET })
   },
 
   // Get purchase overview
@@ -161,11 +107,7 @@ export const purchasesService = {
     const url = timeRange 
       ? `${PURCHASES_ENDPOINTS.OVERVIEW}?timeRange=${timeRange}`
       : PURCHASES_ENDPOINTS.OVERVIEW
-    return apiRequest<PurchaseOverview>(
-      url,
-      { method: HTTP_METHODS.GET },
-      mockPurchasesData.overview
-    )
+    return apiRequest<PurchaseOverview>(url, { method: HTTP_METHODS.GET })
   },
 
   // Get purchase statistics
@@ -173,59 +115,31 @@ export const purchasesService = {
     const url = timeRange 
       ? `${PURCHASES_ENDPOINTS.STATS}?timeRange=${timeRange}`
       : PURCHASES_ENDPOINTS.STATS
-    return apiRequest<PurchaseStats>(
-      url,
-      { method: HTTP_METHODS.GET },
-      mockPurchasesData.stats
-    )
+    return apiRequest<PurchaseStats>(url, { method: HTTP_METHODS.GET })
   },
 
   // Get chart data for purchases
   async getChartData(timeRange: string = 'last-month'): Promise<ChartData[]> {
     const url = `${PURCHASES_ENDPOINTS.CHARTS}?timeRange=${timeRange}`
-    return apiRequest<ChartData[]>(
-      url,
-      { method: HTTP_METHODS.GET },
-      mockPurchasesData.chartData
-    )
+    return apiRequest<ChartData[]>(url, { method: HTTP_METHODS.GET })
   },
 
   // Get purchase by ID
   async getPurchaseById(id: string): Promise<PurchaseHistory> {
     const url = `${PURCHASES_ENDPOINTS.HISTORY}/${id}`
-    const mockPurchase = mockPurchasesData.history.find(p => p.id === id)
-    return apiRequest<PurchaseHistory>(
-      url,
-      { method: HTTP_METHODS.GET },
-      mockPurchase || mockPurchasesData.history[0]
-    )
+    return apiRequest<PurchaseHistory>(url, { method: HTTP_METHODS.GET })
   },
 
   // Get purchases by token ID
   async getPurchasesByToken(tokenId: string): Promise<PurchaseHistory[]> {
     const url = `${PURCHASES_ENDPOINTS.HISTORY}/token/${encodeURIComponent(tokenId)}`
-    const filteredPurchases = mockPurchasesData.history.filter(
-      p => p.tokenId.toLowerCase().includes(tokenId.toLowerCase())
-    )
-    return apiRequest<PurchaseHistory[]>(
-      url,
-      { method: HTTP_METHODS.GET },
-      filteredPurchases
-    )
+    return apiRequest<PurchaseHistory[]>(url, { method: HTTP_METHODS.GET })
   },
 
   // Search purchases
   async searchPurchases(query: string): Promise<PurchaseHistory[]> {
     const url = `${PURCHASES_ENDPOINTS.HISTORY}/search?q=${encodeURIComponent(query)}`
-    const filteredPurchases = mockPurchasesData.history.filter(
-      p => p.tokenId.toLowerCase().includes(query.toLowerCase()) ||
-           p.source.toLowerCase().includes(query.toLowerCase())
-    )
-    return apiRequest<PurchaseHistory[]>(
-      url,
-      { method: HTTP_METHODS.GET },
-      filteredPurchases
-    )
+    return apiRequest<PurchaseHistory[]>(url, { method: HTTP_METHODS.GET })
   },
 
   // Export purchase data
@@ -247,26 +161,18 @@ export const purchasesService = {
     const url = `${PURCHASES_ENDPOINTS.HISTORY}/export?${params.toString()}`
     
     const token = localStorage.getItem('authToken')
-    try {
-      const response = await fetch(buildApiUrl(url), {
-        method: HTTP_METHODS.GET,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    const response = await fetch(buildApiUrl(url), {
+      method: HTTP_METHODS.GET,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      return response.blob()
-    } catch (error) {
-      console.error('Export failed, returning mock data:', error)
-      await simulateApiDelay(2000)
-      // Return a mock CSV blob
-      const mockCsv = 'Date,Token ID,Amount,Status,Source\n2024-01-15,GCC4 POWERSTAR #1234,2.5,completed,OpenSea'
-      return new Blob([mockCsv], { type: 'text/csv' })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
+
+    return response.blob()
   },
 
   // Get all purchases data in one call
@@ -275,26 +181,16 @@ export const purchasesService = {
     stats: PurchaseStats
     chartData: ChartData[]
   }> {
-    try {
-      const [overview, stats, chartData] = await Promise.all([
-        this.getOverview(timeRange),
-        this.getStats(timeRange),
-        this.getChartData(timeRange),
-      ])
+    const [overview, stats, chartData] = await Promise.all([
+      this.getOverview(timeRange),
+      this.getStats(timeRange),
+      this.getChartData(timeRange),
+    ])
 
-      return {
-        overview,
-        stats,
-        chartData,
-      }
-    } catch (error) {
-      console.error('Failed to fetch purchases data, using mock data:', error)
-      await simulateApiDelay(2000)
-      return {
-        overview: mockPurchasesData.overview,
-        stats: mockPurchasesData.stats,
-        chartData: mockPurchasesData.chartData,
-      }
+    return {
+      overview,
+      stats,
+      chartData,
     }
   },
 
@@ -306,30 +202,6 @@ export const purchasesService = {
     statusDistribution: { status: string; count: number }[]
   }> {
     const url = `${PURCHASES_ENDPOINTS.STATS}/analytics?timeRange=${timeRange}`
-    return apiRequest(
-      url,
-      { method: HTTP_METHODS.GET },
-      {
-        topSources: [
-          { source: 'OpenSea', count: 3, volume: 8.5 },
-          { source: 'Foundation', count: 2, volume: 8.4 },
-          { source: 'Rarible', count: 2, volume: 3.7 },
-        ],
-        topTokens: [
-          { tokenId: 'GCC1 SUPRASTAR #6789', count: 1, volume: 5.2 },
-          { tokenId: 'GCC3 POWERSTAR #7890', count: 1, volume: 4.1 },
-          { tokenId: 'GCC2 POWERSTAR #2345', count: 1, volume: 2.8 },
-        ],
-        volumeByCurrency: [
-          { currency: 'USDC', volume: 12.7 },
-          { currency: 'USDT', volume: 10.3 },
-        ],
-        statusDistribution: [
-          { status: 'completed', count: 6 },
-          { status: 'pending', count: 2 },
-          { status: 'failed', count: 1 },
-        ],
-      }
-    )
+    return apiRequest(url, { method: HTTP_METHODS.GET })
   },
 } 

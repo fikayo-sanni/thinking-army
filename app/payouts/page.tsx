@@ -31,9 +31,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function PayoutsPage() {
   const [statusFilter, setStatusFilter] = useState("all")
-  const [timeRange, setTimeRange] = useState("last-month")
+  const [timeRange, setTimeRange] = useState("this-week")
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 6
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   // Fetch payout stats and history
   const { data: statsData, isLoading: isStatsLoading, isError: isStatsError } = usePayoutStats(timeRange)
@@ -209,7 +209,7 @@ export default function PayoutsPage() {
                 <table className="min-w-full divide-y divide-[#2C2F3C]">
                   <thead>
                     <tr>
-                      {["Date","Amount","Status","Method","Currency","Transaction","Notes"].map((col) => (
+                      {["Date","Amount","Status","Transaction","Notes"].map((col) => (
                         <th key={col} className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">
                           <Skeleton className="h-4 w-20 bg-[#2C2F3C]" />
                         </th>
@@ -219,7 +219,7 @@ export default function PayoutsPage() {
                   <tbody className="divide-y divide-[#2C2F3C]">
                     {[1,2,3,4,5].map(i => (
                       <tr key={i}>
-                        {[1,2,3,4,5,6,7].map(j => (
+                        {[1,2,3,4,5].map(j => (
                           <td key={j} className="px-4 py-2 whitespace-nowrap">
                             <Skeleton className="h-6 w-full bg-[#2C2F3C]" />
                           </td>
@@ -244,7 +244,6 @@ export default function PayoutsPage() {
                     <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Date</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Amount</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Status</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Method</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Transaction</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Notes</th>
                   </tr>
@@ -252,7 +251,7 @@ export default function PayoutsPage() {
                 <tbody className="divide-y divide-[#2C2F3C]">
                   {payouts.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-12 text-[#A0AFC0]">No payouts found</td>
+                      <td colSpan={5} className="text-center py-12 text-[#A0AFC0]">No payouts found</td>
                     </tr>
                   ) : (
                     payouts.map((p) => (
@@ -260,7 +259,6 @@ export default function PayoutsPage() {
                         <td className="px-4 py-2 whitespace-nowrap">{p.date}</td>
                         <td className="px-4 py-2 whitespace-nowrap text-[#00E5FF] font-bold">{p.amount.toFixed(2)} {p.currency}</td>
                         <td className="px-4 py-2 whitespace-nowrap">{getStatusBadge(p.status)}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{p.method}</td>
                         <td className="px-4 py-2 whitespace-nowrap">
                           {p.transactionHash ? (
                             <a
@@ -285,7 +283,19 @@ export default function PayoutsPage() {
                 <div className="flex-1 text-[#A0AFC0] text-sm">
                   Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
                 </div>
-                <div className="flex items-center space-x-2 justify-end">
+                <div className="flex items-center space-x-4 justify-end">
+                  {/* Items per page dropdown */}
+                  <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
+                    <SelectTrigger className="w-24 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                      {[5, 10, 20, 50].map(opt => (
+                        <SelectItem key={opt} value={String(opt)} className="text-white hover:bg-[#2C2F3C]">{opt} / page</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* Pagination controls */}
                   <button
                     className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
                   disabled={currentPage === 1}
@@ -293,20 +303,37 @@ export default function PayoutsPage() {
                 >
                   Previous
                   </button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  {/* First page */}
+                  <button
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                  >
+                    1
+                  </button>
+                  {/* Ellipsis if needed */}
+                  {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
+                  {/* Current page (if not first/last) */}
+                  {currentPage !== 1 && currentPage !== totalPages && (
                     <button
-                      key={page}
-                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition
-                        ${page === currentPage
-                          ? 'bg-[#00E5FF] text-black border-[#00E5FF]'
-                          : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}
-                      `}
-                      onClick={() => setCurrentPage(page)}
-                      disabled={page === currentPage}
+                      className="px-3 py-2 rounded-lg border text-sm font-medium bg-[#00E5FF] text-black border-[#00E5FF]"
+                      disabled
                     >
-                      {page}
+                      {currentPage}
                     </button>
-                  ))}
+                  )}
+                  {/* Ellipsis if needed */}
+                  {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
+                  {/* Last page */}
+                  {totalPages > 1 && (
+                    <button
+                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                    >
+                      {totalPages}
+                    </button>
+                  )}
                   <button
                     className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
                     disabled={currentPage === totalPages}

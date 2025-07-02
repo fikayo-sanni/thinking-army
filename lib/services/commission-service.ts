@@ -1,5 +1,4 @@
 import { buildApiUrl, COMMISSION_ENDPOINTS, HTTP_METHODS } from '../api-constants'
-import { mockCommissionData, simulateApiDelay } from '../mock-data'
 
 // Types for commission data
 export interface CommissionHistory {
@@ -56,16 +55,11 @@ export interface ChartData {
   withdrawals: number
 }
 
-// Generic API request function with mock fallback
 const apiRequest = async <T>(
   endpoint: string,
-  options: RequestInit = {},
-  mockData: T
+  options: RequestInit = {}
 ): Promise<T> => {
   const url = buildApiUrl(endpoint)
-  
-  console.log(`Attempting API request to: ${url}`)
-  
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -73,8 +67,6 @@ const apiRequest = async <T>(
     },
     ...options,
   }
-
-  // Add auth token if available
   const token = localStorage.getItem('authToken')
   if (token) {
     config.headers = {
@@ -82,45 +74,9 @@ const apiRequest = async <T>(
       Authorization: `Bearer ${token}`,
     }
   }
-
-  try {
-    // Add timeout to prevent hanging requests
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
-    
-    const response = await fetch(url, {
-      ...config,
-      signal: controller.signal,
-    })
-    
-    clearTimeout(timeoutId)
-    
-    console.log(`API request successful: ${url} (Status: ${response.status})`)
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    
-    const data = await response.json()
-    console.log(`API response data:`, data)
-    return data
-  } catch (error) {
-    console.error(`API request failed for ${url}:`, error)
-    
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.log('Request timed out, using mock data')
-      } else if (error.message.includes('Failed to fetch')) {
-        console.log('Network error (no backend server), using mock data')
-      } else {
-        console.log('API error, using mock data')
-      }
-    }
-    
-    console.log('Falling back to mock data...')
-    await simulateApiDelay(2000)
-    return mockData
-  }
+  const response = await fetch(url, config)
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+  return response.json()
 }
 
 // Commission service
@@ -149,17 +105,7 @@ export const commissionService = {
     if (status) params.append('status', status)
 
     const url = `${COMMISSION_ENDPOINTS.HISTORY}?${params.toString()}`
-    return apiRequest(
-      url,
-      { method: HTTP_METHODS.GET },
-      {
-        commissions: mockCommissionData.history,
-        total: mockCommissionData.history.length,
-        page,
-        limit,
-        totalPages: Math.ceil(mockCommissionData.history.length / limit),
-      }
-    )
+    return apiRequest(url, { method: HTTP_METHODS.GET })
   },
 
   // Get commission earnings
@@ -167,20 +113,12 @@ export const commissionService = {
     const url = timeRange 
       ? `${COMMISSION_ENDPOINTS.EARNINGS}?timeRange=${timeRange}`
       : COMMISSION_ENDPOINTS.EARNINGS
-    return apiRequest<CommissionEarnings>(
-      url,
-      { method: HTTP_METHODS.GET },
-      mockCommissionData.earnings
-    )
+    return apiRequest<CommissionEarnings>(url, { method: HTTP_METHODS.GET })
   },
 
   // Get pending commissions
   async getPending(): Promise<PendingCommission[]> {
-    return apiRequest<PendingCommission[]>(
-      COMMISSION_ENDPOINTS.PENDING,
-      { method: HTTP_METHODS.GET },
-      mockCommissionData.pending
-    )
+    return apiRequest<PendingCommission[]>(COMMISSION_ENDPOINTS.PENDING, { method: HTTP_METHODS.GET })
   },
 
   // Get withdrawal history
@@ -203,36 +141,15 @@ export const commissionService = {
     if (status) params.append('status', status)
 
     const url = `${COMMISSION_ENDPOINTS.WITHDRAWALS}?${params.toString()}`
-    return apiRequest(
-      url,
-      { method: HTTP_METHODS.GET },
-      {
-        withdrawals: [],
-        total: 0,
-        page,
-        limit,
-        totalPages: 0,
-      }
-    )
+    return apiRequest(url, { method: HTTP_METHODS.GET })
   },
 
   // Request withdrawal
   async requestWithdrawal(amount: number, method: string): Promise<WithdrawalRequest> {
-    return apiRequest<WithdrawalRequest>(
-      COMMISSION_ENDPOINTS.WITHDRAWALS,
-      {
-        method: HTTP_METHODS.POST,
-        body: JSON.stringify({ amount, method }),
-      },
-      {
-        id: 'mock-1',
-        amount,
-        status: 'pending',
-        requestDate: new Date().toISOString(),
-        method,
-        currency: 'USDC',
-      }
-    )
+    return apiRequest<WithdrawalRequest>(COMMISSION_ENDPOINTS.WITHDRAWALS, {
+      method: HTTP_METHODS.POST,
+      body: JSON.stringify({ amount, method }),
+    })
   },
 
   // Get commission statistics
@@ -240,21 +157,13 @@ export const commissionService = {
     const url = timeRange 
       ? `${COMMISSION_ENDPOINTS.STATS}?timeRange=${timeRange}`
       : COMMISSION_ENDPOINTS.STATS
-    return apiRequest<CommissionStats>(
-      url,
-      { method: HTTP_METHODS.GET },
-      mockCommissionData.stats
-    )
+    return apiRequest<CommissionStats>(url, { method: HTTP_METHODS.GET })
   },
 
   // Get chart data for commissions
   async getChartData(timeRange: string = 'last-month'): Promise<ChartData[]> {
-    const url = `${COMMISSION_ENDPOINTS.STATS}/charts?timeRange=${timeRange}`
-    return apiRequest<ChartData[]>(
-      url,
-      { method: HTTP_METHODS.GET },
-      mockCommissionData.chartData
-    )
+    const url = `${COMMISSION_ENDPOINTS.CHARTS}?timeRange=${timeRange}`
+    return apiRequest<ChartData[]>(url, { method: HTTP_METHODS.GET })
   },
 
   // Export commission data
@@ -274,26 +183,18 @@ export const commissionService = {
     const url = `${COMMISSION_ENDPOINTS.HISTORY}/export?${params.toString()}`
     
     const token = localStorage.getItem('authToken')
-    try {
-      const response = await fetch(buildApiUrl(url), {
-        method: HTTP_METHODS.GET,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    const response = await fetch(buildApiUrl(url), {
+      method: HTTP_METHODS.GET,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      return response.blob()
-    } catch (error) {
-      console.error('Export failed, returning mock data:', error)
-      await simulateApiDelay(2000)
-      // Return a mock CSV blob
-      const mockCsv = 'Date,Amount,Type,Source,Status\n2024-01-15,45.20,direct,CryptoQueen,completed'
-      return new Blob([mockCsv], { type: 'text/csv' })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
+
+    return response.blob()
   },
 
   // Get all commission data in one call
@@ -303,29 +204,18 @@ export const commissionService = {
     pending: PendingCommission[]
     chartData: ChartData[]
   }> {
-    try {
-      const [earnings, stats, pending, chartData] = await Promise.all([
-        this.getEarnings(timeRange),
-        this.getStats(timeRange),
-        this.getPending(),
-        this.getChartData(timeRange),
-      ])
+    const [earnings, stats, pending, chartData] = await Promise.all([
+      this.getEarnings(timeRange),
+      this.getStats(timeRange),
+      this.getPending(),
+      this.getChartData(timeRange),
+    ])
 
-      return {
-        earnings,
-        stats,
-        pending,
-        chartData,
-      }
-    } catch (error) {
-      console.error('Failed to fetch commission data, using mock data:', error)
-      await simulateApiDelay(2000)
-      return {
-        earnings: mockCommissionData.earnings,
-        stats: mockCommissionData.stats,
-        pending: mockCommissionData.pending,
-        chartData: mockCommissionData.chartData,
-      }
+    return {
+      earnings,
+      stats,
+      pending,
+      chartData,
     }
   },
 } 

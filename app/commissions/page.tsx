@@ -19,11 +19,11 @@ import type { CommissionHistory } from "@/lib/services/commission-service"
 
 export default function CommissionsPage() {
   const [typeFilter, setTypeFilter] = useState("all")
-  const [timeRange, setTimeRange] = useState("last-month")
+  const [timeRange, setTimeRange] = useState("this-week")
   const [statusFilter, setStatusFilter] = useState("all")
   const [currencyFilter, setCurrencyFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 8
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -33,54 +33,26 @@ export default function CommissionsPage() {
   const { data: summaryData, isLoading: isSummaryLoading, isError: isSummaryError } = useCommissionData(timeRange)
   const { data: historyData, isLoading: isHistoryLoading, isError: isHistoryError } = useCommissionHistory(timeRange, typeFilter !== "all" ? typeFilter : undefined, statusFilter !== "all" ? statusFilter : undefined, currentPage, itemsPerPage)
 
-  const commissionsData: CommissionHistory[] = historyData?.commissions || []
-  const earnings = summaryData?.earnings
-  const stats = summaryData?.stats
-  const pending = summaryData?.pending
-  const chartData = summaryData?.chartData
+  // Use backend-paginated data directly
+  const paginatedCommissions: CommissionHistory[] = historyData?.commissions || []
+  const totalPages = historyData?.totalPages || 1
+  const totalResults = historyData?.total || 0
 
-  // Apply filters to commissions data
-  const filteredCommissions = commissionsData.filter((c) => {
-    // Type filter
-    if (typeFilter !== "all") {
-      const typeMapping = {
-        "C1": "direct",
-        "C2": "indirect", 
-        "C3": "bonus"
-      }
-      if (c.type !== typeMapping[typeFilter as keyof typeof typeMapping]) {
-        return false
-      }
-    }
-
-    // Currency filter
-    if (currencyFilter !== "all" && c.currency !== currencyFilter) {
-      return false
-    }
-
-    // Status filter
-    if (statusFilter !== "all" && c.status !== statusFilter) {
-      return false
-    }
-
-    return true
-  })
+  // Only filter by currency on frontend if needed
+  const filteredCommissions = currencyFilter !== "all"
+    ? paginatedCommissions.filter((c) => c.currency === currencyFilter)
+    : paginatedCommissions
 
   // Calculate summary stats from filtered data
-  const totalEarned = earnings?.totalEarnings ?? 0
-  const pendingAmount = stats?.pendingAmount ?? 0
-  const withdrawnAmount = stats?.totalWithdrawals ?? 0
+  const totalEarned = summaryData?.earnings?.totalEarnings ?? 0
+  const pendingAmount = summaryData?.stats?.pendingAmount ?? 0
+  const withdrawnAmount = summaryData?.stats?.totalWithdrawals ?? 0
   const c1Total = filteredCommissions.filter((c: CommissionHistory) => c.type === "direct").reduce((sum, c) => sum + c.amount, 0)
   const c2Total = filteredCommissions.filter((c: CommissionHistory) => c.type === "indirect").reduce((sum, c) => sum + c.amount, 0)
   const c3Total = filteredCommissions.filter((c: CommissionHistory) => c.type === "bonus").reduce((sum, c) => sum + c.amount, 0)
-  const currency = earnings?.currency || 'ETH'
-  const monthlyGrowth = stats?.monthlyGrowth ?? 0
-
-  // Pagination for filtered data
-  const totalPages = Math.ceil(filteredCommissions.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const paginatedCommissions = filteredCommissions.slice(startIndex, endIndex)
+  const currency = summaryData?.earnings?.currency || 'VP'
+  const monthlyGrowth = summaryData?.stats?.monthlyGrowth ?? 0
+  const monthlyGrowthRounded = Number(monthlyGrowth).toFixed(2)
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -132,8 +104,8 @@ export default function CommissionsPage() {
                   <div className="p-2 rounded-lg bg-[#00E5FF]/10">
                     <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
                   </div>
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">+{monthlyGrowth}%</Badge>
-                    </div>
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">+{monthlyGrowthRounded}%</Badge>
+                </div>
                 <div className="text-3xl font-bold mb-1 text-white">{Number(totalEarned).toFixed(2)} {currency}</div>
                 <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">TOTAL EARNED</div>
               </CardContent>
@@ -149,14 +121,14 @@ export default function CommissionsPage() {
                       <span className="text-[#00E5FF] font-bold">C1</span>
                     </span>
                     <span className="text-white font-medium">{Number(c1Total).toFixed(2)} {currency}</span>
-                    </div>
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-[#00FFC8] mr-2"></span>
                       <span className="text-[#00FFC8] font-bold">C2</span>
                     </span>
                     <span className="text-white font-medium">{Number(c2Total).toFixed(2)} {currency}</span>
-                    </div>
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-[#6F00FF] mr-2"></span>
@@ -234,6 +206,9 @@ export default function CommissionsPage() {
                     <SelectValue placeholder="Time range" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                    <SelectItem value="all-time" className="text-white hover:bg-[#2C2F3C]">
+                      All Time
+                    </SelectItem>
                     <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
                       This Week
                     </SelectItem>
@@ -317,7 +292,7 @@ export default function CommissionsPage() {
           ) : (
           <DataTableCard
             title="COMMISSION HISTORY"
-            subtitle={`Showing ${paginatedCommissions.length} of ${filteredCommissions.length} commissions`}
+            subtitle={`Showing ${filteredCommissions.length} of ${totalResults} commissions`}
             showExport
             onExport={() => console.log("Export data")}
           >
@@ -332,12 +307,12 @@ export default function CommissionsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#2C2F3C]">
-                  {paginatedCommissions.length === 0 ? (
+                  {filteredCommissions.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="text-center py-12 text-[#A0AFC0]">No commissions found</td>
                     </tr>
                   ) : (
-                    paginatedCommissions.map((c) => (
+                    filteredCommissions.map((c) => (
                       <tr key={c.id}>
                         <td className="px-4 py-2 whitespace-nowrap">{c.date}</td>
                         <td className="px-4 py-2 whitespace-nowrap">
@@ -360,30 +335,59 @@ export default function CommissionsPage() {
               </table>
               <div className="flex items-center justify-between mt-4">
                 <div className="flex-1 text-[#A0AFC0] text-sm">
-                Page {currentPage} of {totalPages} ({filteredCommissions.length} total results)
-              </div>
-                <div className="flex items-center space-x-2 justify-end">
+                  Page {currentPage} of {totalPages} ({totalResults} total results)
+                </div>
+                <div className="flex items-center space-x-4 justify-end">
+                  {/* Items per page dropdown */}
+                  <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
+                    <SelectTrigger className="w-24 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                      {[5, 10, 20, 50].map(opt => (
+                        <SelectItem key={opt} value={String(opt)} className="text-white hover:bg-[#2C2F3C]">{opt} / page</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* Pagination controls */}
                   <button
                     className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
-                  disabled={currentPage === 1}
+                    disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                >
-                  Previous
+                  >
+                    Previous
                   </button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  {/* First page */}
+                  <button
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                  >
+                    1
+                  </button>
+                  {/* Ellipsis if needed */}
+                  {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
+                  {/* Current page (if not first/last) */}
+                  {currentPage !== 1 && currentPage !== totalPages && (
                     <button
-                      key={page}
-                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition
-                        ${page === currentPage
-                          ? 'bg-[#00E5FF] text-black border-[#00E5FF]'
-                          : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}
-                      `}
-                      onClick={() => setCurrentPage(page)}
-                      disabled={page === currentPage}
+                      className="px-3 py-2 rounded-lg border text-sm font-medium bg-[#00E5FF] text-black border-[#00E5FF]"
+                      disabled
                     >
-                      {page}
+                      {currentPage}
                     </button>
-                  ))}
+                  )}
+                  {/* Ellipsis if needed */}
+                  {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
+                  {/* Last page */}
+                  {totalPages > 1 && (
+                    <button
+                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                    >
+                      {totalPages}
+                    </button>
+                  )}
                   <button
                     className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
                     disabled={currentPage === totalPages}

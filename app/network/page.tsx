@@ -25,7 +25,7 @@ export default function NetworkPage() {
         <div className="min-h-screen">
           <ModernHeader />
           <div className="p-6 space-y-6">
-            <PageHeader title="MY NETWORK" description="Manage and track your referral network structure" />
+            <PageHeader title="MY NETWORK" description="Managing my network" />
             {/* Summary Cards Skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[1,2,3].map(i => (
@@ -162,10 +162,10 @@ export default function NetworkPage() {
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-4">
                             <div className="h-10 w-10 rounded-full bg-[#00E5FF] flex items-center justify-center">
-                              <span className="text-black font-bold text-sm">YOU</span>
+                              <span className="text-black font-bold text-sm">ME</span>
                             </div>
                             <div>
-                              <h3 className="text-white font-medium uppercase text-sm">{currentUser.nickname || "YOU"}</h3>
+                              <h3 className="text-white font-medium uppercase text-sm">{currentUser.nickname || "ME"}</h3>
                               <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
                                 <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
                                   {currentUser.rank}
@@ -189,16 +189,18 @@ export default function NetworkPage() {
                           <div className="flex items-center space-x-4">
                             <div className="h-10 w-10 rounded-full bg-[#6F00FF] flex items-center justify-center">
                               <span className="text-white font-bold text-sm">
-                                {sponsor.name.split(" ").map((n) => n[0]).join("")}
+                                {sponsor ? sponsor.name.split(" ").map((n: string) => n[0]).join("") : "?"}
                               </span>
                             </div>
                             <div>
-                              <h3 className="text-white font-medium uppercase text-sm">{sponsor.name}</h3>
+                              <h3 className="text-white font-medium uppercase text-sm">{sponsor ? sponsor.name : "No Sponsor"}</h3>
                               <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
-                                <span>@{sponsor.username}</span>
-                                <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
-                                  {sponsor.rank}
-                                </Badge>
+                                {sponsor && sponsor.username && <span>@{sponsor.username}</span>}
+                                {sponsor && sponsor.rank && (
+                                  <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
+                                    {sponsor.rank}
+                                  </Badge>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -225,10 +227,10 @@ export default function NetworkPage() {
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-4">
                             <div className="h-10 w-10 rounded-full bg-[#00E5FF] flex items-center justify-center">
-                              <span className="text-black font-bold text-sm">YOU</span>
+                              <span className="text-black font-bold text-sm">ME</span>
                             </div>
                             <div>
-                              <h3 className="text-white font-medium uppercase text-sm">{currentUser.nickname || "YOU"}</h3>
+                              <h3 className="text-white font-medium uppercase text-sm">{currentUser.nickname || "ME"}</h3>
                               <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
                                 <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
                                   {currentUser.rank}

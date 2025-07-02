@@ -1,29 +1,26 @@
-import type React from "react"
+"use client"
+import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { AuthProvider } from "@/lib/auth/AuthProvider"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { useState } from "react"
 import { ThemeProvider } from "@/components/theme/theme-provider"
-import { QueryProvider } from "@/lib/providers/query-provider"
-import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = {
-  title: "Gamescoin - Web3 NFT Platform",
-  description: "Track and manage NFT sales with comprehensive dashboard insights",
-    generator: 'v0.dev'
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient());
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={inter.className}>
-        <QueryProvider>
-        <ThemeProvider>{children}</ThemeProvider>
-        </QueryProvider>
+        <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
