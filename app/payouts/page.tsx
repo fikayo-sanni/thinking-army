@@ -99,13 +99,13 @@ export default function PayoutsPage() {
             />
             <MetricCard
                 title="TOTAL AMOUNT"
-                value={`${statsData?.totalAmount ?? 0} USDC`}
+                value={`${statsData?.totalAmount ?? 0} VP`}
               icon={CheckCircle}
                 change={{ value: `+${statsData?.monthlyGrowth ?? 0}%`, type: "positive" }}
             />
             <MetricCard
               title="PENDING PAYOUTS"
-                value={`${statsData?.pendingAmount ?? 0} USDC`}
+                value={`${statsData?.pendingAmount ?? 0} VP`}
               icon={Clock}
               change={{ value: "PROCESSING", type: "neutral" }}
             />

@@ -97,7 +97,7 @@ export default function RanksPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex items-center space-x-4">
-                      <RankBadge rank={currentRank.name} size="lg" />
+                      <RankBadge rank={currentRank?.name} size="lg" />
                       <div>
                         <div className="text-white text-lg font-bold">RANK ACHIEVED</div>
                         <div className="flex items-center space-x-2 text-[#A0AFC0] text-sm">
@@ -128,11 +128,11 @@ export default function RanksPage() {
             </Card>
 
             {/* Progress Tracker Block */}
-            <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+            {nextRankRequirements? <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
               <CardHeader>
                 <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                   <Target className="h-6 w-6 text-[#00E5FF]" />
-                  <span>PROGRESS TO {nextRankRequirements.name}</span>
+                  <span>PROGRESS TO {nextRankRequirements?.name}</span>
                 </CardTitle>
                 <p className="text-[#A0AFC0] text-sm">Complete these requirements to unlock your next rank</p>
               </CardHeader>
@@ -143,7 +143,7 @@ export default function RanksPage() {
                       label="TOTAL VOLUME"
                       current={nextRankRequirements.currentVolume}
                       target={nextRankRequirements.volumeRequired}
-                      unit="USDC"
+                      unit="VP"
                       color="bg-[#00E5FF]"
                     />
                     <ProgressBar
@@ -166,13 +166,13 @@ export default function RanksPage() {
                       label="MONTHLY VOLUME"
                       current={nextRankRequirements.currentMonthlyVolume}
                       target={nextRankRequirements.monthlyVolumeRequired}
-                      unit="USDC"
+                      unit="VP"
                       color="bg-yellow-500"
                     />
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card>:null}
 
             {/* Rank History Block */}
             <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
@@ -237,7 +237,7 @@ export default function RanksPage() {
                     <Card
                       key={rank.name}
                       className={`border-2 transition-all duration-200 ${
-                        rank.name === currentRank.name
+                        rank.name === currentRank?.name
                           ? "bg-[#00E5FF]/5 border-[#00E5FF]"
                           : "bg-[#0D0F1A] border-[#2C2F3C] hover:border-[#00E5FF]/50"
                       }`}
@@ -245,7 +245,7 @@ export default function RanksPage() {
                       <CardContent className="p-4 space-y-4">
                         <div className="flex items-center justify-between">
                           <RankBadge rank={rank.name} size="md" />
-                          {rank.name === currentRank.name && (
+                          {rank.name === currentRank?.name && (
                             <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
                               CURRENT
                             </Badge>

@@ -78,7 +78,7 @@ export default function DashboardPage() {
         <ModernHeader />
         <div className="p-6 space-y-6">
           {/* Page Title Block */}
-          <PageHeader title="DASHBOARD" description="Overview of your NFT sales performance" />
+          <PageHeader title="MY DASHBOARD" description="Overview of my network performance" />
 
           {/* Time Filter */}
           <div className="flex justify-end">
@@ -121,13 +121,13 @@ export default function DashboardPage() {
                 title="TOTAL PURCHASES"
                 value={stats?.totalNetworkSize ?? 0}
                 icon={TrendingUp}
-                change={{ value: `+${stats?.monthlyGrowth ?? 0}%`, type: "positive" }}
+                change={{ value: `+${stats?.monthlyGrowth.toFixed(2) ?? 0}%`, type: "positive" }}
               />
               <MetricCard
                 title="TOTAL COMMISSIONS"
-                value={`${overview?.totalEarnings ?? 0} USDC`}
+                value={`${overview?.totalEarnings.toFixed(2) ?? 0} VP`}
                 icon={Coins}
-                change={{ value: `+${stats?.monthlyGrowth ?? 0}%`, type: "positive" }}
+                change={{ value: `+${stats?.monthlyGrowth.toFixed(2) ?? 0}%`, type: "positive" }}
               />
               <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
                 <CardContent className="p-6">
@@ -139,7 +139,7 @@ export default function DashboardPage() {
                       <div>
                         <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">IMMEDIATE DOWNLINES</div>
                         <div className="text-2xl font-bold text-white">
-                          {data?.immediateDownlines?.reduce((sum: number, downline: any) => sum + downline.revenue, 0).toFixed(2) || '0.00'} USDC
+                          {data?.immediateDownlines?.reduce((sum: number, downline: any) => sum + downline.revenue, 0).toFixed(2) || '0.00'} VP
                         </div>
                       </div>
                     </div>

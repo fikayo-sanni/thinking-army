@@ -165,10 +165,10 @@ export default function NetworkPage() {
                               <span className="text-black font-bold text-sm">ME</span>
                             </div>
                             <div>
-                              <h3 className="text-white font-medium uppercase text-sm">{currentUser.nickname || "ME"}</h3>
+                              <h3 className="text-white font-medium uppercase text-sm">{currentUser?.nickname || "ME"}</h3>
                               <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
                                 <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
-                                  {currentUser.rank}
+                                  {currentUser?.rank}
                                 </Badge>
                               </div>
                             </div>
@@ -230,10 +230,10 @@ export default function NetworkPage() {
                               <span className="text-black font-bold text-sm">ME</span>
                             </div>
                             <div>
-                              <h3 className="text-white font-medium uppercase text-sm">{currentUser.nickname || "ME"}</h3>
+                              <h3 className="text-white font-medium uppercase text-sm">{currentUser?.nickname || "ME"}</h3>
                               <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
                                 <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
-                                  {currentUser.rank}
+                                  {currentUser?.rank}
                                 </Badge>
                               </div>
                             </div>

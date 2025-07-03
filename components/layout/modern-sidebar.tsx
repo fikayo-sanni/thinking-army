@@ -50,7 +50,7 @@ const navigationItems = [
     name: "Commissions",
     href: "/commissions",
     icon: TrendingUp,
-    badge: "New",
+    badge: null,
     gradient: "from-[#FFD700] to-[#FFA500]",
   },
   {
@@ -66,27 +66,6 @@ const navigationItems = [
     icon: Wallet,
     badge: null,
     gradient: "from-[#4ECDC4] to-[#26A69A]",
-  },
-]
-
-const quickStats = [
-  {
-    label: "Total Earned",
-    value: "45700 VP",
-    icon: TrendingUp,
-    color: "text-[#00E5FF]",
-  },
-  {
-    label: "Active Referrals",
-    value: "12",
-    icon: Users,
-    color: "text-[#00FFC8]",
-  },
-  {
-    label: "Current Rank",
-    value: "Gold",
-    icon: Trophy,
-    color: "text-[#FFD700]",
   },
 ]
 
@@ -107,7 +86,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   const quickStats = [
     {
       label: "Total Earned",
-      value: isDashboardLoading ? <Skeleton className="h-4 w-16 bg-[#2C2F3C] rounded" /> : `${dashboardStats?.monthlyEarnings?.toLocaleString() ?? 0} USDC`,
+      value: isDashboardLoading ? <Skeleton className="h-4 w-16 bg-[#2C2F3C] rounded" /> : `${dashboardStats?.monthlyEarnings?.toFixed(2) ?? 0} VP`,
       icon: TrendingUp,
       color: "text-[#00E5FF]",
     },
@@ -152,7 +131,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       name: "Commissions",
       href: "/commissions",
       icon: TrendingUp,
-      badge: "New",
+      badge: null,
       gradient: "from-[#FFD700] to-[#FFA500]",
     },
     {
