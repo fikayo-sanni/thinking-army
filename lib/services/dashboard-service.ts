@@ -12,6 +12,7 @@ export interface DashboardOverview {
 export interface DashboardStats {
   monthlyEarnings: number
   monthlyGrowth: number
+  purchases: number
   totalNetworkSize: number
   successRate: number
   immediateDownlines?: Array<{
@@ -117,13 +118,7 @@ export const dashboardService = {
       rank: string
     }>
   }> {
-    const [overview, stats, charts, recentActivity] = await Promise.all([
-      this.getOverview(),
-      this.getStats(),
-      this.getCharts(timeRange),
-      this.getRecentActivity(),
-    ])
-    // immediateDownlines is now expected from backend in stats or a separate endpoint
-    return { overview, stats, charts, recentActivity, immediateDownlines: stats.immediateDownlines || [] }
+    const url = `${DASHBOARD_ENDPOINTS.ALL}?timeRange=${timeRange}`
+    return apiRequest(url, { method: HTTP_METHODS.GET })
   },
 } 

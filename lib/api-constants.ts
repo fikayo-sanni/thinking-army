@@ -23,6 +23,7 @@ export const DASHBOARD_ENDPOINTS = {
   STATS: '/api/v1/dashboard/stats',
   CHARTS: '/api/v1/dashboard/charts',
   RECENT_ACTIVITY: '/api/v1/dashboard/recent-activity',
+  ALL: '/api/v1/dashboard/all',
 } as const
 
 // Network endpoints
@@ -50,6 +51,7 @@ export const PURCHASES_ENDPOINTS = {
   OVERVIEW: '/api/v1/purchases/overview',
   STATS: '/api/v1/purchases/stats',
   CHARTS: '/api/v1/purchases/charts',
+  ALL: '/api/v1/purchases/all',
 } as const
 
 // Payouts endpoints

@@ -176,22 +176,17 @@ export const purchasesService = {
   },
 
   // Get all purchases data in one call
-  async getAllPurchasesData(timeRange: string = 'last-month'): Promise<{
-    overview: PurchaseOverview
-    stats: PurchaseStats
-    chartData: ChartData[]
-  }> {
-    const [overview, stats, chartData] = await Promise.all([
-      this.getOverview(timeRange),
-      this.getStats(timeRange),
-      this.getChartData(timeRange),
-    ])
-
-    return {
-      overview,
-      stats,
-      chartData,
-    }
+  async getAllPurchasesData(timeRange: string = 'last-month', filters: Record<string, any> = {}): Promise<any> {
+    const params = new URLSearchParams({ timeRange })
+    if (filters.status) params.append('status', filters.status)
+    if (filters.source) params.append('source', filters.source)
+    if (filters.currency) params.append('currency', filters.currency)
+    if (filters.minAmount) params.append('minAmount', filters.minAmount.toString())
+    if (filters.maxAmount) params.append('maxAmount', filters.maxAmount.toString())
+    if (filters.page) params.append('page', filters.page.toString())
+    if (filters.limit) params.append('limit', filters.limit.toString())
+    const url = `${PURCHASES_ENDPOINTS.ALL}?${params.toString()}`
+    return apiRequest(url, { method: HTTP_METHODS.GET })
   },
 
   // Get purchase analytics

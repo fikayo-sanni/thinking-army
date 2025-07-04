@@ -47,6 +47,9 @@ export default function DashboardPage() {
     accent: "#FF6B00",
   }
 
+  const totalVP = data?.immediateDownlines?.reduce((sum, d) => sum + Number(d.revenue), 0) ?? 0
+  const top3 = (data?.immediateDownlines?.slice() ?? []).sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 3)
+
   if (isLoading) {
     return (
       <ModernSidebar>
@@ -89,6 +92,9 @@ export default function DashboardPage() {
                   <SelectValue placeholder="Select time period" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                  <SelectItem value="all-time" className="text-white hover:bg-[#2C2F3C]">
+                    All Time
+                  </SelectItem>
                   <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
                     This Week
                   </SelectItem>
@@ -119,9 +125,9 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <MetricCard
                 title="TOTAL PURCHASES"
-                value={stats?.totalNetworkSize ?? 0}
+                value={stats?.purchases ?? 0}
                 icon={TrendingUp}
-                change={{ value: `+${stats?.monthlyGrowth.toFixed(2) ?? 0}%`, type: "positive" }}
+                change={{ value: `+${stats?.successRate.toFixed(2) ?? 0}%`, type: "positive" }}
               />
               <MetricCard
                 title="TOTAL COMMISSIONS"
@@ -139,13 +145,13 @@ export default function DashboardPage() {
                       <div>
                         <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">IMMEDIATE DOWNLINES</div>
                         <div className="text-2xl font-bold text-white">
-                          {data?.immediateDownlines?.reduce((sum: number, downline: any) => sum + downline.revenue, 0).toFixed(2) || '0.00'} VP
+                          {totalVP.toFixed(2) || '0.00'} VP
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    {data?.immediateDownlines?.slice(0, 3).map((downline: any) => (
+                    {top3.map((downline: any) => (
                       <div key={downline.id} className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <div className={`w-2 h-2 rounded-full ${downline.status === 'active' ? 'bg-green-400' : 'bg-gray-400'}`}></div>
@@ -155,7 +161,7 @@ export default function DashboardPage() {
                           </Badge>
                         </div>
                         <span className="text-[#00E5FF] text-sm font-bold">
-                          {downline.revenue.toFixed(2)} USDC
+                          {Number(downline.revenue).toFixed(2)} VP
                         </span>
                       </div>
                     ))}

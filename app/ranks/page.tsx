@@ -111,7 +111,7 @@ export default function RanksPage() {
 
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-[#00E5FF] mb-1">{currentRank.totalVolume} ETH</div>
+                      <div className="text-2xl font-bold text-[#00E5FF] mb-1">{currentRank.totalVolume} VP</div>
                       <div className="text-[#A0AFC0] text-xs uppercase tracking-wider">TOTAL VOLUME</div>
                     </div>
                     <div className="text-center">

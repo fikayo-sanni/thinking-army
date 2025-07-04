@@ -21,15 +21,6 @@ export function DataTableCard({ title, subtitle, children, showExport = false, o
             <CardTitle className="text-white uppercase tracking-wide text-xl">{title}</CardTitle>
             {subtitle && <p className="text-[#A0AFC0] text-sm mt-1">{subtitle}</p>}
           </div>
-          {showExport && (
-            <Button
-              variant="outline"
-              onClick={onExport}
-              className="border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF]"
-            >
-              Export Data
-            </Button>
-          )}
         </div>
       </CardHeader>
       <CardContent>{children}</CardContent>

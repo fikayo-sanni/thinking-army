@@ -1,10 +1,19 @@
 import { useQuery } from '@tanstack/react-query'
 import { purchasesService } from '@/lib/services'
 
-export const usePurchasesData = (timeRange: string = 'last-month') => {
+export const usePurchasesData = (filters: {
+  timeRange?: string
+  status?: string
+  source?: string
+  currency?: string
+  minAmount?: number
+  maxAmount?: number
+  page?: number
+  limit?: number
+} = { timeRange: 'last-month' }) => {
   return useQuery({
-    queryKey: ['purchases', 'all', timeRange],
-    queryFn: () => purchasesService.getAllPurchasesData(timeRange),
+    queryKey: ['purchases', 'all', filters],
+    queryFn: () => purchasesService.getAllPurchasesData(filters.timeRange || 'last-month', filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   })

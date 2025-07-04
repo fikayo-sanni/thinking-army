@@ -44,7 +44,12 @@ export default function PurchasesPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Fetch data using custom hooks
-  const { data: purchasesData, isLoading: isDataLoading, error: dataError } = usePurchasesData(timeRange)
+  const { data: purchasesData, isLoading: isDataLoading, error: dataError } = usePurchasesData({
+    timeRange,
+    status: statusFilter !== "all" ? statusFilter : undefined,
+    page: currentPage,
+    limit: itemsPerPage
+  })
   const { data: historyData, isLoading: isHistoryLoading, error: historyError } = usePurchaseHistory(
     { timeRange, status: statusFilter !== "all" ? statusFilter : undefined },
     currentPage,
@@ -123,7 +128,7 @@ export default function PurchasesPage() {
 
   const purchases = historyData?.purchases || []
   const overview = purchasesData?.overview
-  const chartData = purchasesData?.chartData || []
+  const chartData = purchasesData?.charts || []
   const totalPages = historyData?.totalPages || 1;
 
   return (
@@ -132,7 +137,7 @@ export default function PurchasesPage() {
         <ModernHeader />
         <div className="p-6 space-y-6">
           {/* Page Title Block */}
-          <PageHeader title="NETWORK PURCHASES" description="Track and manage your NFT purchase history" />
+          <PageHeader title="NETWORK ACTIVITY" description="Tracking my network's activity" />
 
           {/* Summary Stats - Moved to top for better hierarchy */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -157,6 +162,9 @@ export default function PurchasesPage() {
                   <SelectValue placeholder="Select time range" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                  <SelectItem value="all-time" className="text-white hover:bg-[#2C2F3C]">
+                    All Time
+                  </SelectItem>
                   <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
                     This Week
                   </SelectItem>
@@ -184,7 +192,7 @@ export default function PurchasesPage() {
           <div style={{ width: "70%", transform: "scale(0.9)", transformOrigin: "top left" }} className="mb-4">
             <ChartCard title="NETWORK PURCHASES OVER TIME" description="Daily purchase activity and volume trends">
               <ChartContainer config={chartConfig}>
-                <LineChart data={chartData}>
+                <LineChart data={chartData}  width={600} height={300}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                   <XAxis
                     dataKey="date"
