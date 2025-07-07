@@ -20,9 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
               <ModernSidebar>
-                <div className="min-h-screen">
+                <div className="min-h-screen bg-[#F7F8F8] dark:bg-[#1A1E2D] text-black dark:text-white">
                   <ModernHeader />
-                  <div className="p-6 space-y-6">
+                  <div className="p-6 space-y-6 bg-white dark:bg-[#23263A] rounded-xl shadow-sm">
                     {children}
                   </div>
                 </div>

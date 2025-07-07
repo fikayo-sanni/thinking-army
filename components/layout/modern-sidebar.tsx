@@ -176,15 +176,15 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   }, [isMobileOpen])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0D0F1A] via-[#1A1E2D] to-[#0D0F1A] dark:from-[#0D0F1A] dark:via-[#1A1E2D] dark:to-[#0D0F1A] light:from-slate-50 light:via-white light:to-slate-50">
+    <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A] text-black dark:text-white">
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between p-4">
+      <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-[#1A1E2D]">
         <div className="flex items-center space-x-3">
           <div className="h-8 w-8 flex items-center justify-center">
             <img src="/logo-dark-mode.svg" alt="GC Universe Logo" className="h-20 w-20" />
           </div>
           <div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold text-dark bg-clip-text text-transparent">
               GC UNIVERSE
             </h1>
           </div>
@@ -204,7 +204,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         <aside
           className={`${
             isCollapsed ? "w-20" : "w-80"
-          } transition-all duration-300 ease-in-out bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#2C2F3C]/50 min-h-screen sticky top-0 hidden lg:block`}
+          } transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A] backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 min-h-screen sticky top-0 hidden lg:block text-black dark:text-white`}
         >
           <div className="p-6">
             {/* Logo Section */}

@@ -14,10 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Search, Bell, Settings, User, LogOut, Wallet, TrendingUp, Gift, MessageSquare } from "lucide-react"
+import { Search, Bell, Settings, User, LogOut, Wallet, TrendingUp, Gift, MessageSquare, Sun, Moon } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
+import { useTheme } from "@/components/theme/theme-provider"
 
 const notifications = [
   {
@@ -51,6 +52,7 @@ export function ModernHeader() {
   const unreadCount = notifications.filter((n) => n.unread).length
   const { logout } = useAuth()
   const router = useRouter()
+  const { theme, toggleTheme } = useTheme()
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -201,6 +203,15 @@ export function ModernHeader() {
           <Button variant="outline" onClick={handleLogout} className="ml-4">
             Logout
           </Button>
+
+          {/* Theme toggle button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full bg-[#F7F8F8] dark:bg-[#2C2F3C] hover:bg-[#F9FAFC] dark:hover:bg-[#1A1E2D] transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="h-5 w-5 text-[#FFD700]" /> : <Moon className="h-5 w-5 text-[#0846A6]" />}
+          </button>
         </div>
       </div>
     </header>
