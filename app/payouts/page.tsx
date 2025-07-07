@@ -28,6 +28,7 @@ import {
 } from "lucide-react"
 import { usePayoutsData, usePayoutHistory, usePayoutStats } from "@/hooks/use-payouts"
 import { Skeleton } from "@/components/ui/skeleton"
+import { formatThousands } from "@/lib/utils"
 
 export default function PayoutsPage() {
   const [statusFilter, setStatusFilter] = useState("all")
@@ -73,280 +74,278 @@ export default function PayoutsPage() {
   }
 
   return (
-    <ModernSidebar>
-      <div className="min-h-screen">
-        <ModernHeader />
-        <div className="p-6 space-y-6">
-          {/* Page Title Block */}
-          <PageHeader title="PAYOUTS" description="Manage your withdrawals and payout history" />
+    <div className="min-h-screen">
+      <div className="p-6 space-y-6">
+        {/* Page Title Block */}
+        <PageHeader title="PAYOUTS" description="Manage your withdrawals and payout history" />
 
-          {/* Balance Overview Block */}
-          {isStatsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1,2,3].map(i => (
-                <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
-              ))}
-            </div>
-          ) : isStatsError ? (
-            <div className="text-red-500">Failed to load payout stats.</div>
-          ) : (
+        {/* Balance Overview Block */}
+        {isStatsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
+            ))}
+          </div>
+        ) : isStatsError ? (
+          <div className="text-red-500">Failed to load payout stats.</div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <MetricCard
-                title="TOTAL PAYOUTS"
-                value={`${statsData?.totalPayouts ?? 0}`}
+              title="TOTAL PAYOUTS"
+              value={`${formatThousands(statsData?.totalPayouts.toFixed(2) ?? 0)}`}
               icon={TrendingUp}
-                change={{ value: `+${statsData?.monthlyGrowth ?? 0}%`, type: "positive" }}
+              change={{ value: `+${statsData?.monthlyGrowth ?? 0}%`, type: "positive" }}
             />
             <MetricCard
-                title="TOTAL AMOUNT"
-                value={`${statsData?.totalAmount ?? 0} VP`}
+              title="TOTAL AMOUNT"
+              value={`${formatThousands(statsData?.totalAmount.toFixed(2) ?? 0)} VP`}
               icon={CheckCircle}
-                change={{ value: `+${statsData?.monthlyGrowth ?? 0}%`, type: "positive" }}
+              change={{ value: `+${statsData?.monthlyGrowth ?? 0}%`, type: "positive" }}
             />
             <MetricCard
               title="PENDING PAYOUTS"
-                value={`${statsData?.pendingAmount ?? 0} VP`}
+              value={`${formatThousands(statsData?.pendingAmount.toFixed(2) ?? 0)} VP`}
               icon={Clock}
               change={{ value: "PROCESSING", type: "neutral" }}
             />
           </div>
-          )}
+        )}
 
-          {/* Action Block */}
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
-            <CardContent className="p-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
-                <div>
-                  <h3 className="text-white font-bold text-lg uppercase tracking-wide mb-2">WITHDRAWAL ACTIONS</h3>
-                  <p className="text-[#A0AFC0] text-sm">
-                    Request a payout from your available balance or manage your withdrawal methods
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                  <Button
-                    variant="outline"
-                    className="border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF]"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    MANAGE METHODS
-                  </Button>
-                  <PayoutRequestModal
-                    availableBalance={0} // TODO: Replace with real available balance if/when available from API
-                    onRequestPayout={handlePayoutRequest}
-                  />
-                </div>
+        {/* Action Block */}
+        <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+              <div>
+                <h3 className="text-white font-bold text-lg uppercase tracking-wide mb-2">WITHDRAWAL ACTIONS</h3>
+                <p className="text-[#A0AFC0] text-sm">
+                  Request a payout from your available balance or manage your withdrawal methods
+                </p>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Filter Controls Block */}
-          <FilterControls>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-[#A0AFC0]" />
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
-                    <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
-                      All Statuses
-                    </SelectItem>
-                    <SelectItem value="completed" className="text-white hover:bg-[#2C2F3C]">
-                      Completed
-                    </SelectItem>
-                    <SelectItem value="pending" className="text-white hover:bg-[#2C2F3C]">
-                      Pending
-                    </SelectItem>
-                    <SelectItem value="processing" className="text-white hover:bg-[#2C2F3C]">
-                      Processing
-                    </SelectItem>
-                    <SelectItem value="failed" className="text-white hover:bg-[#2C2F3C]">
-                      Failed
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <CalendarDays className="h-4 w-4 text-[#A0AFC0]" />
-                <Select value={timeRange} onValueChange={setTimeRange}>
-                  <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
-                    <SelectValue placeholder="Select time range" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
-                    <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
-                      This Week
-                    </SelectItem>
-                    <SelectItem value="this-month" className="text-white hover:bg-[#2C2F3C]">
-                      This Month
-                    </SelectItem>
-                    <SelectItem value="this-quarter" className="text-white hover:bg-[#2C2F3C]">
-                      This Quarter
-                    </SelectItem>
-                    <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
-                      Last Week
-                    </SelectItem>
-                    <SelectItem value="last-month" className="text-white hover:bg-[#2C2F3C]">
-                      Last Month
-                    </SelectItem>
-                    <SelectItem value="last-quarter" className="text-white hover:bg-[#2C2F3C]">
-                      Last Quarter
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                <Button
+                  variant="outline"
+                  className="border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF]"
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  MANAGE METHODS
+                </Button>
+                <PayoutRequestModal
+                  availableBalance={0} // TODO: Replace with real available balance if/when available from API
+                  onRequestPayout={handlePayoutRequest}
+                />
               </div>
             </div>
-          </FilterControls>
+          </CardContent>
+        </Card>
 
-          {/* Payout History Table Block */}
-          {isHistoryLoading ? (
-            <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-0 w-full">
-              <div className="px-6 pt-6 pb-2">
-                <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
-                </div>
-                <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-[#2C2F3C]">
-                  <thead>
-                    <tr>
-                      {["Date","Amount","Status","Transaction","Notes"].map((col) => (
-                        <th key={col} className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">
-                          <Skeleton className="h-4 w-20 bg-[#2C2F3C]" />
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#2C2F3C]">
-                    {[1,2,3,4,5].map(i => (
-                      <tr key={i}>
-                        {[1,2,3,4,5].map(j => (
-                          <td key={j} className="px-4 py-2 whitespace-nowrap">
-                            <Skeleton className="h-6 w-full bg-[#2C2F3C]" />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                              </div>
-                            </div>
-          ) : isHistoryError ? (
-            <div className="text-red-500">Failed to load payout history.</div>
-          ) : (
-            <DataTableCard
-              title="PAYOUT HISTORY"
-              showExport
-              onExport={() => console.log("Export data")}
-            >
+        {/* Filter Controls Block */}
+        <FilterControls>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex items-center space-x-2">
+              <Filter className="h-4 w-4 text-[#A0AFC0]" />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                  <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
+                    All Statuses
+                  </SelectItem>
+                  <SelectItem value="completed" className="text-white hover:bg-[#2C2F3C]">
+                    Completed
+                  </SelectItem>
+                  <SelectItem value="pending" className="text-white hover:bg-[#2C2F3C]">
+                    Pending
+                  </SelectItem>
+                  <SelectItem value="processing" className="text-white hover:bg-[#2C2F3C]">
+                    Processing
+                  </SelectItem>
+                  <SelectItem value="failed" className="text-white hover:bg-[#2C2F3C]">
+                    Failed
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <CalendarDays className="h-4 w-4 text-[#A0AFC0]" />
+              <Select value={timeRange} onValueChange={setTimeRange}>
+                <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                  <SelectValue placeholder="Select time range" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                  <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
+                    This Week
+                  </SelectItem>
+                  <SelectItem value="this-month" className="text-white hover:bg-[#2C2F3C]">
+                    This Month
+                  </SelectItem>
+                  <SelectItem value="this-quarter" className="text-white hover:bg-[#2C2F3C]">
+                    This Quarter
+                  </SelectItem>
+                  <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
+                    Last Week
+                  </SelectItem>
+                  <SelectItem value="last-month" className="text-white hover:bg-[#2C2F3C]">
+                    Last Month
+                  </SelectItem>
+                  <SelectItem value="last-quarter" className="text-white hover:bg-[#2C2F3C]">
+                    Last Quarter
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </FilterControls>
+
+        {/* Payout History Table Block */}
+        {isHistoryLoading ? (
+          <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-0 w-full">
+            <div className="px-6 pt-6 pb-2">
+              <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
+            </div>
+            <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-[#2C2F3C]">
                 <thead>
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Date</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Amount</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Status</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Transaction</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Notes</th>
+                    {["Date", "Amount", "Status", "Transaction", "Notes"].map((col) => (
+                      <th key={col} className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">
+                        <Skeleton className="h-4 w-20 bg-[#2C2F3C]" />
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#2C2F3C]">
-                  {payouts.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="text-center py-12 text-[#A0AFC0]">No payouts found</td>
-                    </tr>
-                  ) : (
-                    payouts.map((p) => (
-                      <tr key={p.id}>
-                        <td className="px-4 py-2 whitespace-nowrap">{p.date}</td>
-                        <td className="px-4 py-2 whitespace-nowrap text-[#00E5FF] font-bold">{p.amount.toFixed(2)} {p.currency}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">{getStatusBadge(p.status)}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">
-                          {p.transactionHash ? (
-                            <a
-                              href={`https://polygonscan.com/tx/${p.transactionHash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[#00E5FF] underline hover:text-[#00FFC8] transition"
-                            >
-                              {p.transactionHash}
-                            </a>
-                          ) : (
-                            "-"
-                          )}
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <tr key={i}>
+                      {[1, 2, 3, 4, 5].map(j => (
+                        <td key={j} className="px-4 py-2 whitespace-nowrap">
+                          <Skeleton className="h-6 w-full bg-[#2C2F3C]" />
                         </td>
-                        <td className="px-4 py-2 whitespace-nowrap">{p.notes || "-"}</td>
-                      </tr>
-                    ))
-                  )}
+                      ))}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
-              <div className="flex items-center justify-between mt-4">
-                <div className="flex-1 text-[#A0AFC0] text-sm">
-                  Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
-                </div>
-                <div className="flex items-center space-x-4 justify-end">
-                  {/* Items per page dropdown */}
-                  <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
-                    <SelectTrigger className="w-24 bg-[#1A1E2D] border-[#2C2F3C] text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
-                      {[5, 10, 20, 50].map(opt => (
-                        <SelectItem key={opt} value={String(opt)} className="text-white hover:bg-[#2C2F3C]">{opt} / page</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {/* Pagination controls */}
-                  <button
-                    className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+            </div>
+          </div>
+        ) : isHistoryError ? (
+          <div className="text-red-500">Failed to load payout history.</div>
+        ) : (
+          <DataTableCard
+            title="PAYOUT HISTORY"
+            showExport
+            onExport={() => console.log("Export data")}
+          >
+            <table className="min-w-full divide-y divide-[#2C2F3C]">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Date</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Amount</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Status</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Transaction</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Notes</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#2C2F3C]">
+                {payouts.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-12 text-[#A0AFC0]">No payouts found</td>
+                  </tr>
+                ) : (
+                  payouts.map((p) => (
+                    <tr key={p.id}>
+                      <td className="px-4 py-2 whitespace-nowrap">{p.date}</td>
+                      <td className="px-4 py-2 whitespace-nowrap text-[#00E5FF] font-bold">{formatThousands(p.amount.toFixed(2))} {p.currency}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">{getStatusBadge(p.status)}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">
+                        {p.transactionHash ? (
+                          <a
+                            href={`https://polygonscan.com/tx/${p.transactionHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#00E5FF] underline hover:text-[#00FFC8] transition"
+                          >
+                            {p.transactionHash}
+                          </a>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap">{p.notes || "-"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex-1 text-[#A0AFC0] text-sm">
+                Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
+              </div>
+              <div className="flex items-center space-x-4 justify-end">
+                {/* Items per page dropdown */}
+                <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-24 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                    {[5, 10, 20, 50].map(opt => (
+                      <SelectItem key={opt} value={String(opt)} className="text-white hover:bg-[#2C2F3C]">{opt} / page</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {/* Pagination controls */}
+                <button
+                  className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
                   disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 >
                   Previous
-                  </button>
-                  {/* First page */}
+                </button>
+                {/* First page */}
+                <button
+                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  1
+                </button>
+                {/* Ellipsis if needed */}
+                {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
+                {/* Current page (if not first/last) */}
+                {currentPage !== 1 && currentPage !== totalPages && (
                   <button
-                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
+                    className="px-3 py-2 rounded-lg border text-sm font-medium bg-[#00E5FF] text-black border-[#00E5FF]"
+                    disabled
                   >
-                    1
+                    {currentPage}
                   </button>
-                  {/* Ellipsis if needed */}
-                  {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
-                  {/* Current page (if not first/last) */}
-                  {currentPage !== 1 && currentPage !== totalPages && (
-                    <button
-                      className="px-3 py-2 rounded-lg border text-sm font-medium bg-[#00E5FF] text-black border-[#00E5FF]"
-                      disabled
-                    >
-                      {currentPage}
-                    </button>
-                  )}
-                  {/* Ellipsis if needed */}
-                  {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
-                  {/* Last page */}
-                  {totalPages > 1 && (
-                    <button
-                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={currentPage === totalPages}
-                    >
-                      {totalPages}
-                    </button>
-                  )}
+                )}
+                {/* Ellipsis if needed */}
+                {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
+                {/* Last page */}
+                {totalPages > 1 && (
                   <button
-                    className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                    onClick={() => setCurrentPage(totalPages)}
                     disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   >
-                    Next
+                    {totalPages}
                   </button>
-                </div>
+                )}
+                <button
+                  className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  Next
+                </button>
               </div>
-            </DataTableCard>
-          )}
-        </div>
+            </div>
+          </DataTableCard>
+        )}
       </div>
-    </ModernSidebar>
+    </div>
+
   )
 }

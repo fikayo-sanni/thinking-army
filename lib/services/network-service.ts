@@ -148,4 +148,15 @@ export const networkService = {
     ])
     return { structure, stats }
   },
+
+  // Get direct downlines for a given parentId (with pagination)
+  async getDirectDownlines(parentId?: string, page: number = 1, limit: number = 20): Promise<NetworkUser[]> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    })
+    if (parentId) params.append('parentId', parentId)
+    const url = `${NETWORK_ENDPOINTS.DIRECT_DOWNLINES}?${params.toString()}`
+    return apiRequest<NetworkUser[]>(url, { method: HTTP_METHODS.GET })
+  },
 } 

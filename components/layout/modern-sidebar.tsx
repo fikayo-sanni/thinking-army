@@ -23,6 +23,9 @@ import { useState } from "react"
 import { useDashboardStats } from "@/hooks/use-dashboard"
 import { useNetworkStats } from "@/hooks/use-network"
 import { Skeleton } from "@/components/ui/skeleton"
+import { formatThousands } from "@/lib/utils"
+import { useQuery } from '@tanstack/react-query'
+import { ranksService } from '@/lib/services/ranks-service'
 
 const navigationItems = [
   {
@@ -82,23 +85,33 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   const { data: dashboardStats, isLoading: isDashboardLoading } = useDashboardStats();
   const { data: networkStats, isLoading: isNetworkLoading } = useNetworkStats();
 
+  // Fetch current rank using React Query
+  const { data: currentRankData, isLoading: isCurrentRankLoading } = useQuery({
+    queryKey: ['current-rank'],
+    queryFn: () => ranksService.getCurrentRank(),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
   // Prepare live quick stats
   const quickStats = [
     {
       label: "Total Earned",
-      value: isDashboardLoading ? <Skeleton className="h-4 w-16 bg-[#2C2F3C] rounded" /> : `${dashboardStats?.monthlyEarnings?.toFixed(2) ?? 0} VP`,
+      value: isDashboardLoading ? <Skeleton className="h-4 w-16 bg-[#2C2F3C] rounded" /> : `${formatThousands(dashboardStats?.personalEarnings?.toFixed(2) ?? 0)} VP`,
       icon: TrendingUp,
       color: "text-[#00E5FF]",
     },
     {
       label: "Active Referrals",
-      value: isNetworkLoading ? <Skeleton className="h-4 w-8 bg-[#2C2F3C] rounded" /> : networkStats?.activeMembers?.toLocaleString() ?? 0,
+      value: isNetworkLoading ? <Skeleton className="h-4 w-8 bg-[#2C2F3C] rounded" /> : formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0),
       icon: Users,
       color: "text-[#00FFC8]",
     },
     {
       label: "Current Rank",
-      value: isDashboardLoading ? <Skeleton className="h-4 w-12 bg-[#2C2F3C] rounded" /> : (dashboardStats?.immediateDownlines?.[0]?.rank ?? "-"),
+      value: isCurrentRankLoading
+        ? <Skeleton className="h-4 w-12 bg-[#2C2F3C] rounded" />
+        : (currentRankData?.name || "Member"),
       icon: Trophy,
       color: "text-[#FFD700]",
     },

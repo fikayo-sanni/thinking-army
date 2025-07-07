@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronRight, Users, Calendar, Award } from "lucide-react"
 import { useState } from "react"
+import { useDirectDownlines } from '@/hooks/use-network'
 
 interface NetworkUser {
   id: string
@@ -31,13 +32,18 @@ interface NetworkNodeProps {
 
 export function NetworkNode({ user, isExpanded = false, onToggle, direction }: NetworkNodeProps) {
   const [expanded, setExpanded] = useState(isExpanded)
+  const { data: directDownlines = [], isLoading: isLoadingChildren } = useDirectDownlines(user.id, 1, 20)
 
   const handleToggle = () => {
-    setExpanded(!expanded)
+    setExpanded((prev) => !prev)
     onToggle?.()
   }
 
-  const hasChildren = user.children && user.children.length > 0
+  // Only fetch and show children if expanded
+  const showChildren = expanded
+
+  // Only show expand button if we want to always allow expansion
+  const showExpand = true
 
   // Handle both old and new data structures
   const displayName = user.nickname || user.name || "Unknown"
@@ -59,7 +65,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
         <CardContent className="p-4">
           <div className="flex items-center space-x-4">
             {/* Expand/Collapse Button */}
-            {hasChildren && (
+            {showExpand && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -119,18 +125,22 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
         </CardContent>
       </Card>
 
-      {/* Children */}
-      {hasChildren && expanded && (
+      {/* Children (on-demand fetch) */}
+      {showChildren && (
         <div className="ml-8 relative">
           {/* Vertical line for children */}
           <div className="absolute left-2 top-0 bottom-0 w-px bg-[#2C2F3C]" />
-          {user.children?.map((child, index) => (
-            <div key={child.id} className="relative">
-              {/* Horizontal line to child */}
-              <div className="absolute left-2 top-6 w-4 h-px bg-[#2C2F3C]" />
-              <NetworkNode user={child} direction={direction} />
-            </div>
-          ))}
+          {isLoadingChildren ? (
+            <div className="text-[#A0AFC0] text-xs ml-4">Loading...</div>
+          ) : (
+            directDownlines.map((child) => (
+              <div key={child.id} className="relative">
+                {/* Horizontal line to child */}
+                <div className="absolute left-2 top-6 w-4 h-px bg-[#2C2F3C]" />
+                <NetworkNode user={{ ...child, level: (user.level ?? 0) + 1 }} direction={direction} />
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>

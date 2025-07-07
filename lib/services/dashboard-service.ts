@@ -11,6 +11,7 @@ export interface DashboardOverview {
 
 export interface DashboardStats {
   monthlyEarnings: number
+  personalEarnings: number
   monthlyGrowth: number
   purchases: number
   totalNetworkSize: number

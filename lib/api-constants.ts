@@ -31,6 +31,7 @@ export const NETWORK_ENDPOINTS = {
   STRUCTURE: '/api/v1/network/structure',
   SPONSOR: '/api/v1/network/sponsor',
   DOWNLINES: '/api/v1/network/downlines',
+  DIRECT_DOWNLINES: '/api/v1/network/direct-downlines',
   STATS: '/api/v1/network/stats',
   INVITE: '/api/v1/network/invite',
 } as const

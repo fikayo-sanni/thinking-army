@@ -26,3 +26,8 @@ export function formatDateTime(date: string | Date): string {
     minute: "2-digit",
   })
 }
+
+export function formatThousands(value: string | number): string {
+  const number = typeof value === 'string' ? parseFloat(value) : value;
+  return new Intl.NumberFormat('en-US').format(number);
+}

@@ -6,6 +6,8 @@ import { AuthProvider } from "@/lib/auth/AuthProvider"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
 import { ThemeProvider } from "@/components/theme/theme-provider"
+import { ModernSidebar } from "@/components/layout/modern-sidebar"
+import { ModernHeader } from "@/components/layout/modern-header"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -17,7 +19,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              {children}
+              <ModernSidebar>
+                <div className="min-h-screen">
+                  <ModernHeader />
+                  <div className="p-6 space-y-6">
+                    {children}
+                  </div>
+                </div>
+              </ModernSidebar>
             </AuthProvider>
           </QueryClientProvider>
         </ThemeProvider>
