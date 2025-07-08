@@ -73,8 +73,7 @@ export function ModernHeader() {
   }
 
   return (
-    <header className="h-16 bg-[#0D0F1A]/80 backdrop-blur-xl border-b border-[#2C2F3C]/50 sticky top-0 z-50">
-      <div className="flex items-center justify-between h-full px-6">
+    <header className="flex items-center justify-between py-4 px-6 bg-[#F9FAFC] dark:bg-[#1A1E2D]">
         {/* Search Section */}
         <div className="flex-1 max-w-md">
           <div className="relative">
@@ -87,9 +86,8 @@ export function ModernHeader() {
             />
           </div>
         </div>
-
         {/* Actions Section */}
-        <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 ml-6">
           {/* Notifications */}
           <Popover>
             <PopoverTrigger asChild>
@@ -204,15 +202,14 @@ export function ModernHeader() {
             Logout
           </Button>
 
-          {/* Theme toggle button */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full bg-[#F7F8F8] dark:bg-[#2C2F3C] hover:bg-[#F9FAFC] dark:hover:bg-[#1A1E2D] transition-colors"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Sun className="h-5 w-5 text-[#FFD700]" /> : <Moon className="h-5 w-5 text-[#0846A6]" />}
-          </button>
-        </div>
+        {/* Theme toggle button */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full bg-[#F7F8F8] dark:bg-[#2C2F3C] hover:bg-[#F9FAFC] dark:hover:bg-[#1A1E2D] transition-colors"
+          aria-label="Toggle theme"
+        >
+          {theme === "dark" ? <Sun className="h-5 w-5 text-[#FFD700]" /> : <Moon className="h-5 w-5 text-[#0846A6]" />}
+        </button>
       </div>
     </header>
   )

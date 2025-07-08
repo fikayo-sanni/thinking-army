@@ -110,6 +110,7 @@ export const dashboardService = {
     overview: DashboardOverview
     stats: DashboardStats
     charts: DashboardCharts
+    commissionBalances: Record<string, unknown>
     recentActivity: ActivityItem[]
     immediateDownlines: Array<{
       id: string

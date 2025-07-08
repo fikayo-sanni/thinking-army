@@ -96,14 +96,14 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   // Prepare live quick stats
   const quickStats = [
     {
-      label: "Total Earned",
+      label: "AllTime VP",
       value: isDashboardLoading ? <Skeleton className="h-4 w-16 bg-[#2C2F3C] rounded" /> : `${formatThousands(dashboardStats?.personalEarnings?.toFixed(2) ?? 0)} VP`,
       icon: TrendingUp,
       color: "text-[#00E5FF]",
     },
     {
-      label: "Active Referrals",
-      value: isNetworkLoading ? <Skeleton className="h-4 w-8 bg-[#2C2F3C] rounded" /> : formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0),
+      label: "Active Downlines",
+      value: isNetworkLoading ? <Skeleton className="h-4 w-8 bg-[#2C2F3C] rounded" /> : `${formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands(networkStats?.totalDownlines || 0)}`,
       icon: Users,
       color: "text-[#00FFC8]",
     },
@@ -111,7 +111,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       label: "Current Rank",
       value: isCurrentRankLoading
         ? <Skeleton className="h-4 w-12 bg-[#2C2F3C] rounded" />
-        : (currentRankData?.name || "Member"),
+        : (currentRankData?.name.split(" Member")[0] || "Member"),
       icon: Trophy,
       color: "text-[#FFD700]",
     },
@@ -127,7 +127,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       gradient: "from-[#00E5FF] to-[#0099CC]",
     },
     {
-      name: "Network Purchases",
+      name: "Network Activity",
       href: "/purchases",
       icon: ShoppingCart,
       badge: null, // Replace with live data if available
@@ -176,7 +176,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   }, [isMobileOpen])
 
   return (
-    <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A] text-black dark:text-white">
+    <div className="min-h-screen bg-[#F9FAFC] dark:bg-gradient-to-br dark:from-[#0D0F1A] dark:via-[#1A1E2D] dark:to-[#0D0F1A] text-black dark:text-white">
       {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-[#1A1E2D]">
         <div className="flex items-center space-x-3">
@@ -184,7 +184,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
             <img src="/logo-dark-mode.svg" alt="GC Universe Logo" className="h-20 w-20" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-dark bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
               GC UNIVERSE
             </h1>
           </div>
@@ -204,7 +204,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         <aside
           className={`${
             isCollapsed ? "w-20" : "w-80"
-          } transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A] backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 min-h-screen sticky top-0 hidden lg:block text-black dark:text-white`}
+          } transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 min-h-screen sticky top-0 hidden lg:block text-black dark:text-white`}
         >
           <div className="p-6">
             {/* Logo Section */}

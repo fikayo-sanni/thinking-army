@@ -130,16 +130,19 @@ export const authService = {
 
   // Check if user is authenticated
   isAuthenticated(): boolean {
+    if (typeof window === "undefined") return false;
     return !!localStorage.getItem('authToken')
   },
 
   // Get stored token
   getToken(): string | null {
+    if (typeof window === "undefined") return null;
     return localStorage.getItem('authToken')
   },
 
   // Store tokens
   storeTokens(token: string, refreshToken: string): void {
+    if (typeof window === "undefined") return;
     localStorage.setItem('authToken', token)
     localStorage.setItem('refreshToken', refreshToken)
   },
@@ -156,6 +159,7 @@ export const authService = {
 
   // Clear stored token
   clearToken(): void {
+    if (typeof window === "undefined") return;
     localStorage.removeItem('authToken');
   },
 } 
