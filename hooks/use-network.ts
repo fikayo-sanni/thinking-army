@@ -67,7 +67,7 @@ export const useSearchMembers = (query: string) => {
     staleTime: 1 * 60 * 1000, // 1 minute
     gcTime: 2 * 60 * 1000, // 2 minutes
   })
-}
+} 
 
 export const useDirectDownlines = (parentId?: string, page: number = 1, limit: number = 20) => {
   return useQuery({

@@ -92,3 +92,25 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+body.light {
+  background-color: #F9FAFC;
+  color: #000;
+}
+
+body.dark {
+  /* Keep existing dark backgrounds */
+}
+
+.subtext {
+  color: #78797A;
+}
+
+/* Card backgrounds for light mode */
+.light .card-bg {
+  background-color: #F7F8F8;
+}
+
+.light .card-white {
+  background-color: #fff;
+}

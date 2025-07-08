@@ -14,10 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Search, Bell, Settings, User, LogOut, Wallet, TrendingUp, Gift, MessageSquare } from "lucide-react"
+import { Search, Bell, Settings, User, LogOut, Wallet, TrendingUp, Gift, MessageSquare, Sun, Moon } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
+import { useTheme } from "@/components/theme/theme-provider"
 
 const notifications = [
   {
@@ -51,6 +52,7 @@ export function ModernHeader() {
   const unreadCount = notifications.filter((n) => n.unread).length
   const { logout } = useAuth()
   const router = useRouter()
+  const { theme, toggleTheme } = useTheme()
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -71,8 +73,7 @@ export function ModernHeader() {
   }
 
   return (
-    <header className="h-16 bg-[#0D0F1A]/80 backdrop-blur-xl border-b border-[#2C2F3C]/50 sticky top-0 z-50">
-      <div className="flex items-center justify-between h-full px-6">
+    <header className="flex items-center justify-between py-4 px-6 bg-[#F9FAFC] dark:bg-[#1A1E2D]">
         {/* Search Section */}
         <div className="flex-1 max-w-md">
           <div className="relative">
@@ -85,9 +86,8 @@ export function ModernHeader() {
             />
           </div>
         </div>
-
         {/* Actions Section */}
-        <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 ml-6">
           {/* Notifications */}
           <Popover>
             <PopoverTrigger asChild>
@@ -201,7 +201,15 @@ export function ModernHeader() {
           <Button variant="outline" onClick={handleLogout} className="ml-4">
             Logout
           </Button>
-        </div>
+
+        {/* Theme toggle button */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full bg-[#F7F8F8] dark:bg-[#2C2F3C] hover:bg-[#F9FAFC] dark:hover:bg-[#1A1E2D] transition-colors"
+          aria-label="Toggle theme"
+        >
+          {theme === "dark" ? <Sun className="h-5 w-5 text-[#FFD700]" /> : <Moon className="h-5 w-5 text-[#0846A6]" />}
+        </button>
       </div>
     </header>
   )

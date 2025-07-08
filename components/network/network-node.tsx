@@ -134,11 +134,11 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
             <div className="text-[#A0AFC0] text-xs ml-4">Loading...</div>
           ) : (
             directDownlines.map((child) => (
-              <div key={child.id} className="relative">
-                {/* Horizontal line to child */}
-                <div className="absolute left-2 top-6 w-4 h-px bg-[#2C2F3C]" />
+            <div key={child.id} className="relative">
+              {/* Horizontal line to child */}
+              <div className="absolute left-2 top-6 w-4 h-px bg-[#2C2F3C]" />
                 <NetworkNode user={{ ...child, level: (user.level ?? 0) + 1 }} direction={direction} />
-              </div>
+            </div>
             ))
           )}
         </div>

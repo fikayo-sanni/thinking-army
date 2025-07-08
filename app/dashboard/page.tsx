@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { PageHeader } from "@/components/layout/page-header"
-import { MetricCard } from "@/components/ui/metric-card"
+import { MetricCard, MetricCardContent } from "@/components/ui/metric-card"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { TrendingUp, Users, Coins, Trophy, BarChart3, PieChart, Calendar } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -36,6 +36,7 @@ export default function DashboardPage() {
   // Extract data safely
   const overview = data?.overview
   const stats = data?.stats
+  const balances = data?.commissionBalances
   const charts = data?.charts
 
   // Chart colors
@@ -55,13 +56,13 @@ export default function DashboardPage() {
         <PageHeader title="MY DASHBOARD" description="Overview of my network performance" />
         {/* Metric Cards Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1,2,3,4].map(i => (
+          {[1, 2, 3, 4].map(i => (
             <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
           ))}
         </div>
         {/* Charts Skeleton */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          {[1,2,3,4].map(i => (
+          {[1, 2, 3, 4].map(i => (
             <Skeleton key={i} className="h-72 w-full bg-[#2C2F3C] rounded-lg" />
           ))}
         </div>
@@ -113,18 +114,95 @@ export default function DashboardPage() {
         <div className="text-red-500">Failed to load dashboard data.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <MetricCard
-            title="TOTAL PURCHASES"
-            value={stats?.purchases ?? 0}
-            icon={TrendingUp}
-            change={{ value: `+${formatThousands(stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }}
-          />
-          <MetricCard
-            title="TOTAL COMMISSIONS"
-            value={`${formatThousands(overview?.totalEarnings.toFixed(2) ?? 0)} VP`}
-            icon={Coins}
-            change={{ value: `+${stats?.monthlyGrowth.toFixed(2) ?? 0}%`, type: "positive" }}
-          />
+
+          <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
+                    <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
+                  </div>
+                  <div>
+                    <div className="text-[#A0AFC0] text-sm uppercase tracking-wider"></div>
+                    <div className="text-2xl font-bold text-white">
+                      PERFORMANCE
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <MetricCardContent title="TOTAL PURCHASES IN PERIOD"
+                  value={stats?.purchases ?? 0}
+                  icon={TrendingUp}
+                  change={{ value: `+${formatThousands(stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }} />
+
+                <MetricCardContent title="TOTAL VP IN PERIOD"
+                  value={formatThousands(Number(stats?.monthlyEarnings||0).toFixed(2)) ?? 0}
+                  icon={TrendingUp}
+                  change={{ value: `+${formatThousands(stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }} />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
+                    <Users className="h-6 w-6 text-[#00E5FF]" />
+                  </div>
+                  <div>
+                    <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">COMMISSION ELIGIBLE BASE</div>
+                    <div className="text-2xl font-bold text-white">
+                      {formatThousands(totalVP.toFixed(2)) || '0.00'} VP
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-white text-m font-medium">GC-He</span>
+                      
+                    </div>
+                    <span className="text-[#00E5FF] text-sm font-bold">
+                    {formatThousands(Number(balances? balances['HE'] : 0.00).toFixed(2))}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-white text-m font-medium">GC-H</span>
+                      
+                    </div>
+                    <span className="text-[#00E5FF] text-sm font-bold">
+                    {formatThousands(Number(balances? balances['H'] : 0.00).toFixed(2))}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-white text-m font-medium">GCC1</span>
+                      
+                    </div>
+                    <span className="text-[#00E5FF] text-sm font-bold">
+                    {formatThousands(Number(balances? balances['GCC1'] : 0.00).toFixed(2))}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-white text-m font-medium">USDC</span>
+                      
+                    </div>
+                    <span className="text-[#00E5FF] text-sm font-bold">
+                      {formatThousands(Number(balances? balances['USDC'] : 0.00).toFixed(2))}
+                    </span>
+                  </div>
+              </div>
+            </CardContent>
+          </Card>
+          
           <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -147,7 +225,7 @@ export default function DashboardPage() {
                       <div className={`w-2 h-2 rounded-full ${downline.status === 'active' ? 'bg-green-400' : 'bg-gray-400'}`}></div>
                       <span className="text-white text-sm font-medium">{downline.nickname}</span>
                       <Badge className="text-xs bg-[#2C2F3C] text-[#A0AFC0] border-[#2C2F3C]">
-                        {downline.rank || 'Member'}
+                        {downline.rank?.split(" Member")[0] || 'Member'}
                       </Badge>
                     </div>
                     <span className="text-[#00E5FF] text-sm font-bold">
@@ -175,20 +253,20 @@ export default function DashboardPage() {
             <ResponsiveContainer width="100%" height={256}>
               <LineChart data={charts?.purchasesOverTime || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#A0AFC0" 
+                <XAxis
+                  dataKey="date"
+                  stroke="#A0AFC0"
                   tick={{ fill: "#A0AFC0", fontSize: 12 }}
                 />
-                <YAxis 
+                <YAxis
                   yAxisId="left"
-                  stroke="#A0AFC0" 
+                  stroke="#A0AFC0"
                   tick={{ fill: "#A0AFC0", fontSize: 12 }}
                 />
-                <YAxis 
+                <YAxis
                   yAxisId="right"
                   orientation="right"
-                  stroke="#A0AFC0" 
+                  stroke="#A0AFC0"
                   tick={{ fill: "#A0AFC0", fontSize: 12 }}
                 />
                 <Tooltip
@@ -272,13 +350,13 @@ export default function DashboardPage() {
             <ResponsiveContainer width="100%" height={256}>
               <BarChart data={(charts as any)?.commissionBreakdown || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
-                <XAxis 
-                  dataKey="month" 
-                  stroke="#A0AFC0" 
+                <XAxis
+                  dataKey="month"
+                  stroke="#A0AFC0"
                   tick={{ fill: "#A0AFC0", fontSize: 12 }}
                 />
-                <YAxis 
-                  stroke="#A0AFC0" 
+                <YAxis
+                  stroke="#A0AFC0"
                   tick={{ fill: "#A0AFC0", fontSize: 12 }}
                 />
                 <Tooltip
@@ -311,13 +389,13 @@ export default function DashboardPage() {
             <ResponsiveContainer width="100%" height={256}>
               <LineChart data={(charts as any)?.networkGrowth || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#A0AFC0" 
+                <XAxis
+                  dataKey="date"
+                  stroke="#A0AFC0"
                   tick={{ fill: "#A0AFC0", fontSize: 12 }}
                 />
-                <YAxis 
-                  stroke="#A0AFC0" 
+                <YAxis
+                  stroke="#A0AFC0"
                   tick={{ fill: "#A0AFC0", fontSize: 12 }}
                 />
                 <Tooltip

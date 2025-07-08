@@ -17,30 +17,11 @@ interface MetricCardProps {
   }
 }
 
-export function MetricCard({ title, value, icon: Icon, change, progress }: MetricCardProps) {
+export function MetricCard({ title, value, icon, change, progress }: MetricCardProps) {
   return (
     <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
       <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-            <Icon className="h-6 w-6 text-[#00E5FF]" />
-          </div>
-          {change && (
-            <Badge
-              className={
-                change.type === "positive"
-                  ? "bg-green-500/20 text-green-400 border-green-500/30"
-                  : change.type === "negative"
-                    ? "bg-red-500/20 text-red-400 border-red-500/30"
-                    : "bg-[#2C2F3C] text-[#A0AFC0]"
-              }
-            >
-              {change.value}
-            </Badge>
-          )}
-        </div>
-        <div className="text-3xl font-bold mb-1 text-white">{value}</div>
-        <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">{title}</div>
+        <MetricCardContent title={title} value={value} icon={icon} change={change}/>
         {progress && (
           <div className="mt-3">
             <Progress value={progress.value} className="h-2 bg-[#2C2F3C]" />
@@ -52,5 +33,26 @@ export function MetricCard({ title, value, icon: Icon, change, progress }: Metri
         )}
       </CardContent>
     </Card>
+  )
+}
+
+export function MetricCardContent({ title, value, icon: Icon, change, progress }: MetricCardProps) {
+  return (
+    <div>
+        <div className="text-2xl font-bold mb-1 text-white">{value} {change && (
+            <Badge
+              className={
+                change.type === "positive"
+                  ? "bg-green-500/20 text-green-400 border-green-500/30"
+                  : change.type === "negative"
+                    ? "bg-red-500/20 text-red-400 border-red-500/30"
+                    : "bg-[#2C2F3C] text-[#A0AFC0]"
+              }
+            >
+              {change.value}
+            </Badge>
+          )}</div>
+        <div className="text-[#A0AFC0] text-xs uppercase tracking-wider">{title}</div>
+    </div>
   )
 }
