@@ -83,7 +83,7 @@ export default function PayoutsPage() {
         {isStatsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
+              <Skeleton key={i} className="h-28 w-full dark:bg-[#2C2F3C] rounded-lg" />
             ))}
           </div>
         ) : isStatsError ? (
@@ -111,43 +111,16 @@ export default function PayoutsPage() {
           </div>
         )}
 
-        {/* Action Block */}
-        <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
-              <div>
-                <h3 className="text-white font-bold text-lg uppercase tracking-wide mb-2">WITHDRAWAL ACTIONS</h3>
-                <p className="text-[#A0AFC0] text-sm">
-                  Request a payout from your available balance or manage your withdrawal methods
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                <Button
-                  variant="outline"
-                  className="border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF]"
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  MANAGE METHODS
-                </Button>
-                <PayoutRequestModal
-                  availableBalance={0} // TODO: Replace with real available balance if/when available from API
-                  onRequestPayout={handlePayoutRequest}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Filter Controls Block */}
         <FilterControls>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-[#A0AFC0]" />
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] dark:text-white">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
                   <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
                     All Statuses
                   </SelectItem>
@@ -170,10 +143,10 @@ export default function PayoutsPage() {
             <div className="flex items-center space-x-2">
               <CalendarDays className="h-4 w-4 text-[#A0AFC0]" />
               <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">
                   <SelectValue placeholder="Select time range" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
                   <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
                     This Week
                   </SelectItem>
@@ -200,27 +173,27 @@ export default function PayoutsPage() {
 
         {/* Payout History Table Block */}
         {isHistoryLoading ? (
-          <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-0 w-full">
+          <div className="dark:bg-[#1A1E2D] border dark:border-[#2C2F3C] border-[#E5E7EB] rounded-lg p-0 w-full">
             <div className="px-6 pt-6 pb-2">
-              <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
+              <Skeleton className="h-6 w-48 mb-4 dark:bg-[#2C2F3C]" />
             </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-[#2C2F3C]">
+              <table className="min-w-full divide-y dark:divide-[#2C2F3C]">
                 <thead>
                   <tr>
                     {["Date", "Amount", "Status", "Transaction", "Notes"].map((col) => (
                       <th key={col} className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">
-                        <Skeleton className="h-4 w-20 bg-[#2C2F3C]" />
+                        <Skeleton className="h-4 w-20 dark:bg-[#2C2F3C]" />
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2C2F3C]">
+                <tbody className="divide-y dark:divide-[#2C2F3C]">
                   {[1, 2, 3, 4, 5].map(i => (
                     <tr key={i}>
                       {[1, 2, 3, 4, 5].map(j => (
                         <td key={j} className="px-4 py-2 whitespace-nowrap">
-                          <Skeleton className="h-6 w-full bg-[#2C2F3C]" />
+                          <Skeleton className="h-6 w-full dark:bg-[#2C2F3C]" />
                         </td>
                       ))}
                     </tr>
@@ -237,20 +210,20 @@ export default function PayoutsPage() {
             showExport
             onExport={() => console.log("Export data")}
           >
-            <table className="min-w-full divide-y divide-[#2C2F3C]">
+            <table className="min-w-full divide-y dark:divide-[#2C2F3C]">
               <thead>
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Date</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Amount</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Status</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Transaction</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">Notes</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Date</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Amount</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Status</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Transaction</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Notes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2C2F3C]">
                 {payouts.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-[#A0AFC0]">No payouts found</td>
+                    <td colSpan={5} className="text-center py-12 dark:text-[#A0AFC0]">No payouts found</td>
                   </tr>
                 ) : (
                   payouts.map((p) => (
@@ -285,10 +258,10 @@ export default function PayoutsPage() {
               <div className="flex items-center space-x-4 justify-end">
                 {/* Items per page dropdown */}
                 <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
-                  <SelectTrigger className="w-24 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+                  <SelectTrigger className="w-24 dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C] text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                  <SelectContent className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
                     {[5, 10, 20, 50].map(opt => (
                       <SelectItem key={opt} value={String(opt)} className="text-white hover:bg-[#2C2F3C]">{opt} / page</SelectItem>
                     ))}
@@ -296,7 +269,7 @@ export default function PayoutsPage() {
                 </Select>
                 {/* Pagination controls */}
                 <button
-                  className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                  className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 >
@@ -304,7 +277,7 @@ export default function PayoutsPage() {
                 </button>
                 {/* First page */}
                 <button
-                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                  className={`px-3 py-2 rounded-lg border-[#E5E7EB] border text-sm font-medium transition ${currentPage === 1 ? 'dark:bg-[#00E5FF] text-black dark:border-[#00E5FF]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#2C2F3C] dark:hover:text-white dark:hover:border-[#00E5FF]'}`}
                   onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
                 >
@@ -315,7 +288,7 @@ export default function PayoutsPage() {
                 {/* Current page (if not first/last) */}
                 {currentPage !== 1 && currentPage !== totalPages && (
                   <button
-                    className="px-3 py-2 rounded-lg border text-sm font-medium bg-[#00E5FF] text-black border-[#00E5FF]"
+                    className="px-3 py-2 rounded-lg border text-sm font-medium border-[#E5E7EB] dark:bg-[#00E5FF] text-black dark:border-[#00E5FF]"
                     disabled
                   >
                     {currentPage}
@@ -326,7 +299,7 @@ export default function PayoutsPage() {
                 {/* Last page */}
                 {totalPages > 1 && (
                   <button
-                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'dark:bg-[#00E5FF] text-black border-[#E5E7EB] dark:border-[#00E5FF]' : 'dark:bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] dark:border-[#2C2F3C] dark:hover:text-white dark:hover:border-[#00E5FF]'}`}
                     onClick={() => setCurrentPage(totalPages)}
                     disabled={currentPage === totalPages}
                   >
@@ -334,7 +307,7 @@ export default function PayoutsPage() {
                   </button>
                 )}
                 <button
-                  className={`px-4 py-2 rounded-lg bg-[#181B23] border border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                  className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] border dark:border-[#2C2F3C] text-[#A0AFC0] dark:hover:text-white dark:hover:border-[#00E5FF] transition disabled:opacity-50`}
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 >

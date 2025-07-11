@@ -64,7 +64,7 @@ export default function PreferencesPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Theme & Appearance */}
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Palette className="h-5 w-5 text-[#00E5FF]" />
@@ -129,7 +129,7 @@ export default function PreferencesPage() {
           </Card>
 
           {/* Notifications */}
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Bell className="h-5 w-5 text-[#00E5FF]" />
@@ -182,7 +182,7 @@ export default function PreferencesPage() {
           </Card>
 
           {/* Language & Region */}
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Globe className="h-5 w-5 text-[#00E5FF]" />
@@ -194,10 +194,10 @@ export default function PreferencesPage() {
                 <div className="space-y-2">
                   <Label className="text-[#A0AFC0] uppercase text-xs tracking-wider">LANGUAGE</Label>
                   <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger className="bg-[#0D0F1A] border-[#2C2F3C] text-white">
+                    <SelectTrigger className="dark:bg-[#0D0F1A] dark:border-[#2C2F3C] text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                    <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
                       <SelectItem value="en" className="text-white hover:bg-[#2C2F3C]">
                         English
                       </SelectItem>
@@ -220,10 +220,10 @@ export default function PreferencesPage() {
                 <div className="space-y-2">
                   <Label className="text-[#A0AFC0] uppercase text-xs tracking-wider">CURRENCY</Label>
                   <Select value={currency} onValueChange={setCurrency}>
-                    <SelectTrigger className="bg-[#0D0F1A] border-[#2C2F3C] text-white">
+                    <SelectTrigger className="dark:bg-[#0D0F1A] dark:border-[#2C2F3C] text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                    <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
                       <SelectItem value="USD" className="text-white hover:bg-[#2C2F3C]">
                         USD ($)
                       </SelectItem>
@@ -244,10 +244,10 @@ export default function PreferencesPage() {
                   <div className="space-y-2">
                     <Label className="text-[#A0AFC0] uppercase text-xs tracking-wider">DATE FORMAT</Label>
                     <Select value={dateFormat} onValueChange={setDateFormat}>
-                      <SelectTrigger className="bg-[#0D0F1A] border-[#2C2F3C] text-white">
+                      <SelectTrigger className="dark:bg-[#0D0F1A] dark:border-[#2C2F3C] text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                      <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
                         <SelectItem value="MM/DD/YYYY" className="text-white hover:bg-[#2C2F3C]">
                           MM/DD/YYYY
                         </SelectItem>
@@ -264,14 +264,14 @@ export default function PreferencesPage() {
                   <div className="space-y-2">
                     <Label className="text-[#A0AFC0] uppercase text-xs tracking-wider">TIME FORMAT</Label>
                     <Select value={timeFormat} onValueChange={setTimeFormat}>
-                      <SelectTrigger className="bg-[#0D0F1A] border-[#2C2F3C] text-white">
+                      <SelectTrigger className="dark:bg-[#0D0F1A] dark:border-[#2C2F3C] text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                      <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
                         <SelectItem value="12" className="text-white hover:bg-[#2C2F3C]">
                           12 Hour
                         </SelectItem>
-                        <SelectItem value="24" className="text-white hover:bg-[#2C2F3C]">
+                        <SelectItem value="24" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                           24 Hour
                         </SelectItem>
                       </SelectContent>
@@ -283,7 +283,7 @@ export default function PreferencesPage() {
           </Card>
 
           {/* Data & Performance */}
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Settings className="h-5 w-5 text-[#00E5FF]" />
@@ -321,7 +321,7 @@ export default function PreferencesPage() {
                   </div>
                 )}
 
-                <div className="p-4 rounded-lg bg-[#0D0F1A] border border-[#2C2F3C]">
+                <div className="p-4 rounded-lg dark:bg-[#0D0F1A] border dark:border-[#2C2F3C] border-[#E5E7EB]">
                   <h4 className="text-white font-medium mb-2">Data Usage</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">

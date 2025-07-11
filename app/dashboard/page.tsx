@@ -27,11 +27,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useProtectedRoute } from "@/hooks/use-protected-route"
 import { formatThousands } from "@/lib/utils"
+import { useTheme } from "@/components/theme/theme-provider"
 
 export default function DashboardPage() {
   useProtectedRoute()
   const [timeFilter, setTimeFilter] = useState("this-week")
   const { data, isLoading, isError } = useDashboardData(timeFilter)
+  const { theme } = useTheme();
 
   // Extract data safely
   const overview = data?.overview
@@ -47,6 +49,14 @@ export default function DashboardPage() {
     accent: "#FF6B00",
   }
 
+  // Chart tick colors for light mode
+  const tickColors = {
+    blue: "#0846A6",
+    green: "#0B5B3C",
+    purple: "#4B2067",
+    gray: "#A0AFC0", // for dark mode
+  };
+
   const totalVP = data?.immediateDownlines?.reduce((sum, d) => sum + Number(d.revenue), 0) ?? 0
   const top3 = (data?.immediateDownlines?.slice() ?? []).sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 3)
 
@@ -57,13 +67,13 @@ export default function DashboardPage() {
         {/* Metric Cards Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
+            <Skeleton key={i} className="h-28 w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
           ))}
         </div>
         {/* Charts Skeleton */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-72 w-full bg-[#2C2F3C] rounded-lg" />
+            <Skeleton key={i} className="h-72 w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
           ))}
         </div>
       </>
@@ -79,29 +89,29 @@ export default function DashboardPage() {
         <div className="flex items-center space-x-2">
           <Calendar className="h-4 w-4 text-[#A0AFC0]" />
           <Select value={timeFilter} onValueChange={setTimeFilter}>
-            <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+            <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">
               <SelectValue placeholder="Select time period" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
-              <SelectItem value="all-time" className="text-white hover:bg-[#2C2F3C]">
+            <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
+              <SelectItem value="all-time" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 All Time
               </SelectItem>
-              <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="this-week" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 This Week
               </SelectItem>
-              <SelectItem value="this-month" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="this-month" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 This Month
               </SelectItem>
-              <SelectItem value="this-quarter" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="this-quarter" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 This Quarter
               </SelectItem>
-              <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="last-week" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 Last Week
               </SelectItem>
-              <SelectItem value="last-month" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="last-month" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 Last Month
               </SelectItem>
-              <SelectItem value="last-quarter" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="last-quarter" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 Last Quarter
               </SelectItem>
             </SelectContent>
@@ -115,15 +125,15 @@ export default function DashboardPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
+                    <TrendingUp className="h-6 w-6 text-[#0846A6] dark:text-[#00E5FF]" />
                   </div>
                   <div>
-                    <div className="text-[#A0AFC0] text-sm uppercase tracking-wider"></div>
+                    <div className="text-[#0846A6] dark:text-[#A0AFC0] text-sm uppercase tracking-wider"></div>
                     <div className="text-2xl font-bold text-white">
                       PERFORMANCE
                     </div>
@@ -144,12 +154,12 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <Users className="h-6 w-6 text-[#00E5FF]" />
+                    <Users className="h-6 w-6 text-[#0846A6] dark:text-[#00E5FF]" />
                   </div>
                   <div>
                     <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">COMMISSION ELIGIBLE BASE</div>
@@ -165,7 +175,7 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GC-He</span>
                       
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
                     {formatThousands(Number(balances? balances['HE'] : 0.00).toFixed(2))}
                     </span>
                   </div>
@@ -175,7 +185,7 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GC-H</span>
                       
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
                     {formatThousands(Number(balances? balances['H'] : 0.00).toFixed(2))}
                     </span>
                   </div>
@@ -185,7 +195,7 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GCC1</span>
                       
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
                     {formatThousands(Number(balances? balances['GCC1'] : 0.00).toFixed(2))}
                     </span>
                   </div>
@@ -195,7 +205,7 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">USDC</span>
                       
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
                       {formatThousands(Number(balances? balances['USDC'] : 0.00).toFixed(2))}
                     </span>
                   </div>
@@ -203,12 +213,12 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
           
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <Users className="h-6 w-6 text-[#00E5FF]" />
+                    <Users className="h-6 w-6 text-[#0846A6] dark:text-[#00E5FF]" />
                   </div>
                   <div>
                     <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">IMMEDIATE DOWNLINES</div>
@@ -228,7 +238,7 @@ export default function DashboardPage() {
                         {downline.rank?.split(" Member")[0] || 'Member'}
                       </Badge>
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
                       {Number(downline.revenue).toFixed(2)} VP
                     </span>
                   </div>
@@ -255,19 +265,19 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="date"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <YAxis
                   yAxisId="left"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <YAxis
                   yAxisId="right"
                   orientation="right"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -331,7 +341,7 @@ export default function DashboardPage() {
                   verticalAlign="bottom"
                   height={36}
                   wrapperStyle={{
-                    color: "#A0AFC0",
+                    color: theme === "dark" ? tickColors.gray : tickColors.purple,
                     fontSize: "12px",
                   }}
                 />
@@ -352,12 +362,12 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="month"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.green}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
                 />
                 <YAxis
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.green}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -369,7 +379,7 @@ export default function DashboardPage() {
                 />
                 <Legend
                   wrapperStyle={{
-                    color: "#A0AFC0",
+                    color: theme === "dark" ? tickColors.gray : tickColors.green,
                     fontSize: "12px",
                   }}
                 />
@@ -391,12 +401,12 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="date"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <YAxis
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -408,7 +418,7 @@ export default function DashboardPage() {
                 />
                 <Legend
                   wrapperStyle={{
-                    color: "#A0AFC0",
+                    color: theme === "dark" ? tickColors.gray : tickColors.blue,
                     fontSize: "12px",
                   }}
                 />

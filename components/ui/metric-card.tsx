@@ -19,12 +19,12 @@ interface MetricCardProps {
 
 export function MetricCard({ title, value, icon, change, progress }: MetricCardProps) {
   return (
-    <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+    <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
       <CardContent className="p-6">
         <MetricCardContent title={title} value={value} icon={icon} change={change}/>
         {progress && (
           <div className="mt-3">
-            <Progress value={progress.value} className="h-2 bg-[#2C2F3C]" />
+            <Progress value={progress.value} className="h-2 border-[#E5E7EB] dark:bg-[#2C2F3C]" />
             <div className="flex justify-between text-xs text-[#A0AFC0] mt-1">
               <span>{progress.label}</span>
               <span>{progress.value}%</span>

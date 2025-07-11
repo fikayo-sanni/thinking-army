@@ -34,30 +34,30 @@ export default function NetworkPage() {
             {/* Summary Cards Skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[1,2,3].map(i => (
-                <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
+                <Skeleton key={i} className="h-28 w-full dark:bg-[#2C2F3C] rounded-lg" />
               ))}
             </div>
             {/* Main Content Area Skeleton */}
             <div className="space-y-6">
               {/* Tab Navigation Skeleton */}
               <div className="grid w-full grid-cols-2 gap-4 mb-4">
-                <Skeleton className="h-10 w-full bg-[#2C2F3C] rounded-lg" />
-                <Skeleton className="h-10 w-full bg-[#2C2F3C] rounded-lg" />
+                <Skeleton className="h-10 w-full dark:bg-[#2C2F3C] rounded-lg" />
+                <Skeleton className="h-10 w-full dark:bg-[#2C2F3C] rounded-lg" />
               </div>
               {/* Sponsor Card Skeleton */}
-              <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6 w-full mb-6">
+              <div className="dark:bg-[#1A1E2D] border-[#E5E7EB] border dark:border-[#2C2F3C] rounded-lg p-6 w-full mb-6">
                 <div className="flex flex-col items-center space-y-6">
-                  <Skeleton className="h-16 w-1/2 bg-[#2C2F3C] rounded-lg mb-2" />
-                  <Skeleton className="h-10 w-1/3 bg-[#2C2F3C] rounded-lg" />
+                  <Skeleton className="h-16 w-1/2 dark:bg-[#2C2F3C] rounded-lg mb-2" />
+                  <Skeleton className="h-10 w-1/3 dark:bg-[#2C2F3C] rounded-lg" />
                 </div>
               </div>
               {/* Downlines Card Skeleton */}
-              <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6 w-full">
+              <div className="border-[#E5E7EB] dark:bg-[#1A1E2D] border dark:border-[#2C2F3C] rounded-lg p-6 w-full">
                 <div className="flex flex-col items-center space-y-6">
-                  <Skeleton className="h-16 w-1/2 bg-[#2C2F3C] rounded-lg mb-2" />
+                  <Skeleton className="h-16 w-1/2 dark:bg-[#2C2F3C] rounded-lg mb-2" />
                   <div className="space-y-4 w-full">
                     {[1,2,3].map(i => (
-                      <Skeleton key={i} className="h-14 w-full bg-[#2C2F3C] rounded-lg" />
+                      <Skeleton key={i} className="h-14 w-full dark:bg-[#2C2F3C] rounded-lg" />
                     ))}
                   </div>
                 </div>
@@ -122,7 +122,7 @@ export default function NetworkPage() {
           <div className="space-y-6">
             {/* Tab Navigation Block */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-[#1A1E2D] border border-[#2C2F3C]">
+              <TabsList className="grid w-full grid-cols-2 dark:bg-[#1A1E2D] border border-[#E5E7EB] dark:border-[#2C2F3C]">
                 <TabsTrigger
                   value="sponsor"
                   className="data-[state=active]:bg-[#00E5FF] data-[state=active]:text-black text-[#A0AFC0] uppercase tracking-wide"
@@ -146,7 +146,7 @@ export default function NetworkPage() {
 
               {/* Sponsor View Block */}
               <TabsContent value="sponsor" className="mt-6">
-                <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+                <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
                   <CardHeader>
                     <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                       <User className="h-5 w-5 text-[#00E5FF]" />
@@ -157,10 +157,10 @@ export default function NetworkPage() {
                   <CardContent className="space-y-6">
                     {/* Current User Node */}
                     <div className="flex justify-center">
-                      <Card className="bg-[#00E5FF]/10 border-[#00E5FF]">
+                      <Card className="bg-[#00E5FF]/10 border-[#E5E7EB] dark:border-[#00E5FF]">
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-4">
-                            <div className="h-10 w-10 rounded-full bg-[#00E5FF] flex items-center justify-center">
+                            <div className="h-10 w-10 rounded-full dark:bg-[#00E5FF] flex items-center justify-center">
                               <span className="text-black font-bold text-sm">ME</span>
                             </div>
                             <div>
@@ -178,12 +178,12 @@ export default function NetworkPage() {
 
                     {/* Connection Line */}
                     <div className="flex justify-center">
-                      <div className="w-px h-8 bg-[#2C2F3C]" />
+                      <div className="w-px h-8 dark:bg-[#2C2F3C]" />
                     </div>
 
                     {/* Sponsor Node */}
                     <div className="flex justify-center">
-                      <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+                      <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-4">
                             <div className="h-10 w-10 rounded-full bg-[#6F00FF] flex items-center justify-center">
@@ -211,7 +211,7 @@ export default function NetworkPage() {
               </TabsContent>
 
               <TabsContent value="downlines" className="mt-6">
-                <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+                <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
                   <CardHeader>
                     <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                       <Users className="h-5 w-5 text-[#00E5FF]" />

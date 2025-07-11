@@ -22,36 +22,36 @@ export default function RanksPage() {
           {/* Summary/Metric Cards Skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
+              <Skeleton key={i} className="h-28 w-full dark:bg-[#2C2F3C] rounded-lg" />
             ))}
           </div>
           {/* Progress Tracker Skeleton */}
-          <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6 w-full">
-            <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
-            <Skeleton className="h-8 w-1/2 mb-4 bg-[#2C2F3C]" />
+          <div className="dark:bg-[#1A1E2D] border-[#E5E7EB] border dark:border-[#2C2F3C] rounded-lg p-6 w-full">
+            <Skeleton className="h-6 w-48 mb-4 dark:bg-[#2C2F3C]" />
+            <Skeleton className="h-8 w-1/2 mb-4 dark:bg-[#2C2F3C]" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-3">
                 {[1, 2].map(i => (
-                  <Skeleton key={i} className="h-6 w-full bg-[#2C2F3C]" />
+                  <Skeleton key={i} className="h-6 w-full dark:bg-[#2C2F3C]" />
                 ))}
               </div>
               <div className="space-y-3">
                 {[1, 2].map(i => (
-                  <Skeleton key={i} className="h-6 w-full bg-[#2C2F3C]" />
+                  <Skeleton key={i} className="h-6 w-full dark:bg-[#2C2F3C]" />
                 ))}
               </div>
             </div>
           </div>
           {/* Rank History Skeleton */}
-          <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-6 w-full space-y-4">
+          <div className="dark:bg-[#1A1E2D] border dark:border-[#2C2F3C] border-[#E5E7EB] rounded-lg p-6 w-full space-y-4">
             {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="h-14 w-full bg-[#2C2F3C]" />
+              <Skeleton key={i} className="h-14 w-full dark:bg-[#2C2F3C]" />
             ))}
           </div>
           {/* All Ranks & Benefits Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <Skeleton key={i} className="h-48 w-full bg-[#2C2F3C] rounded-lg" />
+              <Skeleton key={i} className="h-48 w-full dark:bg-[#2C2F3C] rounded-lg" />
             ))}
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function RanksPage() {
 
         <div className="p-6 space-y-6">
           {/* Current Rank Summary Block */}
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Trophy className="h-6 w-6 text-[#00E5FF]" />
@@ -92,35 +92,35 @@ export default function RanksPage() {
                     <RankBadge rank={currentRank?.name} size="lg" />
                     <div>
                       <div className="text-white text-lg font-bold">RANK ACHIEVED</div>
-                      <div className="flex items-center space-x-2 text-[#A0AFC0] text-sm">
+                      {currentRank ? <div className="flex items-center space-x-2 text-[#A0AFC0] text-sm">
                         <Calendar className="h-4 w-4" />
-                        <span>{formatDate(currentRank.achievedDate)}</span>
-                        <span>({currentRank.monthsAtRank} months ago)</span>
-                      </div>
+                        <span>{formatDate(currentRank?.achievedDate)}</span>
+                        <span>({currentRank?.monthsAtRank} months ago)</span>
+                      </div> : <></>}
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                {currentRank ? <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-[#00E5FF] mb-1">{currentRank.totalVolume} VP</div>
-                    <div className="text-[#A0AFC0] text-xs uppercase tracking-wider">TOTAL VOLUME</div>
+                    <div className="dark:text-[#A0AFC0] text-xs uppercase tracking-wider">TOTAL VOLUME</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-[#00FFC8] mb-1">{currentRank.teamSize}</div>
-                    <div className="text-[#A0AFC0] text-xs uppercase tracking-wider">TEAM SIZE</div>
+                    <div className="dark:text-[#A0AFC0] text-xs uppercase tracking-wider">TEAM SIZE</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-[#6F00FF] mb-1">{currentRank.directReferrals}</div>
-                    <div className="text-[#A0AFC0] text-xs uppercase tracking-wider">DIRECT REFS</div>
+                    <div className="dark:text-[#A0AFC0] text-xs uppercase tracking-wider">DIRECT REFS</div>
                   </div>
-                </div>
+                </div> : <></>}
               </div>
             </CardContent>
           </Card>
 
           {/* Progress Tracker Block */}
-          {nextRankRequirements ? <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          {nextRankRequirements ? <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Target className="h-6 w-6 text-[#00E5FF]" />
@@ -167,7 +167,7 @@ export default function RanksPage() {
           </Card> : null}
 
           {/* Rank History Block */}
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
@@ -180,11 +180,11 @@ export default function RanksPage() {
                 {rankHistory.map((entry, index) => (
                   <div
                     key={entry.rank}
-                    className="flex items-center space-x-4 p-4 rounded-lg bg-[#0D0F1A] border border-[#2C2F3C]"
+                    className="flex items-center space-x-4 p-4 rounded-lg dark:bg-[#0D0F1A] border border-[#E5E7EB] dark:border-[#2C2F3C]"
                   >
                     <div className="flex-shrink-0">
                       {entry.isCurrent ? (
-                        <div className="h-3 w-3 rounded-full bg-[#00E5FF]" />
+                        <div className="h-3 w-3 rounded-full dark:bg-[#00E5FF]" />
                       ) : (
                         <CheckCircle className="h-5 w-5 text-green-400" />
                       )}
@@ -215,7 +215,7 @@ export default function RanksPage() {
           </Card>
 
           {/* Ranks Table Block */}
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+          <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Gift className="h-6 w-6 text-[#00E5FF]" />
@@ -228,9 +228,9 @@ export default function RanksPage() {
                 {allRanks.map((rank) => (
                   <Card
                     key={rank.name}
-                    className={`border-2 transition-all duration-200 ${rank.name === currentRank?.name
-                      ? "bg-[#00E5FF]/5 border-[#00E5FF]"
-                      : "bg-[#0D0F1A] border-[#2C2F3C] hover:border-[#00E5FF]/50"
+                    className={`border-[#E5E7EB] transition-all duration-200 ${rank.name === currentRank?.name
+                      ? "dark:bg-[#00E5FF]/5 dark:border-[#00E5FF]"
+                      : "dark:bg-[#0D0F1A] dark:border-[#2C2F3C] dark:hover:border-[#00E5FF]/50"
                       }`}
                   >
                     <CardContent className="p-4 space-y-4">
@@ -251,11 +251,11 @@ export default function RanksPage() {
                             <span className="text-white">{rank.requirements.volume}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-[#A0AFC0]">Direct Refs:</span>
+                            <span className="dark:text-[#A0AFC0]">Direct Refs:</span>
                             <span className="text-white">{rank.requirements.directReferrals}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-[#A0AFC0]">Team Size:</span>
+                            <span className="dark:text-[#A0AFC0]">Team Size:</span>
                             <span className="text-white">{rank.requirements.teamSize}</span>
                           </div>
                         </div>

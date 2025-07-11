@@ -97,20 +97,20 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   const quickStats = [
     {
       label: "AllTime VP",
-      value: isDashboardLoading ? <Skeleton className="h-4 w-16 bg-[#2C2F3C] rounded" /> : `${formatThousands(dashboardStats?.personalEarnings?.toFixed(2) ?? 0)} VP`,
+      value: isDashboardLoading ? <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(dashboardStats?.personalEarnings?.toFixed(2) ?? 0)} VP`,
       icon: TrendingUp,
       color: "text-[#00E5FF]",
     },
     {
       label: "Active Downlines",
-      value: isNetworkLoading ? <Skeleton className="h-4 w-8 bg-[#2C2F3C] rounded" /> : `${formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands(networkStats?.totalDownlines || 0)}`,
+      value: isNetworkLoading ? <Skeleton className="h-4 w-8 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands(networkStats?.totalDownlines || 0)}`,
       icon: Users,
       color: "text-[#00FFC8]",
     },
     {
       label: "Current Rank",
       value: isCurrentRankLoading
-        ? <Skeleton className="h-4 w-12 bg-[#2C2F3C] rounded" />
+        ? <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
         : (currentRankData?.name.split(" Member")[0] || "Member"),
       icon: Trophy,
       color: "text-[#FFD700]",
@@ -181,10 +181,20 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-[#1A1E2D]">
         <div className="flex items-center space-x-3">
           <div className="h-8 w-8 flex items-center justify-center">
-            <img src="/logo-dark-mode.svg" alt="GC Universe Logo" className="h-20 w-20" />
+            <img
+              src="/logo-dark-mode.svg"
+              alt="GC Universe Logo"
+              className="h-20 w-20 hidden dark:block"
+            />
+            {/* Light Mode Logo */}
+            <img
+              src="/logo-light-mode.svg"
+              alt="GC Universe Logo"
+              className="h-20 w-20 dark:hidden"
+            />
           </div>
           <div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold">
               GC UNIVERSE
             </h1>
           </div>
@@ -202,21 +212,30 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       <div className="flex">
         {/* Desktop Sidebar */}
         <aside
-          className={`${
-            isCollapsed ? "w-20" : "w-80"
-          } transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 min-h-screen sticky top-0 hidden lg:block text-black dark:text-white`}
+          className={`${isCollapsed ? "w-20" : "w-80"
+            } transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 min-h-screen sticky top-0 hidden lg:block text-black dark:text-white`}
         >
           <div className="p-6">
             {/* Logo Section */}
             <div className="flex items-center space-x-4 mb-8">
               <div className="relative">
                 <div className="h-12 w-12 rounded-2xl flex items-center justify-center">
-                  <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-20 w-20" />
+                  <img
+                    src="/logo-dark-mode.svg"
+                    alt="GC Universe Logo"
+                    className="h-20 w-20 hidden dark:block"
+                  />
+                  {/* Light Mode Logo */}
+                  <img
+                    src="/logo-light-mode.svg"
+                    alt="GC Universe Logo"
+                    className="h-20 w-20 dark:hidden"
+                  />
                 </div>
               </div>
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold">
                     GC UNIVERSE
                   </h1>
                 </div>
@@ -225,7 +244,11 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
 
             {/* Quick Stats */}
             {!isCollapsed && (
-              <div className="mb-8 p-4 rounded-2xl bg-gradient-to-br from-[#1A1E2D]/80 to-[#2C2F3C]/40 backdrop-blur border border-[#2C2F3C]/50">
+              <div className="mb-8 p-4 rounded-2xl backdrop-blur
+              bg-white
+              border-[#E5E7EB]
+              dark:border-none
+              dark:bg-[#1A1E2D]">
                 <h3 className="text-white font-semibold mb-4 flex items-center">
                   <BarChart3 className="h-4 w-4 mr-2 text-[#00E5FF]" />
                   Quick Stats
@@ -235,7 +258,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                     <div key={stat.label} className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                        <span className="text-[#A0AFC0] text-sm">{stat.label}</span>
+                        <span className="dark:text-[#A0AFC0] text-gray-700 text-sm">{stat.label}</span>
                       </div>
                       <span className="text-white font-semibold text-sm">{stat.value}</span>
                     </div>
@@ -246,7 +269,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
 
             {/* Navigation */}
             <nav className="space-y-2">
-              <div className="text-[#A0AFC0] text-xs uppercase tracking-wider font-semibold mb-4 px-3">
+              <div className="dark:text-[#A0AFC0] text-gray-700 text-xs uppercase tracking-wider font-semibold mb-4 px-3">
                 {isCollapsed ? "•••" : "Navigation"}
               </div>
               {navigationItemsLive.map((item) => {
@@ -254,24 +277,23 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                 return (
                   <Link key={item.name} href={item.href}>
                     <div
-                      className={`group relative flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                        isActive
-                          ? "bg-gradient-to-r from-[#00E5FF]/20 to-[#6F00FF]/20 border border-[#00E5FF]/30 shadow-lg shadow-[#00E5FF]/10"
-                          : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#2C2F3C]/50"
-                      }`}
+                      className={`group relative dark:text-[#A0AFC0] text-gray-700 flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
+                        ? "bg-[#E9ECF0] dark:bg-gradient-to-r dark:from-[#00E5FF]/20 dark:to-[#6F00FF]/20 border-none dark:border-[#00E5FF]/30 shadow-lg shadow-[#00E5FF]/10"
+                        : "hover:bg-[#E9ECF0] dark:hover:bg-[#1A1E2D]/60 dark:hover:border dark:hover:border-[#2C2F3C]/50"
+                        }`}
                     >
                       <div
-                        className={`relative p-2 rounded-lg ${isActive ? `bg-gradient-to-br ${item.gradient}` : "bg-[#2C2F3C]/50 group-hover:bg-[#2C2F3C]"} transition-all duration-200`}
+                        className={`relative p-2 rounded-lg ${isActive ? `bg-gradient-to-br ${item.gradient}` : "bg-[#D9D9D9] dark:bg-[#2C2F3C]/50 dark:group-hover:bg-[#2C2F3C]"} transition-all duration-200`}
                       >
                         <item.icon
-                          className={`h-5 w-5 ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
+                          className={`h-5 w-5 ${isActive ? "text-white" : "text-gray-700 dark:text-[#A0AFC0] group-hover:text-white"}`}
                         />
                       </div>
                       {!isCollapsed && (
                         <>
                           <div className="flex-1">
                             <span
-                              className={`font-medium text-sm ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
+                              className={`font-medium dark:text-[#A0AFC0] text-gray-700 text-sm ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
                             >
                               {item.name}
                             </span>
@@ -279,16 +301,15 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                           <div className="flex items-center space-x-2">
                             {item.badge && (
                               <Badge
-                                className={`text-xs px-2 py-0.5 ${
-                                  item.badge === "New"
-                                    ? "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30"
-                                    : "bg-[#2C2F3C] text-[#A0AFC0]"
-                                }`}
+                                className={`text-xs px-2 py-0.5 ${item.badge === "New"
+                                  ? "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30"
+                                  : "bg-[#2C2F3C] text-[#A0AFC0]"
+                                  }`}
                               >
                                 {item.badge}
                               </Badge>
                             )}
-                            {isActive && <ChevronRight className="h-4 w-4 text-[#00E5FF]" />}
+                            {isActive && <ChevronRight className="h-4 w-4 text-gray-700  dark:text-[#00E5FF]" />}
                           </div>
                         </>
                       )}
@@ -308,7 +329,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
               variant="ghost"
               size="sm"
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="w-full justify-center bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#2C2F3C]/50 text-[#A0AFC0] hover:text-white"
+              className="w-full justify-center dark:bg-[#1A1E2D]/50 dark:hover:bg-[#2C2F3C]/50 border dark:border-[#2C2F3C]/50 dark:text-[#A0AFC0] hover:text-white"
             >
               <ChevronRight
                 className={`h-4 w-4 transition-transform duration-200 ${isCollapsed ? "rotate-0" : "rotate-180"}`}
@@ -330,30 +351,46 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                 <div className="flex items-center space-x-4 mb-8">
                   <div className="relative">
                     <div className="h-12 w-12 rounded-2xl flex items-center justify-center">
-                      <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-20 w-20" />
+                      <img
+                        src="/logo-dark-mode.svg"
+                        alt="GC Universe Logo"
+                        className="h-20 w-20 hidden dark:block"
+                      />
+                      {/* Light Mode Logo */}
+                      <img
+                        src="/logo-light-mode.svg"
+                        alt="GC Universe Logo"
+                        className="h-20 w-20 dark:hidden"
+                      />
                     </div>
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#A0AFC0] bg-clip-text text-transparent">
+                    <h1 className="text-2xl font-bold">
                       GC UNIVERSE
                     </h1>
                   </div>
                 </div>
 
                 {/* Quick Stats */}
-                <div className="mb-8 p-4 rounded-2xl bg-gradient-to-br from-[#1A1E2D]/80 to-[#2C2F3C]/40 backdrop-blur border border-[#2C2F3C]/50">
-                  <h3 className="text-white font-semibold mb-4 flex items-center">
+                <div className="mb-8 p-4 rounded-2xl border-[#E5E7EB] backdrop-blur
+  bg-white 
+  dark:bg-[#1A1E2D]">
+
+                  <h3 className="text-gray-900 dark:text-white font-semibold mb-4 flex items-center">
                     <BarChart3 className="h-4 w-4 mr-2 text-[#00E5FF]" />
                     Quick Stats
                   </h3>
+
                   <div className="space-y-3">
                     {quickStats.map((stat) => (
                       <div key={stat.label} className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                          <span className="text-[#A0AFC0] text-sm">{stat.label}</span>
+                          <span className="text-gray-600 dark:text-[#A0AFC0] text-sm">{stat.label}</span>
                         </div>
-                        <span className="text-white font-semibold text-sm">{stat.value}</span>
+                        <span className="text-gray-900 dark:text-white font-semibold text-sm">
+                          {stat.value}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -361,7 +398,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
 
                 {/* Navigation */}
                 <nav className="space-y-2">
-                  <div className="text-[#A0AFC0] text-xs uppercase tracking-wider font-semibold mb-4 px-3">
+                  <div className="dark:text-[#A0AFC0] text-gray-700 text-xs uppercase tracking-wider font-semibold mb-4 px-3">
                     Navigation
                   </div>
                   {navigationItemsLive.map((item) => {
@@ -369,11 +406,10 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                     return (
                       <Link key={item.name} href={item.href} onClick={() => setIsMobileOpen(false)}>
                         <div
-                          className={`group relative flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                            isActive
-                              ? "bg-gradient-to-r from-[#00E5FF]/20 to-[#6F00FF]/20 border border-[#00E5FF]/30 shadow-lg shadow-[#00E5FF]/10"
-                              : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#2C2F3C]/50"
-                          }`}
+                          className={`group relative flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
+                            ? "bg-gradient-to-r from-[#00E5FF]/20 to-[#6F00FF]/20 border border-[#00E5FF]/30 shadow-lg shadow-[#00E5FF]/10"
+                            : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#2C2F3C]/50"
+                            }`}
                         >
                           <div
                             className={`relative p-2 rounded-lg ${isActive ? `bg-gradient-to-br ${item.gradient}` : "bg-[#2C2F3C]/50 group-hover:bg-[#2C2F3C]"} transition-all duration-200`}
@@ -392,11 +428,10 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                           <div className="flex items-center space-x-2">
                             {item.badge && (
                               <Badge
-                                className={`text-xs px-2 py-0.5 ${
-                                  item.badge === "New"
-                                    ? "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30"
-                                    : "bg-[#2C2F3C] text-[#A0AFC0]"
-                                }`}
+                                className={`text-xs px-2 py-0.5 ${item.badge === "New"
+                                  ? "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30"
+                                  : "bg-[#2C2F3C] text-[#A0AFC0]"
+                                  }`}
                               >
                                 {item.badge}
                               </Badge>

@@ -24,7 +24,7 @@ export default function CommissionPage() {
             {/* Table Skeleton */}
             <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-0 w-full">
               <div className="px-6 pt-6 pb-2">
-                <Skeleton className="h-6 w-48 mb-4 bg-[#2C2F3C]" />
+                <Skeleton className="h-6 w-48 mb-4 dark:bg-[#2C2F3C]" />
               </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-[#2C2F3C]">
@@ -32,7 +32,7 @@ export default function CommissionPage() {
                     <tr>
                       {["Date","Amount","Type","Source","Status","Description","Currency"].map((col) => (
                         <th key={col} className="px-4 py-2 text-left text-xs font-medium text-[#A0AFC0] uppercase">
-                          <Skeleton className="h-4 w-20 bg-[#2C2F3C]" />
+                          <Skeleton className="h-4 w-20 dark:bg-[#2C2F3C]" />
                         </th>
                       ))}
                     </tr>
@@ -42,7 +42,7 @@ export default function CommissionPage() {
                       <tr key={i}>
                         {[1,2,3,4,5,6,7].map(j => (
                           <td key={j} className="px-4 py-2 whitespace-nowrap">
-                            <Skeleton className="h-6 w-full bg-[#2C2F3C]" />
+                            <Skeleton className="h-6 w-full dark:bg-[#2C2F3C]" />
                           </td>
                         ))}
                       </tr>
