@@ -9,7 +9,7 @@ import { ChartCard } from "@/components/dashboard/chart-card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarDays, Filter } from "lucide-react"
+import { CalendarDays, Filter, AlertTriangle } from "lucide-react"
 import {
   ChartContainer,
   ChartTooltip,
@@ -24,15 +24,17 @@ import {
 import { usePurchasesData, usePurchaseHistory } from "@/hooks"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatThousands } from "@/lib/utils"
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 const chartConfig = {
   purchases: {
     label: "Purchases",
-    color: "#00E5FF",
+    color: "#0846A6",
   },
   volume: {
     label: "Volume (USDC)",
-    color: "#00FFC8",
+    color: "#00B28C",
   },
 }
 
@@ -43,13 +45,13 @@ export default function PurchasesPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Fetch data using custom hooks
-  const { data: purchasesData, isLoading: isDataLoading, error: dataError } = usePurchasesData({
+  const { data: purchasesData, isLoading: isDataLoading, error: dataError, refetch: refetchData } = usePurchasesData({
     timeRange,
     status: statusFilter !== "all" ? statusFilter : undefined,
     page: currentPage,
     limit: itemsPerPage
   })
-  const { data: historyData, isLoading: isHistoryLoading, error: historyError } = usePurchaseHistory(
+  const { data: historyData, isLoading: isHistoryLoading, error: historyError, refetch: refetchHistory } = usePurchaseHistory(
     { timeRange, status: statusFilter !== "all" ? statusFilter : undefined },
     currentPage,
     itemsPerPage
@@ -108,15 +110,17 @@ export default function PurchasesPage() {
   // Error states
   if (dataError || historyError) {
     return (
-      <div className="min-h-screen">
-        <div className="p-6">
-          <div className="text-center py-12">
-            <div className="text-red-400 text-lg mb-2">Error loading data</div>
-            <div className="text-[#A0AFC0] text-sm">Please try refreshing the page</div>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full border-red-400 bg-red-50 dark:bg-[#2C2F3C] dark:border-red-800 shadow-lg">
+          <CardContent className="flex flex-col items-center py-10">
+            <AlertTriangle className="h-12 w-12 text-red-500 mb-4 animate-bounce" />
+            <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">Network Activity Load Failed</h2>
+            <p className="text-center text-[#A0AFC0] mb-6">We couldn't load your network activity right now. Please check your connection or try again in a moment.</p>
+            <Button onClick={() => { refetchData(); refetchHistory(); }} className="bg-[#0846A6] text-white hover:bg-[#06377a]">Retry</Button>
+          </CardContent>
+        </Card>
       </div>
-    )
+    );
   }
 
   const purchases = historyData?.purchases || []
@@ -135,12 +139,12 @@ export default function PurchasesPage() {
           <SummaryCard
             title="TOTAL VOLUME POINTS IN PERIOD"
             value={`${formatThousands(overview?.totalSpent.toFixed(1) || '0.0')} ${overview?.currency || 'VP'}`}
-            color="dark:text-[#00E5FF]"
+            color="dark:text-[#0846A6]"
           />
           <SummaryCard
             title="TOTAL PURCHASES IN PERIOD"
             value={overview?.totalPurchases || 0}
-            color="dark:text-[#00FFC8]"
+            color="dark:text-[#00B28C]"
           />
         </div>
 
@@ -209,11 +213,11 @@ export default function PurchasesPage() {
                           <div className="text-white font-medium mb-2">{label}</div>
                           <div className="space-y-1">
                             <div className="flex justify-between text-sm">
-                              <span className="text-[#00E5FF]">Purchases:</span>
+                              <span className="text-[#0846A6]">Purchases:</span>
                               <span className="text-white font-medium">{payload[0]?.value}</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                              <span className="text-[#00FFC8]">Volume:</span>
+                              <span className="text-[#00B28C]">Volume:</span>
                               <span className="text-white font-medium">{payload[1]?.value} VP</span>
                             </div>
                           </div>
@@ -227,19 +231,19 @@ export default function PurchasesPage() {
                   yAxisId="left"
                   type="monotone"
                   dataKey="purchases"
-                  stroke="#00E5FF"
+                  stroke="#0846A6"
                   strokeWidth={1.5}
-                  dot={{ fill: "#00E5FF", strokeWidth: 1, r: 3 }}
-                  activeDot={{ r: 4, stroke: "#00E5FF", strokeWidth: 1 }}
+                  dot={{ fill: "#0846A6", strokeWidth: 1, r: 3 }}
+                  activeDot={{ r: 4, stroke: "#0846A6", strokeWidth: 1 }}
                 />
                 <Line
                   yAxisId="right"
                   type="monotone"
                   dataKey="volume"
-                  stroke="#00FFC8"
+                  stroke="#00B28C"
                   strokeWidth={1.5}
-                  dot={{ fill: "#00FFC8", strokeWidth: 1, r: 3 }}
-                  activeDot={{ r: 4, stroke: "#00FFC8", strokeWidth: 1 }}
+                  dot={{ fill: "#00B28C", strokeWidth: 1, r: 3 }}
+                  activeDot={{ r: 4, stroke: "#00B28C", strokeWidth: 1 }}
                 />
               </LineChart>
             </ChartContainer>
@@ -274,7 +278,7 @@ export default function PurchasesPage() {
                       })}
                     </TableCell>
                     <TableCell className="dark:text-white font-medium uppercase">{purchase.tokenId}</TableCell>
-                    <TableCell className="dark:text-[#00E5FF] font-bold">{purchase.amount.toFixed(2)} {purchase.currency}</TableCell>
+                    <TableCell className="dark:text-[#0846A6] font-bold">{purchase.amount.toFixed(2)} {purchase.currency}</TableCell>
                     <TableCell className="dark:text-[#A0AFC0]">{purchase.source}</TableCell>
                   </TableRow>
                 ))}
@@ -307,7 +311,7 @@ export default function PurchasesPage() {
               </Select>
               {/* Pagination controls */}
               <button
-                className={`px-4 py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#2C2F3C] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#00E5FF] transition disabled:opacity-50`}
+                className={`px-4 py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#2C2F3C] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50`}
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               >
@@ -315,7 +319,7 @@ export default function PurchasesPage() {
               </button>
               {/* First page */}
               <button
-                className={`px-3 py-2 rounded-lg border-[#E5E7EB] border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#00E5FF] text-black border-[#00E5FF]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                className={`px-3 py-2 rounded-lg border-[#E5E7EB] border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#0846A6] text-black border-[#0846A6]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#0846A6]'}`}
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
               >
@@ -326,7 +330,7 @@ export default function PurchasesPage() {
               {/* Current page (if not first/last) */}
               {currentPage !== 1 && currentPage !== totalPages && (
                 <button
-                  className="px-3 py-2 rounded-lg border text-sm font-medium dark:bg-[#00E5FF] text-black dark:border-[#00E5FF]"
+                  className="px-3 py-2 rounded-lg border text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6]"
                   disabled
                 >
                   {currentPage}
@@ -337,7 +341,7 @@ export default function PurchasesPage() {
               {/* Last page */}
               {totalPages > 1 && (
                 <button
-                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'dark:bg-[#00E5FF] text-black border-[#00E5FF]' : 'dark:bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#00E5FF]'}`}
+                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'dark:bg-[#0846A6] text-black border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#0846A6]'}`}
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={currentPage === totalPages}
                 >
@@ -345,7 +349,7 @@ export default function PurchasesPage() {
                 </button>
               )}
               <button
-                className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF] transition disabled:opacity-50`}
+                className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#0846A6] transition disabled:opacity-50`}
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               >
@@ -356,5 +360,5 @@ export default function PurchasesPage() {
         </DataTableCard>
       </div>
     </div>
-  )
+  );
 }

@@ -8,7 +8,7 @@ interface ProgressBarProps {
   color?: string
 }
 
-export function ProgressBar({ label, current, target, unit = "", color = "bg-[#00E5FF]" }: ProgressBarProps) {
+export function ProgressBar({ label, current, target, unit = "", color = "bg-[#0846A6]" }: ProgressBarProps) {
   const percentage = Math.min((current / target) * 100, 100)
   const isComplete = current >= target
 

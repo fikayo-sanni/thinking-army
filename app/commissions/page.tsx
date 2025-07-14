@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight, Coins } from "lucide-react"
+import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight, Coins, AlertTriangle } from "lucide-react"
 import { useCommissionData, useCommissionHistory } from "@/hooks/use-commission"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { CommissionHistory } from "@/lib/services/commission-service"
@@ -29,8 +29,8 @@ export default function CommissionsPage() {
     setCurrentPage(1)
   }, [typeFilter, currencyFilter, statusFilter, timeRange])
 
-  const { data: summaryData, isLoading: isSummaryLoading, isError: isSummaryError } = useCommissionData(timeRange)
-  const { data: historyData, isLoading: isHistoryLoading, isError: isHistoryError } = useCommissionHistory(timeRange, typeFilter !== "all" ? typeFilter : undefined, statusFilter !== "all" ? statusFilter : undefined, currentPage, itemsPerPage)
+  const { data: summaryData, isLoading: isSummaryLoading, isError: isSummaryError, refetch: refetchSummary } = useCommissionData(timeRange)
+  const { data: historyData, isLoading: isHistoryLoading, isError: isHistoryError, refetch: refetchHistory } = useCommissionHistory(timeRange, typeFilter !== "all" ? typeFilter : undefined, statusFilter !== "all" ? statusFilter : undefined, currentPage, itemsPerPage)
 
   // Use backend-paginated data directly
   const paginatedCommissions: CommissionHistory[] = historyData?.commissions || []
@@ -69,9 +69,9 @@ export default function CommissionsPage() {
   const getTypeLabelAndColor = (type: string) => {
     switch (type) {
       case "direct":
-        return { label: "C1", color: "bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30" };
+        return { label: "C1", color: "bg-[#0846A6]/20 text-[#0846A6] border-[#0846A6]/30" };
       case "indirect":
-        return { label: "C2", color: "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30" };
+        return { label: "C2", color: "bg-[#00B28C]/20 text-[#00B28C] border-[#00B28C]/30" };
       case "bonus":
         return { label: "C3", color: "bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30" };
       default:
@@ -81,10 +81,25 @@ export default function CommissionsPage() {
 
   const getCurrencyBadge = (currency: string) => {
     const colors = {
-      USDC: "bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30",
-      USDT: "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30",
+      USDC: "bg-[#0846A6]/20 text-[#0846A6] border-[#0846A6]/30",
+      USDT: "bg-[#00B28C]/20 text-[#00B28C] border-[#00B28C]/30",
     }
     return <Badge className={colors[currency as keyof typeof colors] || "bg-[#2C2F3C] text-[#A0AFC0]"}>{currency}</Badge>
+  }
+
+  if (isSummaryError || isHistoryError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full border-red-400 bg-red-50 dark:bg-[#2C2F3C] dark:border-red-800 shadow-lg">
+          <CardContent className="flex flex-col items-center py-10">
+            <AlertTriangle className="h-12 w-12 text-red-500 mb-4 animate-bounce" />
+            <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">Commissions Load Failed</h2>
+            <p className="text-center text-[#A0AFC0] mb-6">We couldn't load your commissions right now. Please check your connection or try again in a moment.</p>
+            <Button onClick={() => { refetchSummary(); refetchHistory(); }} className="bg-[#0846A6] text-white hover:bg-[#06377a]">Retry</Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -98,8 +113,8 @@ export default function CommissionsPage() {
             <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
               <CardContent className="p-6 flex flex-col h-full justify-between">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <TrendingUp className="h-6 w-6 text-[#0846A6]" />
                   </div>
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30">+{monthlyGrowthRounded}%</Badge>
                 </div>
@@ -114,15 +129,15 @@ export default function CommissionsPage() {
                 <div className="flex flex-col space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
-                      <span className="inline-block w-2 h-2 rounded-full bg-[#00E5FF] mr-2"></span>
-                      <span className="text-[#00E5FF] font-bold">C1</span>
+                      <span className="inline-block w-2 h-2 rounded-full bg-[#0846A6] mr-2"></span>
+                      <span className="text-[#0846A6] font-bold">C1</span>
                     </span>
                     <span className="text-white font-medium">{formatThousands(Number(c1Total).toFixed(2))} {currency}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
-                      <span className="inline-block w-2 h-2 rounded-full bg-[#00FFC8] mr-2"></span>
-                      <span className="text-[#00FFC8] font-bold">C2</span>
+                      <span className="inline-block w-2 h-2 rounded-full bg-[#00B28C] mr-2"></span>
+                      <span className="text-[#00B28C] font-bold">C2</span>
                     </span>
                     <span className="text-white font-medium">{formatThousands(Number(c2Total).toFixed(2))} {currency}</span>
                   </div>
@@ -140,8 +155,8 @@ export default function CommissionsPage() {
             <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB] col-span-1 md:col-span-1">
               <CardContent className="p-6 flex flex-col h-full justify-between">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <CheckCircle className="h-6 w-6 text-[#00E5FF]" />
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <CheckCircle className="h-6 w-6 text-[#0846A6]" />
                   </div>
                 </div>
                 <div className="text-3xl font-bold mb-1 text-white">{formatThousands(Number(withdrawnAmount).toFixed(2))} {currency}</div>
@@ -186,6 +201,9 @@ export default function CommissionsPage() {
                     <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
                       All Currencies
                     </SelectItem>
+                    <SelectItem value="GCC1" className="text-white hover:bg-[#2C2F3C]">
+                      GCC1
+                    </SelectItem>
                     <SelectItem value="USDC" className="text-white hover:bg-[#2C2F3C]">
                       USDC
                     </SelectItem>
@@ -223,29 +241,6 @@ export default function CommissionsPage() {
                     </SelectItem>
                     <SelectItem value="last-quarter" className="text-white hover:bg-[#2C2F3C]">
                       Last Quarter
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-[#A0AFC0]" />
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
-                    <SelectItem value="all" className="text-white hover:bg-[#2C2F3C]">
-                      All Statuses
-                    </SelectItem>
-                    <SelectItem value="paid" className="text-white hover:bg-[#2C2F3C]">
-                      Paid
-                    </SelectItem>
-                    <SelectItem value="pending" className="text-white hover:bg-[#2C2F3C]">
-                      Pending
-                    </SelectItem>
-                    <SelectItem value="processing" className="text-white hover:bg-[#2C2F3C]">
-                      Processing
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -321,7 +316,7 @@ export default function CommissionsPage() {
                             return <span className={`px-3 py-1 rounded-full text-xs font-bold border ${color}`}>{label}</span>
                           })()
                         }</td>
-                        <td className="px-4 py-2 whitespace-nowrap dark:text-[#00E5FF] font-bold">{c.amount.toFixed(2)} {c.currency}</td>
+                        <td className="px-4 py-2 whitespace-nowrap dark:text-[#0846A6] font-bold">{c.amount.toFixed(2)} {c.currency}</td>
                         <td className="px-4 py-2 whitespace-nowrap dark:text-[#A0AFC0] text-sm max-w-48 truncate" title={c.description}>
                           {c.description}
                         </td>
@@ -348,7 +343,7 @@ export default function CommissionsPage() {
                   </Select>
                   {/* Pagination controls */}
                   <button
-                    className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white dark:hover:border-[#00E5FF] transition disabled:opacity-50`}
+                    className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50`}
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   >
@@ -356,7 +351,7 @@ export default function CommissionsPage() {
                   </button>
                   {/* First page */}
                   <button
-                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === 1 ? 'dark:bg-[#00E5FF] text-black dark:border-[#00E5FF]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#2C2F3C] hover:text-white dark:hover:border-[#00E5FF]'}`}
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === 1 ? 'dark:bg-[#0846A6] text-black dark:border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#2C2F3C] hover:text-white dark:hover:border-[#0846A6]'}`}
                     onClick={() => setCurrentPage(1)}
                     disabled={currentPage === 1}
                   >
@@ -367,7 +362,7 @@ export default function CommissionsPage() {
                   {/* Current page (if not first/last) */}
                   {currentPage !== 1 && currentPage !== totalPages && (
                     <button
-                      className="px-3 py-2 rounded-lg border text-sm font-medium dark:bg-[#00E5FF] text-black dark:border-[#00E5FF]"
+                      className="px-3 py-2 rounded-lg border text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6]"
                       disabled
                     >
                       {currentPage}
@@ -378,7 +373,7 @@ export default function CommissionsPage() {
                   {/* Last page */}
                   {totalPages > 1 && (
                     <button
-                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'dark:bg-[#00E5FF] text-black dark:border-[#00E5FF]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#2C2F3C] hover:text-white dark:hover:border-[#00E5FF]'}`}
+                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'dark:bg-[#0846A6] text-black dark:border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#2C2F3C] hover:text-white dark:hover:border-[#0846A6]'}`}
                       onClick={() => setCurrentPage(totalPages)}
                       disabled={currentPage === totalPages}
                     >
@@ -386,7 +381,7 @@ export default function CommissionsPage() {
                     </button>
                   )}
                   <button
-                    className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white dark:hover:border-[#00E5FF] transition disabled:opacity-50`}
+                    className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50`}
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   >

@@ -33,14 +33,14 @@ const navigationItems = [
     href: "/dashboard",
     icon: LayoutDashboard,
     badge: null,
-    gradient: "from-[#00E5FF] to-[#0099CC]",
+    gradient: "from-[#0846A6] to-[#0099CC]",
   },
   {
     name: "Network Purchases",
     href: "/purchases",
     icon: ShoppingCart,
     badge: "156",
-    gradient: "from-[#00FFC8] to-[#00CC99]",
+    gradient: "from-[#00B28C] to-[#00CC99]",
   },
   {
     name: "My Network",
@@ -99,13 +99,13 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       label: "AllTime VP",
       value: isDashboardLoading ? <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(dashboardStats?.personalEarnings?.toFixed(2) ?? 0)} VP`,
       icon: TrendingUp,
-      color: "text-[#00E5FF]",
+      color: "text-[#0846A6]",
     },
     {
       label: "Active Downlines",
       value: isNetworkLoading ? <Skeleton className="h-4 w-8 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands(networkStats?.totalDownlines || 0)}`,
       icon: Users,
-      color: "text-[#00FFC8]",
+      color: "text-[#00B28C]",
     },
     {
       label: "Current Rank",
@@ -124,14 +124,14 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       href: "/dashboard",
       icon: LayoutDashboard,
       badge: null,
-      gradient: "from-[#00E5FF] to-[#0099CC]",
+      gradient: "from-[#0846A6] to-[#0099CC]",
     },
     {
       name: "Network Activity",
       href: "/purchases",
       icon: ShoppingCart,
       badge: null, // Replace with live data if available
-      gradient: "from-[#00FFC8] to-[#00CC99]",
+      gradient: "from-[#00B28C] to-[#00CC99]",
     },
     {
       name: "My Network",
@@ -250,7 +250,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
               dark:border-none
               dark:bg-[#1A1E2D]">
                 <h3 className="text-white font-semibold mb-4 flex items-center">
-                  <BarChart3 className="h-4 w-4 mr-2 text-[#00E5FF]" />
+                  <BarChart3 className="h-4 w-4 mr-2 text-[#0846A6]" />
                   Quick Stats
                 </h3>
                 <div className="space-y-3">
@@ -278,7 +278,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                   <Link key={item.name} href={item.href}>
                     <div
                       className={`group relative dark:text-[#A0AFC0] text-gray-700 flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
-                        ? "bg-[#E9ECF0] dark:bg-gradient-to-r dark:from-[#00E5FF]/20 dark:to-[#6F00FF]/20 border-none dark:border-[#00E5FF]/30 shadow-lg shadow-[#00E5FF]/10"
+                        ? "bg-[#E9ECF0] dark:bg-gradient-to-r dark:from-[#0846A6]/20 dark:to-[#6F00FF]/20 border-none dark:border-[#0846A6]/30 shadow-lg shadow-[#0846A6]/10"
                         : "hover:bg-[#E9ECF0] dark:hover:bg-[#1A1E2D]/60 dark:hover:border dark:hover:border-[#2C2F3C]/50"
                         }`}
                     >
@@ -302,19 +302,19 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                             {item.badge && (
                               <Badge
                                 className={`text-xs px-2 py-0.5 ${item.badge === "New"
-                                  ? "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30"
+                                  ? "bg-[#00B28C]/20 text-[#00B28C] border-[#00B28C]/30"
                                   : "bg-[#2C2F3C] text-[#A0AFC0]"
                                   }`}
                               >
                                 {item.badge}
                               </Badge>
                             )}
-                            {isActive && <ChevronRight className="h-4 w-4 text-gray-700  dark:text-[#00E5FF]" />}
+                            {isActive && <ChevronRight className="h-4 w-4 text-gray-700  dark:text-[#0846A6]" />}
                           </div>
                         </>
                       )}
                       {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#00E5FF] to-[#6F00FF] rounded-r-full" />
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#0846A6] to-[#6F00FF] rounded-r-full" />
                       )}
                     </div>
                   </Link>
@@ -377,7 +377,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   dark:bg-[#1A1E2D]">
 
                   <h3 className="text-gray-900 dark:text-white font-semibold mb-4 flex items-center">
-                    <BarChart3 className="h-4 w-4 mr-2 text-[#00E5FF]" />
+                    <BarChart3 className="h-4 w-4 mr-2 text-[#0846A6]" />
                     Quick Stats
                   </h3>
 
@@ -407,7 +407,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                       <Link key={item.name} href={item.href} onClick={() => setIsMobileOpen(false)}>
                         <div
                           className={`group relative flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
-                            ? "bg-gradient-to-r from-[#00E5FF]/20 to-[#6F00FF]/20 border border-[#00E5FF]/30 shadow-lg shadow-[#00E5FF]/10"
+                            ? "bg-gradient-to-r from-[#0846A6]/20 to-[#6F00FF]/20 border border-[#0846A6]/30 shadow-lg shadow-[#0846A6]/10"
                             : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#2C2F3C]/50"
                             }`}
                         >
@@ -429,17 +429,17 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                             {item.badge && (
                               <Badge
                                 className={`text-xs px-2 py-0.5 ${item.badge === "New"
-                                  ? "bg-[#00FFC8]/20 text-[#00FFC8] border-[#00FFC8]/30"
+                                  ? "bg-[#00B28C]/20 text-[#00B28C] border-[#00B28C]/30"
                                   : "bg-[#2C2F3C] text-[#A0AFC0]"
                                   }`}
                               >
                                 {item.badge}
                               </Badge>
                             )}
-                            {isActive && <ChevronRight className="h-4 w-4 text-[#00E5FF]" />}
+                            {isActive && <ChevronRight className="h-4 w-4 text-[#0846A6]" />}
                           </div>
                           {isActive && (
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#00E5FF] to-[#6F00FF] rounded-r-full" />
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#0846A6] to-[#6F00FF] rounded-r-full" />
                           )}
                         </div>
                       </Link>

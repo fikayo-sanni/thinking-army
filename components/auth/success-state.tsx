@@ -28,7 +28,7 @@ export function SuccessState({ title, message, email, backLink }: SuccessStatePr
             {email ? (
               <>
                 {message.split(email)[0]}
-                <span className="text-[#00E5FF] font-medium">{email}</span>
+                <span className="text-[#0846A6] font-medium">{email}</span>
                 {message.split(email)[1]}
               </>
             ) : (

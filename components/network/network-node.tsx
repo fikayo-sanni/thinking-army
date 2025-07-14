@@ -79,7 +79,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
             {/* Avatar */}
             <Avatar className="h-10 w-10 ring-2 dark:ring-[#2C2F3C]">
               <AvatarImage src={user.avatar || "/placeholder.svg?height=40&width=40"} />
-              <AvatarFallback className="bg-[#0D0F1A] text-[#00E5FF]">
+              <AvatarFallback className="bg-[#0D0F1A] text-[#0846A6]">
                 {avatarFallback}
               </AvatarFallback>
             </Avatar>
@@ -109,7 +109,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
 
             {/* Level and Stats */}
             <div className="text-right">
-              <Badge className="bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30 mb-2">L{user.level}</Badge>
+              <Badge className="bg-[#0846A6]/20 text-[#0846A6] border-[#0846A6]/30 mb-2">L{user.level}</Badge>
               <div className="flex items-center space-x-3 text-xs text-[#A0AFC0]">
                 <div className="flex items-center space-x-1">
                   <Award className="h-3 w-3" />

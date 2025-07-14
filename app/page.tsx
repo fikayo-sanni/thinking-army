@@ -9,10 +9,10 @@ export default function LoginPage() {
 
   return (
     <AuthLayout title="SIGN IN" description="Sign in with your YOURE.ID account to access your dashboard">
-      <div className="flex flex-col items-center justify-center min-h-[300px]">
+      <div className="flex flex-col items-center justify-center min-h-[200px] ">
         <button
           onClick={login}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition"
+          className="px-6 py-3 bg-blue-600 text-white dark:text-white rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition"
         >
           Login with YOURE.ID
         </button>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/lib/services/auth-service";
+import { AuthLayout } from "@/components/auth/auth-layout";
 
 export default function LoginPage() {
   const [youreId, setYoureId] = useState("");
@@ -26,31 +27,41 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-6 rounded-lg bg-card p-8 shadow-lg"
-      >
-        <h1 className="text-2xl font-bold mb-4 text-center">Login</h1>
-        <div>
-          <label htmlFor="youreid" className="block mb-2 text-sm font-medium">
-            YoureID
-          </label>
-          <Input
-            id="youreid"
-            type="text"
-            value={youreId}
-            onChange={(e) => setYoureId(e.target.value)}
-            placeholder="Enter your YoureID"
-            required
-            disabled={loading}
-          />
-        </div>
-        {error && <div className="text-red-500 text-sm">{error}</div>}
-        <Button type="submit" className="w-full" disabled={loading || !youreId}>
-          {loading ? "Logging in..." : "Login"}
-        </Button>
-      </form>
-    </div>
+    <AuthLayout
+      title="SIGN IN"
+      description="Sign in with your YOURE.ID account to access your dashboard"
+    >
+      <div className="flex flex-col items-center justify-center min-h-[200px] ">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-sm space-y-6 rounded-lg p-8 shadow-lg"
+        >
+          <div>
+            <label htmlFor="youreid" className="block mb-2 text-sm font-medium">
+              YoureID
+            </label>
+            <Input
+              id="youreid"
+              type="text"
+              value={youreId}
+              onChange={(e) => setYoureId(e.target.value)}
+              placeholder="Enter your YoureID"
+              required
+              disabled={loading}
+            />
+          </div>
+          {error && <div className="text-red-500 text-sm">{error}</div>}
+          <div className="flex flex-col items-center justify-center">
+            <Button
+              type="submit"
+              className="px-6 py-3 bg-blue-600 text-white dark:text-white w-full rounded-lg text-lg font-semibold shadow hover:bg-blue-700 transition"
+              disabled={loading || !youreId}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </AuthLayout>
   );
-} 
+}

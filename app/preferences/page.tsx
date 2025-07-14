@@ -67,7 +67,7 @@ export default function PreferencesPage() {
           <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <Palette className="h-5 w-5 text-[#00E5FF]" />
+                <Palette className="h-5 w-5 text-[#0846A6]" />
                 <span>THEME & APPEARANCE</span>
               </CardTitle>
             </CardHeader>
@@ -80,8 +80,8 @@ export default function PreferencesPage() {
                       variant={theme === "light" ? "default" : "outline"}
                       onClick={() => setTheme("light")}
                       className={`h-12 justify-start space-x-3 ${theme === "light"
-                          ? "bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90"
-                          : "border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF]"
+                          ? "bg-[#0846A6] text-black hover:bg-[#0846A6]/90"
+                          : "border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#0846A6]"
                         }`}
                     >
                       <Sun className="h-4 w-4" />
@@ -91,8 +91,8 @@ export default function PreferencesPage() {
                       variant={theme === "dark" ? "default" : "outline"}
                       onClick={() => setTheme("dark")}
                       className={`h-12 justify-start space-x-3 ${theme === "dark"
-                          ? "bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90"
-                          : "border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF]"
+                          ? "bg-[#0846A6] text-black hover:bg-[#0846A6]/90"
+                          : "border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#0846A6]"
                         }`}
                     >
                       <Moon className="h-4 w-4" />
@@ -132,7 +132,7 @@ export default function PreferencesPage() {
           <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <Bell className="h-5 w-5 text-[#00E5FF]" />
+                <Bell className="h-5 w-5 text-[#0846A6]" />
                 <span>NOTIFICATIONS</span>
               </CardTitle>
             </CardHeader>
@@ -185,7 +185,7 @@ export default function PreferencesPage() {
           <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <Globe className="h-5 w-5 text-[#00E5FF]" />
+                <Globe className="h-5 w-5 text-[#0846A6]" />
                 <span>LANGUAGE & REGION</span>
               </CardTitle>
             </CardHeader>
@@ -286,7 +286,7 @@ export default function PreferencesPage() {
           <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <Settings className="h-5 w-5 text-[#00E5FF]" />
+                <Settings className="h-5 w-5 text-[#0846A6]" />
                 <span>DATA & PERFORMANCE</span>
               </CardTitle>
             </CardHeader>
@@ -336,7 +336,7 @@ export default function PreferencesPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full mt-3 border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#00E5FF]"
+                    className="w-full mt-3 border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#0846A6]"
                   >
                     Clear Cache
                   </Button>
@@ -351,7 +351,7 @@ export default function PreferencesPage() {
           <Button
             onClick={handleSave}
             disabled={isLoading}
-            className="bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90 font-bold uppercase tracking-wide px-8"
+            className="bg-[#0846A6] text-black hover:bg-[#0846A6]/90 font-bold uppercase tracking-wide px-8"
           >
             <Save className="h-4 w-4 mr-2" />
             {isLoading ? "SAVING..." : "SAVE PREFERENCES"}

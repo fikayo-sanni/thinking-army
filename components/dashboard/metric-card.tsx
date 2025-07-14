@@ -22,8 +22,8 @@ export function MetricCard({ title, value, icon: Icon, change, progress }: Metri
     <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-            <Icon className="h-6 w-6 text-[#00E5FF]" />
+          <div className="p-2 rounded-lg bg-[#0846A6]/10">
+            <Icon className="h-6 w-6 text-[#0846A6]" />
           </div>
           {change && (
             <Badge

@@ -6,7 +6,7 @@ interface SummaryCardProps {
   color?: string
 }
 
-export function SummaryCard({ title, value, color = "text-[#00E5FF]" }: SummaryCardProps) {
+export function SummaryCard({ title, value, color = "text-[#0846A6]" }: SummaryCardProps) {
   return (
     <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
       <CardContent className="p-6 text-center">

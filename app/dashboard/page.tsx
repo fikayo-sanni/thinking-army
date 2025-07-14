@@ -4,7 +4,7 @@ import { useState } from "react"
 import { PageHeader } from "@/components/layout/page-header"
 import { MetricCard, MetricCardContent } from "@/components/ui/metric-card"
 import { ChartCard } from "@/components/dashboard/chart-card"
-import { TrendingUp, Users, Coins, Trophy, BarChart3, PieChart, Calendar } from "lucide-react"
+import { TrendingUp, Users, Coins, Trophy, BarChart3, PieChart, Calendar, AlertTriangle } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useDashboardData } from "@/hooks/use-dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -28,11 +28,12 @@ import { Badge } from "@/components/ui/badge"
 import { useProtectedRoute } from "@/hooks/use-protected-route"
 import { formatThousands } from "@/lib/utils"
 import { useTheme } from "@/components/theme/theme-provider"
+import { Button } from "@/components/ui/button"
 
 export default function DashboardPage() {
   useProtectedRoute()
   const [timeFilter, setTimeFilter] = useState("this-week")
-  const { data, isLoading, isError } = useDashboardData(timeFilter)
+  const { data, isLoading, isError, refetch } = useDashboardData(timeFilter)
   const { theme } = useTheme();
 
   // Extract data safely
@@ -43,8 +44,8 @@ export default function DashboardPage() {
 
   // Chart colors
   const chartColors = {
-    primary: "#00E5FF",
-    secondary: "#00FFC8",
+    primary: "#0846A6",
+    secondary: "#00B28C",
     tertiary: "#6F00FF",
     accent: "#FF6B00",
   }
@@ -59,6 +60,21 @@ export default function DashboardPage() {
 
   const totalVP = data?.immediateDownlines?.reduce((sum, d) => sum + Number(d.revenue), 0) ?? 0
   const top3 = (data?.immediateDownlines?.slice() ?? []).sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 3)
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full border-red-400 bg-red-50 dark:bg-[#2C2F3C] dark:border-red-800 shadow-lg">
+          <CardContent className="flex flex-col items-center py-10">
+            <AlertTriangle className="h-12 w-12 text-red-500 mb-4 animate-bounce" />
+            <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">Dashboard Load Failed</h2>
+            <p className="text-center text-[#A0AFC0] mb-6">We couldn't load your dashboard data right now. Please check your connection or try again in a moment.</p>
+            <Button onClick={() => refetch()} className="bg-[#0846A6] text-white hover:bg-[#06377a]">Retry</Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return (
@@ -129,8 +145,8 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <TrendingUp className="h-6 w-6 text-[#0846A6] dark:text-[#00E5FF]" />
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <TrendingUp className="h-6 w-6 text-[#0846A6] dark:text-[#0846A6]" />
                   </div>
                   <div>
                     <div className="text-[#0846A6] dark:text-[#A0AFC0] text-sm uppercase tracking-wider"></div>
@@ -158,8 +174,8 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <Users className="h-6 w-6 text-[#0846A6] dark:text-[#00E5FF]" />
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <Users className="h-6 w-6 text-[#0846A6] dark:text-[#0846A6]" />
                   </div>
                   <div>
                     <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">COMMISSION ELIGIBLE BASE</div>
@@ -175,7 +191,7 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GC-He</span>
                       
                     </div>
-                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                     {formatThousands(Number(balances? balances['HE'] : 0.00).toFixed(2))}
                     </span>
                   </div>
@@ -185,7 +201,7 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GC-H</span>
                       
                     </div>
-                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                     {formatThousands(Number(balances? balances['H'] : 0.00).toFixed(2))}
                     </span>
                   </div>
@@ -195,18 +211,18 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GCC1</span>
                       
                     </div>
-                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                     {formatThousands(Number(balances? balances['GCC1'] : 0.00).toFixed(2))}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className="text-white text-m font-medium">USDC</span>
+                      <span className="text-white text-m font-medium">USDT</span>
                       
                     </div>
-                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
-                      {formatThousands(Number(balances? balances['USDC'] : 0.00).toFixed(2))}
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
+                      {formatThousands(Number(balances? balances['USDT'] : 0.00).toFixed(2))}
                     </span>
                   </div>
               </div>
@@ -217,13 +233,12 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <Users className="h-6 w-6 text-[#0846A6] dark:text-[#00E5FF]" />
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <Users className="h-6 w-6 text-[#0846A6] dark:text-[#0846A6]" />
                   </div>
                   <div>
-                    <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">IMMEDIATE DOWNLINES</div>
                     <div className="text-2xl font-bold text-white">
-                      {formatThousands(totalVP.toFixed(2)) || '0.00'} VP
+                      VP BY DOWNLINES
                     </div>
                   </div>
                 </div>
@@ -238,7 +253,7 @@ export default function DashboardPage() {
                         {downline.rank?.split(" Member")[0] || 'Member'}
                       </Badge>
                     </div>
-                    <span className="text-[#0846A6] dark:text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                       {Number(downline.revenue).toFixed(2)} VP
                     </span>
                   </div>
@@ -386,7 +401,6 @@ export default function DashboardPage() {
                 <Bar dataKey="c1" fill={chartColors.primary} name="C1" />
                 <Bar dataKey="c2" fill={chartColors.secondary} name="C2" />
                 <Bar dataKey="c3" fill={chartColors.tertiary} name="C3" />
-                <Bar dataKey="campaigns" fill={chartColors.accent} name="Campaigns" />
               </BarChart>
             </ResponsiveContainer>
           )}

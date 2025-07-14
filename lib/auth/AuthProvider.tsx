@@ -14,7 +14,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser]     = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<string>('');
   const [processingCallback, setProcessingCallback] = useState<boolean>(false);
 
@@ -24,21 +24,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (prevUser?.id_token === u?.id_token) {
         return prevUser; // Avoid redundant state update
       }
-  
+
       if (!u) {
         window.localStorage.removeItem('jwt');
         return null;
       }
-  
+
       const idToken = u.id_token || '';
-      const parsed  = parseJwt(idToken);
+      const parsed = parseJwt(idToken);
       if (!parsed.nickslug || !parsed.sponsor) {
         window.localStorage.removeItem('jwt');
         setStatus('Your account is not authorised');
         setTimeout(() => oidcUserManager.signoutRedirect(), 5000);
         return null;
       }
-  
+
       window.localStorage.setItem('jwt', idToken);
       return u;
     });
@@ -51,9 +51,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       oidcUserManager
         .signinRedirectCallback()
         .then(user => {
-          handleUser(user);
-          window.localStorage.setItem('jwt', user.id_token);
-          console.log('user id token: ', user.id_token)
+          if (user.id_token) {
+            handleUser(user);
+            window.localStorage.setItem('jwt', user.id_token);
+            console.log('user id token: ', user.id_token)
+          }
         })
         .catch(err => {
           console.error('signinRedirectCallback error:', err);
@@ -66,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
     }
   }, [handleUser]);
-  
+
   // AND ALSO:
   useEffect(() => {
     if (!processingCallback) {
@@ -75,14 +77,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .catch(err => console.error('getUser error:', err));
     }
   }, [handleUser, processingCallback]);
-  
 
-  const login  = () => oidcUserManager.signinRedirect();
+
+  const login = () => oidcUserManager.signinRedirect();
   const logout = () => oidcUserManager.signoutRedirect();
-  
+
   useEffect(() => {
     const mgr = oidcUserManager;
-  
+
     const onUserLoaded = (u: User) => handleUser(u);
     const onTokenExpiring = () => {
       console.log('[OIDC] access-token expiring, trying silent renew');
@@ -94,11 +96,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.warn('[OIDC] access-token expired, forcing silent renew');
       mgr.signinSilent().catch(() => logout());
     };
-  
+
     mgr.events.addUserLoaded(onUserLoaded);
     mgr.events.addAccessTokenExpiring(onTokenExpiring);
     mgr.events.addAccessTokenExpired(onTokenExpired);
-  
+
     return () => {
       mgr.events.removeUserLoaded(onUserLoaded);
       mgr.events.removeAccessTokenExpiring(onTokenExpiring);

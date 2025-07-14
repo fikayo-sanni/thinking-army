@@ -7,13 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { RankBadge } from "@/components/ranks/rank-badge"
 import { ProgressBar } from "@/components/ranks/progress-bar"
-import { Trophy, TrendingUp, Calendar, CheckCircle, Target, Gift } from "lucide-react"
+import { Trophy, TrendingUp, Calendar, CheckCircle, Target, Gift, AlertTriangle } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import { useRanksData } from '@/hooks/use-ranks'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 
 export default function RanksPage() {
-  const { data, isLoading, isError } = useRanksData()
+  const { data, isLoading, isError, refetch } = useRanksData()
   if (isLoading) {
     return (
       <div className="min-h-screen">
@@ -60,11 +61,15 @@ export default function RanksPage() {
   }
   if (isError || !data) {
     return (
-      <div className="min-h-screen">
-        <div className="p-6 space-y-6">
-          <PageHeader title="RANKS" description="Track your rank progression and unlock new benefits" />
-          <div className="text-red-500">Failed to load rank data.</div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full border-red-400 bg-red-50 dark:bg-[#2C2F3C] dark:border-red-800 shadow-lg">
+          <CardContent className="flex flex-col items-center py-10">
+            <AlertTriangle className="h-12 w-12 text-red-500 mb-4 animate-bounce" />
+            <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">Ranks Load Failed</h2>
+            <p className="text-center text-[#A0AFC0] mb-6">We couldn't load your ranks data right now. Please check your connection or try again in a moment.</p>
+            <Button onClick={() => refetch()} className="bg-[#0846A6] text-white hover:bg-[#06377a]">Retry</Button>
+          </CardContent>
+        </Card>
       </div>
     )
   }
@@ -81,7 +86,7 @@ export default function RanksPage() {
           <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <Trophy className="h-6 w-6 text-[#00E5FF]" />
+                <Trophy className="h-6 w-6 text-[#0846A6]" />
                 <span>CURRENT RANK</span>
               </CardTitle>
             </CardHeader>
@@ -103,11 +108,11 @@ export default function RanksPage() {
 
                 {currentRank ? <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-[#00E5FF] mb-1">{currentRank.totalVolume} VP</div>
+                    <div className="text-2xl font-bold text-[#0846A6] mb-1">{currentRank.totalVolume} VP</div>
                     <div className="dark:text-[#A0AFC0] text-xs uppercase tracking-wider">TOTAL VOLUME</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-[#00FFC8] mb-1">{currentRank.teamSize}</div>
+                    <div className="text-2xl font-bold text-[#00B28C] mb-1">{currentRank.teamSize}</div>
                     <div className="dark:text-[#A0AFC0] text-xs uppercase tracking-wider">TEAM SIZE</div>
                   </div>
                   <div className="text-center">
@@ -123,7 +128,7 @@ export default function RanksPage() {
           {nextRankRequirements ? <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <Target className="h-6 w-6 text-[#00E5FF]" />
+                <Target className="h-6 w-6 text-[#0846A6]" />
                 <span>PROGRESS TO {nextRankRequirements?.name}</span>
               </CardTitle>
               <p className="text-[#A0AFC0] text-sm">Complete these requirements to unlock your next rank</p>
@@ -136,14 +141,14 @@ export default function RanksPage() {
                     current={nextRankRequirements.currentVolume}
                     target={nextRankRequirements.volumeRequired}
                     unit="VP"
-                    color="bg-[#00E5FF]"
+                    color="bg-[#0846A6]"
                   />
                   <ProgressBar
                     label="DIRECT REFERRALS"
                     current={nextRankRequirements.currentDirectReferrals}
                     target={nextRankRequirements.directReferralsRequired}
                     unit="users"
-                    color="bg-[#00FFC8]"
+                    color="bg-[#00B28C]"
                   />
                 </div>
                 <div className="space-y-4">
@@ -170,7 +175,7 @@ export default function RanksPage() {
           <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
+                <TrendingUp className="h-6 w-6 text-[#0846A6]" />
                 <span>RANK HISTORY</span>
               </CardTitle>
               <p className="text-[#A0AFC0] text-sm">Your rank progression timeline</p>
@@ -184,7 +189,7 @@ export default function RanksPage() {
                   >
                     <div className="flex-shrink-0">
                       {entry.isCurrent ? (
-                        <div className="h-3 w-3 rounded-full dark:bg-[#00E5FF]" />
+                        <div className="h-3 w-3 rounded-full dark:bg-[#0846A6]" />
                       ) : (
                         <CheckCircle className="h-5 w-5 text-green-400" />
                       )}
@@ -204,7 +209,7 @@ export default function RanksPage() {
                       <div className="text-right">
                         <div className="text-[#A0AFC0] text-sm">{entry.duration}</div>
                         {entry.isCurrent && (
-                          <Badge className="bg-[#00E5FF]/20 text-[#00E5FF] border-[#00E5FF]/30 text-xs">ACTIVE</Badge>
+                          <Badge className="bg-[#0846A6]/20 text-[#0846A6] border-[#0846A6]/30 text-xs">ACTIVE</Badge>
                         )}
                       </div>
                     </div>
@@ -218,7 +223,7 @@ export default function RanksPage() {
           <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <Gift className="h-6 w-6 text-[#00E5FF]" />
+                <Gift className="h-6 w-6 text-[#0846A6]" />
                 <span>ALL RANKS & BENEFITS</span>
               </CardTitle>
               <p className="text-[#A0AFC0] text-sm">Complete overview of rank requirements and benefits</p>
@@ -229,8 +234,8 @@ export default function RanksPage() {
                   <Card
                     key={rank.name}
                     className={`border-[#E5E7EB] transition-all duration-200 ${rank.name === currentRank?.name
-                      ? "dark:bg-[#00E5FF]/5 dark:border-[#00E5FF]"
-                      : "dark:bg-[#0D0F1A] dark:border-[#2C2F3C] dark:hover:border-[#00E5FF]/50"
+                      ? "dark:bg-[#0846A6]/5 dark:border-[#0846A6]"
+                      : "dark:bg-[#0D0F1A] dark:border-[#2C2F3C] dark:hover:border-[#0846A6]/50"
                       }`}
                   >
                     <CardContent className="p-4 space-y-4">
@@ -266,11 +271,11 @@ export default function RanksPage() {
                         <div className="space-y-1 text-sm">
                           <div className="flex justify-between">
                             <span className="text-[#A0AFC0]">Commission:</span>
-                            <span className="text-[#00E5FF]">{rank.benefits.commission}</span>
+                            <span className="text-[#0846A6]">{rank.benefits.commission}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-[#A0AFC0]">Bonus:</span>
-                            <span className="text-[#00FFC8]">{rank.benefits.bonus}</span>
+                            <span className="text-[#00B28C]">{rank.benefits.bonus}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-[#A0AFC0]">Perks:</span>
