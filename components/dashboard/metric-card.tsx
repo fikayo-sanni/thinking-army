@@ -19,11 +19,11 @@ interface MetricCardProps {
 
 export function MetricCard({ title, value, icon: Icon, change, progress }: MetricCardProps) {
   return (
-    <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+    <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-            <Icon className="h-6 w-6 text-[#00E5FF]" />
+          <div className="p-2 rounded-lg bg-[#0846A6]/10">
+            <Icon className="h-6 w-6 text-[#0846A6]" />
           </div>
           {change && (
             <Badge
@@ -43,7 +43,7 @@ export function MetricCard({ title, value, icon: Icon, change, progress }: Metri
         <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">{title}</div>
         {progress && (
           <div className="mt-3">
-            <Progress value={progress.value} className="h-2 bg-[#2C2F3C]" />
+            <Progress value={progress.value} className="h-2 dark:bg-[#2C2F3C]" />
             <div className="flex justify-between text-xs text-[#A0AFC0] mt-1">
               <span>{progress.label}</span>
               <span>{progress.value}%</span>

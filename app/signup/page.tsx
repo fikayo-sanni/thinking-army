@@ -98,7 +98,7 @@ export default function SignUpPage() {
               id="terms"
               checked={formData.agreeToTerms}
               onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked as boolean)}
-              className="border-[#2C2F3C] data-[state=checked]:bg-[#00E5FF] data-[state=checked]:border-[#00E5FF]"
+              className="border-[#2C2F3C] data-[state=checked]:bg-[#0846A6] data-[state=checked]:border-[#0846A6]"
             />
             <Label htmlFor="terms" className="text-sm text-[#A0AFC0] leading-relaxed">
               I agree to the <AuthLink href="/terms">Terms of Service</AuthLink> and{" "}

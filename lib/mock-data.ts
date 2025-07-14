@@ -88,8 +88,8 @@ export const mockDashboardData = {
       { date: "Jan 14", purchases: 12, volume: 167.8 },
     ],
     commissionSources: [
-      { name: "C1", value: 45.2, color: "#00E5FF" },
-      { name: "C2", value: 32.8, color: "#00FFC8" },
+      { name: "C1", value: 45.2, color: "#0846A6" },
+      { name: "C2", value: 32.8, color: "#00B28C" },
       { name: "C3", value: 18.5, color: "#6F00FF" },
     ],
     commissionBreakdown: [

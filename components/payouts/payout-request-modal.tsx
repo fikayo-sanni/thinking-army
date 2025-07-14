@@ -52,7 +52,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90 font-bold uppercase tracking-wide">
+        <Button className="bg-[#0846A6] text-black hover:bg-[#0846A6]/90 font-bold uppercase tracking-wide">
           <Wallet className="h-4 w-4 mr-2" />
           REQUEST PAYOUT
         </Button>
@@ -70,7 +70,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
           <Card className="bg-[#0D0F1A] border-[#2C2F3C]">
             <CardContent className="p-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#00E5FF] mb-1">{availableBalance.toFixed(2)} ETH</div>
+                <div className="text-2xl font-bold text-[#0846A6] mb-1">{availableBalance.toFixed(2)} ETH</div>
                 <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">AVAILABLE BALANCE</div>
               </div>
             </CardContent>
@@ -90,7 +90,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
-              className="bg-[#0D0F1A] border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#00E5FF]"
+              className="bg-[#0D0F1A] border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#0846A6]"
               required
             />
             {amount && !isValidAmount && (
@@ -143,7 +143,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
                     ? "Account number or IBAN"
                     : "Enter address or account details"
               }
-              className="bg-[#0D0F1A] border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#00E5FF]"
+              className="bg-[#0D0F1A] border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#0846A6]"
               required
             />
           </div>
@@ -152,7 +152,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
           <Button
             type="submit"
             disabled={!isValidAmount || !method || !address || isLoading}
-            className="w-full bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90 font-bold uppercase tracking-wide disabled:opacity-50"
+            className="w-full bg-[#0846A6] text-black hover:bg-[#0846A6]/90 font-bold uppercase tracking-wide disabled:opacity-50"
           >
             {isLoading ? "PROCESSING..." : "CONFIRM PAYOUT REQUEST"}
           </Button>

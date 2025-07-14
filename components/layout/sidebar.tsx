@@ -68,7 +68,7 @@ export function Sidebar({ children }: SidebarProps) {
       {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#2C2F3C] bg-[#0D0F1A]">
         <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 rounded-lg bg-[#00E5FF] flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-[#0846A6] flex items-center justify-center">
             <img src="/logo-dark-mode.svg" alt="GC Universe Logo" className="h-5 w-5" />
           </div>
           <div>
@@ -95,7 +95,7 @@ export function Sidebar({ children }: SidebarProps) {
           <div className="p-4">
             {/* Logo Section */}
             <div className="flex items-center space-x-3 mb-8">
-              <div className="h-10 w-10 rounded-lg bg-[#00E5FF] flex items-center justify-center">
+              <div className="h-10 w-10 rounded-lg bg-[#0846A6] flex items-center justify-center">
                 <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-6 w-6" />
               </div>
               {!isCollapsed && (
@@ -114,17 +114,17 @@ export function Sidebar({ children }: SidebarProps) {
                     <div
                       className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors ${
                         isActive
-                          ? "bg-[#1A1E2D] border border-[#00E5FF] text-white"
+                          ? "bg-[#1A1E2D] border border-[#0846A6] text-white"
                           : "hover:bg-[#1A1E2D] text-[#A0AFC0] hover:text-white"
                       }`}
                     >
-                      <item.icon className={`h-5 w-5 ${isActive ? "text-[#00E5FF]" : ""}`} />
+                      <item.icon className={`h-5 w-5 ${isActive ? "text-[#0846A6]" : ""}`} />
                       {!isCollapsed && (
                         <>
                           <span className={`font-medium text-sm tracking-wide ${isActive ? "text-white" : ""}`}>
                             {item.name}
                           </span>
-                          {isActive && <ChevronRight className="h-4 w-4 text-[#00E5FF] ml-auto" />}
+                          {isActive && <ChevronRight className="h-4 w-4 text-[#0846A6] ml-auto" />}
                         </>
                       )}
                     </div>
@@ -155,7 +155,7 @@ export function Sidebar({ children }: SidebarProps) {
                   </Button>
                   <Avatar className="h-8 w-8 ring-2 ring-[#2C2F3C]">
                     <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                    <AvatarFallback className="bg-[#1A1E2D] text-[#00E5FF]">GC</AvatarFallback>
+                    <AvatarFallback className="bg-[#1A1E2D] text-[#0846A6]">GC</AvatarFallback>
                   </Avatar>
                 </div>
               )}
@@ -170,7 +170,7 @@ export function Sidebar({ children }: SidebarProps) {
               <div className="p-4">
                 {/* Logo Section */}
                 <div className="flex items-center space-x-3 mb-8">
-                  <div className="h-10 w-10 rounded-lg bg-[#00E5FF] flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-lg bg-[#0846A6] flex items-center justify-center">
                     <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-6 w-6" />
                   </div>
                   <div>
@@ -187,15 +187,15 @@ export function Sidebar({ children }: SidebarProps) {
                         <div
                           className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors ${
                             isActive
-                              ? "bg-[#1A1E2D] border border-[#00E5FF] text-white"
+                              ? "bg-[#1A1E2D] border border-[#0846A6] text-white"
                               : "hover:bg-[#1A1E2D] text-[#A0AFC0] hover:text-white"
                           }`}
                         >
-                          <item.icon className={`h-5 w-5 ${isActive ? "text-[#00E5FF]" : ""}`} />
+                          <item.icon className={`h-5 w-5 ${isActive ? "text-[#0846A6]" : ""}`} />
                           <span className={`font-medium text-sm tracking-wide ${isActive ? "text-white" : ""}`}>
                             {item.name}
                           </span>
-                          {isActive && <ChevronRight className="h-4 w-4 text-[#00E5FF] ml-auto" />}
+                          {isActive && <ChevronRight className="h-4 w-4 text-[#0846A6] ml-auto" />}
                         </div>
                       </Link>
                     )
@@ -208,7 +208,7 @@ export function Sidebar({ children }: SidebarProps) {
                 <div className="flex items-center justify-between">
                   <Avatar className="h-8 w-8 ring-2 ring-[#2C2F3C]">
                     <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                    <AvatarFallback className="bg-[#1A1E2D] text-[#00E5FF]">GC</AvatarFallback>
+                    <AvatarFallback className="bg-[#1A1E2D] text-[#0846A6]">GC</AvatarFallback>
                   </Avatar>
                   <div className="flex items-center space-x-2">
                     <Button variant="ghost" size="sm" className="text-[#A0AFC0] hover:text-white hover:bg-[#1A1E2D]">

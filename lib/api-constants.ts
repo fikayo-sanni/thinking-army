@@ -65,7 +65,7 @@ export const PAYOUTS_ENDPOINTS = {
 
 // User endpoints
 export const USER_ENDPOINTS = {
-  PROFILE: '/api/v1/user/profile',
+  PROFILE: '/api/v1/auth/profile',
   SETTINGS: '/api/v1/user/settings',
   PREFERENCES: '/api/v1/user/preferences',
   SECURITY: '/api/v1/user/security',

@@ -17,8 +17,8 @@ export function AuthLayout({ children, title, description, maxWidth = "md" }: Au
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0F1A] flex items-center justify-center p-4">
-      <Card className={`w-full ${widthClasses[maxWidth]} bg-[#1A1E2D] border-[#2C2F3C]`}>
+    <div className="min-h-screen dark:bg-[#0D0F1A] flex items-center justify-center p-4">
+      <Card className={`w-full ${widthClasses[maxWidth]} dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border dark:border-[#2C2F3C] shadow-lg`}>
         <CardHeader className="text-center space-y-4">
           <AuthLogo />
           <div>

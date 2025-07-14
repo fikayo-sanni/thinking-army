@@ -104,20 +104,20 @@ export default function WalletSettingsPage() {
             <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
               <CardHeader>
                 <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                  <Wallet className="h-5 w-5 text-[#00E5FF]" />
+                  <Wallet className="h-5 w-5 text-[#0846A6]" />
                   <span>WALLET OVERVIEW</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center p-4 rounded-lg bg-[#0D0F1A] border border-[#2C2F3C]">
-                  <div className="text-2xl font-bold text-[#00E5FF] mb-1">
+                  <div className="text-2xl font-bold text-[#0846A6] mb-1">
                     {wallets.filter((w) => w.status === "connected").length}
                   </div>
                   <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">CONNECTED WALLETS</div>
                 </div>
 
                 <div className="text-center p-4 rounded-lg bg-[#0D0F1A] border border-[#2C2F3C]">
-                  <div className="text-2xl font-bold text-[#00FFC8] mb-1">
+                  <div className="text-2xl font-bold text-[#00B28C] mb-1">
                     {wallets
                       .filter((w) => w.status === "connected")
                       .reduce((sum, w) => sum + Number.parseFloat(w.balance.split(" ")[0]), 0)
@@ -130,9 +130,9 @@ export default function WalletSettingsPage() {
                 <div className="space-y-2">
                   <h4 className="text-white font-medium text-sm uppercase tracking-wider">PRIMARY WALLET</h4>
                   {wallets.find((w) => w.isPrimary) && (
-                    <div className="p-3 rounded-lg bg-[#00E5FF]/10 border border-[#00E5FF]/30">
+                    <div className="p-3 rounded-lg bg-[#0846A6]/10 border border-[#0846A6]/30">
                       <div className="flex items-center space-x-2 mb-1">
-                        <Wallet className="h-4 w-4 text-[#00E5FF]" />
+                        <Wallet className="h-4 w-4 text-[#0846A6]" />
                         <span className="text-white font-medium text-sm">{wallets.find((w) => w.isPrimary)?.name}</span>
                       </div>
                       <div className="text-[#A0AFC0] text-xs font-mono">
@@ -151,13 +151,13 @@ export default function WalletSettingsPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                      <Wallet className="h-5 w-5 text-[#00E5FF]" />
+                      <Wallet className="h-5 w-5 text-[#0846A6]" />
                       <span>CONNECTED WALLETS</span>
                     </CardTitle>
                     <Button
                       onClick={handleConnectWallet}
                       disabled={isConnecting}
-                      className="bg-[#00E5FF] text-black hover:bg-[#00E5FF]/90 font-bold uppercase tracking-wide"
+                      className="bg-[#0846A6] text-black hover:bg-[#0846A6]/90 font-bold uppercase tracking-wide"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       {isConnecting ? "CONNECTING..." : "CONNECT WALLET"}
@@ -170,13 +170,13 @@ export default function WalletSettingsPage() {
                       key={wallet.id}
                       className={`p-4 rounded-lg border transition-all duration-200 ${
                         wallet.isPrimary
-                          ? "bg-[#00E5FF]/5 border-[#00E5FF]/30"
-                          : "bg-[#0D0F1A] border-[#2C2F3C] hover:border-[#00E5FF]/20"
+                          ? "bg-[#0846A6]/5 border-[#0846A6]/30"
+                          : "bg-[#0D0F1A] border-[#2C2F3C] hover:border-[#0846A6]/20"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#00E5FF] to-[#6F00FF] flex items-center justify-center">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#0846A6] to-[#6F00FF] flex items-center justify-center">
                             <Wallet className="h-5 w-5 text-white" />
                           </div>
                           <div>
@@ -219,7 +219,7 @@ export default function WalletSettingsPage() {
 
                         <div className="flex items-center justify-between p-2 rounded bg-[#2C2F3C]/30">
                           <span className="text-[#A0AFC0] text-sm">Balance:</span>
-                          <span className="text-[#00E5FF] font-bold">{wallet.balance}</span>
+                          <span className="text-[#0846A6] font-bold">{wallet.balance}</span>
                         </div>
 
                         <div className="flex items-center justify-between pt-2">
@@ -229,7 +229,7 @@ export default function WalletSettingsPage() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleSetPrimary(wallet.id)}
-                                className="border-[#00E5FF] text-[#00E5FF] hover:bg-[#00E5FF]/10"
+                                className="border-[#0846A6] text-[#0846A6] hover:bg-[#0846A6]/10"
                               >
                                 Set as Primary
                               </Button>
@@ -259,7 +259,7 @@ export default function WalletSettingsPage() {
               <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
                 <CardHeader>
                   <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                    <Shield className="h-5 w-5 text-[#00E5FF]" />
+                    <Shield className="h-5 w-5 text-[#0846A6]" />
                     <span>WALLET PREFERENCES</span>
                   </CardTitle>
                 </CardHeader>

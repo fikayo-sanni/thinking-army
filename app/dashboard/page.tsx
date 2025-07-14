@@ -4,7 +4,7 @@ import { useState } from "react"
 import { PageHeader } from "@/components/layout/page-header"
 import { MetricCard, MetricCardContent } from "@/components/ui/metric-card"
 import { ChartCard } from "@/components/dashboard/chart-card"
-import { TrendingUp, Users, Coins, Trophy, BarChart3, PieChart, Calendar } from "lucide-react"
+import { TrendingUp, Users, Coins, Trophy, BarChart3, PieChart, Calendar, AlertTriangle } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useDashboardData } from "@/hooks/use-dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -27,11 +27,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useProtectedRoute } from "@/hooks/use-protected-route"
 import { formatThousands } from "@/lib/utils"
+import { useTheme } from "@/components/theme/theme-provider"
+import { Button } from "@/components/ui/button"
 
 export default function DashboardPage() {
   useProtectedRoute()
   const [timeFilter, setTimeFilter] = useState("this-week")
-  const { data, isLoading, isError } = useDashboardData(timeFilter)
+  const { data, isLoading, isError, refetch } = useDashboardData(timeFilter)
+  const { theme } = useTheme();
 
   // Extract data safely
   const overview = data?.overview
@@ -41,14 +44,37 @@ export default function DashboardPage() {
 
   // Chart colors
   const chartColors = {
-    primary: "#00E5FF",
-    secondary: "#00FFC8",
+    primary: "#0846A6",
+    secondary: "#00B28C",
     tertiary: "#6F00FF",
     accent: "#FF6B00",
   }
 
+  // Chart tick colors for light mode
+  const tickColors = {
+    blue: "#0846A6",
+    green: "#0B5B3C",
+    purple: "#4B2067",
+    gray: "#A0AFC0", // for dark mode
+  };
+
   const totalVP = data?.immediateDownlines?.reduce((sum, d) => sum + Number(d.revenue), 0) ?? 0
   const top3 = (data?.immediateDownlines?.slice() ?? []).sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 3)
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full border-red-400 bg-red-50 dark:bg-[#2C2F3C] dark:border-red-800 shadow-lg">
+          <CardContent className="flex flex-col items-center py-10">
+            <AlertTriangle className="h-12 w-12 text-red-500 mb-4 animate-bounce" />
+            <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">Dashboard Load Failed</h2>
+            <p className="text-center text-[#A0AFC0] mb-6">We couldn't load your dashboard data right now. Please check your connection or try again in a moment.</p>
+            <Button onClick={() => refetch()} className="bg-[#0846A6] text-white hover:bg-[#06377a]">Retry</Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return (
@@ -57,13 +83,13 @@ export default function DashboardPage() {
         {/* Metric Cards Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-28 w-full bg-[#2C2F3C] rounded-lg" />
+            <Skeleton key={i} className="h-28 w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
           ))}
         </div>
         {/* Charts Skeleton */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-72 w-full bg-[#2C2F3C] rounded-lg" />
+            <Skeleton key={i} className="h-72 w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
           ))}
         </div>
       </>
@@ -79,29 +105,29 @@ export default function DashboardPage() {
         <div className="flex items-center space-x-2">
           <Calendar className="h-4 w-4 text-[#A0AFC0]" />
           <Select value={timeFilter} onValueChange={setTimeFilter}>
-            <SelectTrigger className="w-48 bg-[#1A1E2D] border-[#2C2F3C] text-white">
+            <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">
               <SelectValue placeholder="Select time period" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
-              <SelectItem value="all-time" className="text-white hover:bg-[#2C2F3C]">
+            <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
+              <SelectItem value="all-time" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 All Time
               </SelectItem>
-              <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="this-week" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 This Week
               </SelectItem>
-              <SelectItem value="this-month" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="this-month" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 This Month
               </SelectItem>
-              <SelectItem value="this-quarter" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="this-quarter" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 This Quarter
               </SelectItem>
-              <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="last-week" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 Last Week
               </SelectItem>
-              <SelectItem value="last-month" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="last-month" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 Last Month
               </SelectItem>
-              <SelectItem value="last-quarter" className="text-white hover:bg-[#2C2F3C]">
+              <SelectItem value="last-quarter" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 Last Quarter
               </SelectItem>
             </SelectContent>
@@ -115,15 +141,15 @@ export default function DashboardPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <TrendingUp className="h-6 w-6 text-[#00E5FF]" />
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <TrendingUp className="h-6 w-6 text-[#0846A6] dark:text-[#0846A6]" />
                   </div>
                   <div>
-                    <div className="text-[#A0AFC0] text-sm uppercase tracking-wider"></div>
+                    <div className="text-[#0846A6] dark:text-[#A0AFC0] text-sm uppercase tracking-wider"></div>
                     <div className="text-2xl font-bold text-white">
                       PERFORMANCE
                     </div>
@@ -144,12 +170,12 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <Users className="h-6 w-6 text-[#00E5FF]" />
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <Users className="h-6 w-6 text-[#0846A6] dark:text-[#0846A6]" />
                   </div>
                   <div>
                     <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">COMMISSION ELIGIBLE BASE</div>
@@ -165,7 +191,7 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GC-He</span>
                       
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                     {formatThousands(Number(balances? balances['HE'] : 0.00).toFixed(2))}
                     </span>
                   </div>
@@ -175,7 +201,7 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GC-H</span>
                       
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                     {formatThousands(Number(balances? balances['H'] : 0.00).toFixed(2))}
                     </span>
                   </div>
@@ -185,35 +211,34 @@ export default function DashboardPage() {
                       <span className="text-white text-m font-medium">GCC1</span>
                       
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                     {formatThousands(Number(balances? balances['GCC1'] : 0.00).toFixed(2))}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className="text-white text-m font-medium">USDC</span>
+                      <span className="text-white text-m font-medium">USDT</span>
                       
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
-                      {formatThousands(Number(balances? balances['USDC'] : 0.00).toFixed(2))}
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
+                      {formatThousands(Number(balances? balances['USDT'] : 0.00).toFixed(2))}
                     </span>
                   </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="bg-[#1A1E2D] border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-[#00E5FF]/10">
-                    <Users className="h-6 w-6 text-[#00E5FF]" />
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <Users className="h-6 w-6 text-[#0846A6] dark:text-[#0846A6]" />
                   </div>
                   <div>
-                    <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">IMMEDIATE DOWNLINES</div>
                     <div className="text-2xl font-bold text-white">
-                      {formatThousands(totalVP.toFixed(2)) || '0.00'} VP
+                      VP BY DOWNLINES
                     </div>
                   </div>
                 </div>
@@ -228,7 +253,7 @@ export default function DashboardPage() {
                         {downline.rank?.split(" Member")[0] || 'Member'}
                       </Badge>
                     </div>
-                    <span className="text-[#00E5FF] text-sm font-bold">
+                    <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                       {Number(downline.revenue).toFixed(2)} VP
                     </span>
                   </div>
@@ -255,19 +280,19 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="date"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <YAxis
                   yAxisId="left"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <YAxis
                   yAxisId="right"
                   orientation="right"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -331,7 +356,7 @@ export default function DashboardPage() {
                   verticalAlign="bottom"
                   height={36}
                   wrapperStyle={{
-                    color: "#A0AFC0",
+                    color: theme === "dark" ? tickColors.gray : tickColors.purple,
                     fontSize: "12px",
                   }}
                 />
@@ -352,12 +377,12 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="month"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.green}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
                 />
                 <YAxis
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.green}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -369,14 +394,13 @@ export default function DashboardPage() {
                 />
                 <Legend
                   wrapperStyle={{
-                    color: "#A0AFC0",
+                    color: theme === "dark" ? tickColors.gray : tickColors.green,
                     fontSize: "12px",
                   }}
                 />
                 <Bar dataKey="c1" fill={chartColors.primary} name="C1" />
                 <Bar dataKey="c2" fill={chartColors.secondary} name="C2" />
                 <Bar dataKey="c3" fill={chartColors.tertiary} name="C3" />
-                <Bar dataKey="campaigns" fill={chartColors.accent} name="Campaigns" />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -391,12 +415,12 @@ export default function DashboardPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="date"
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <YAxis
-                  stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
@@ -408,7 +432,7 @@ export default function DashboardPage() {
                 />
                 <Legend
                   wrapperStyle={{
-                    color: "#A0AFC0",
+                    color: theme === "dark" ? tickColors.gray : tickColors.blue,
                     fontSize: "12px",
                   }}
                 />
