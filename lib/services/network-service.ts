@@ -29,6 +29,7 @@ export interface NetworkStructure {
   currentUser: NetworkUser
   sponsor: SponsorInfo
   downlines: NetworkUser[]
+  totalReferrals: number;
 }
 
 export interface NetworkStats {
@@ -128,10 +129,11 @@ export const networkService = {
   },
 
   // Get direct downlines for a given parentId (with pagination)
-  async getDirectDownlines(parentId?: string, page: number = 1, limit: number = 20): Promise<NetworkUser[]> {
+  async getDirectDownlines(parentId?: string, page: number = 1, limit: number = 20, level: number = 0): Promise<NetworkUser[]> {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
+      level: level.toString(),
     })
     if (parentId) params.append('parentId', parentId)
     const url = `${NETWORK_ENDPOINTS.DIRECT_DOWNLINES}?${params.toString()}`

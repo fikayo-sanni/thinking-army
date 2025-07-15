@@ -9,6 +9,7 @@ import { useState, useEffect } from "react"
 import { useDirectDownlines } from '@/hooks/use-network'
 
 interface NetworkUser {
+  directReferrals: number;
   id: string
   name?: string
   username?: string
@@ -25,12 +26,13 @@ interface NetworkUser {
 
 interface NetworkNodeProps {
   user: NetworkUser
+  totalReferrals?: number
   isExpanded?: boolean
   onToggle?: () => void
   direction: "up" | "down"
 }
 
-export function NetworkNode({ user, isExpanded = false, onToggle, direction }: NetworkNodeProps) {
+export function NetworkNode({ user, isExpanded = false, onToggle, direction, totalReferrals = 0 }: NetworkNodeProps) {
   const PAGE_SIZE = 20;
   const [expanded, setExpanded] = useState(isExpanded)
   const [page, setPage] = useState(1)
@@ -39,7 +41,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
   const [loadingMore, setLoadingMore] = useState(false)
 
   // Fetch children for the current page
-  const { data: directDownlines = [], isLoading: isLoadingChildren } = useDirectDownlines(user.id, page, PAGE_SIZE)
+  const { data: directDownlines = [], isLoading: isLoadingChildren } = useDirectDownlines(user.id, user.level, page, PAGE_SIZE)
 
   // When expanded or page changes, update children
   useEffect(() => {
@@ -54,12 +56,15 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
   useEffect(() => {
     if (!expanded) return;
     if (directDownlines && directDownlines.length > 0) {
-      setChildren((prev) => {
+      setChildren((prev: any) => {
+        // Compute the next level for children
+        const nextLevel = (user.level ?? 0) + 1;
+        const downlinesWithLevel = directDownlines.map((c) => ({ ...c, level: nextLevel }));
         // If page is 1, replace; else, append
-        if (page === 1) return directDownlines;
+        if (page === 1) return downlinesWithLevel;
         // Avoid duplicates
-        const ids = new Set(prev.map((c) => c.id));
-        return [...prev, ...directDownlines.filter((c) => !ids.has(c.id))];
+        const ids = new Set(prev.map((c: any) => c.id));
+        return [...prev, ...downlinesWithLevel.filter((c) => !ids.has(c.id))];
       });
       setHasMore(directDownlines.length === PAGE_SIZE);
     } else {
@@ -84,7 +89,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
   const showChildren = expanded
 
   // Only show expand button if we want to always allow expansion
-  const showExpand = true
+  const showExpand = user.totalReferrals > 0 || totalReferrals > 0
 
   // Handle both old and new data structures
   const displayName = user.nickname || user.name || "Unknown"
@@ -157,7 +162,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
                 </div>
                 <div className="flex items-center space-x-1">
                   <Users className="h-3 w-3" />
-                  <span>{user.totalReferrals}</span>
+                  <span>{user.totalReferrals || totalReferrals}</span>
                 </div>
               </div>
             </div>

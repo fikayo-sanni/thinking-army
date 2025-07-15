@@ -69,10 +69,10 @@ export const useSearchMembers = (query: string) => {
   })
 } 
 
-export const useDirectDownlines = (parentId?: string, page: number = 1, limit: number = 20) => {
+export const useDirectDownlines = (parentId: string, level: number, page: number = 1, limit: number = 20) => {
   return useQuery({
-    queryKey: ['network', 'direct-downlines', parentId, page, limit],
-    queryFn: () => networkService.getDirectDownlines(parentId, page, limit),
+    queryKey: ['network', 'direct-downlines', parentId, page, limit, level],
+    queryFn: () => networkService.getDirectDownlines(parentId, page, limit, level),
     enabled: !!parentId || parentId === undefined, // allow root fetch if parentId is undefined
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
