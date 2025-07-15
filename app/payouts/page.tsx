@@ -359,7 +359,7 @@ export default function PayoutsPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#2C2F3C]">
+              <tbody className="divide-y divide-[#E5E7EB]">
                 {payouts.length === 0 ? (
                   <tr>
                     <td

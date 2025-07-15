@@ -1,11 +1,12 @@
 import { buildApiUrl, COMMISSION_ENDPOINTS, HTTP_METHODS } from '../api-constants'
+import { apiRequest } from '../utils'
 
 // Types for commission data
 export interface CommissionHistory {
   id: string
   date: string
   amount: number
-  type: 'direct' | 'indirect' | 'bonus'
+  type: 'C1' | 'C2' | 'C3'
   source: string
   status: 'completed' | 'pending' | 'failed'
   description: string
@@ -44,6 +45,9 @@ export interface CommissionStats {
   totalWithdrawals: number
   pendingAmount: number
   successRate: number
+  totalC1: number
+  totalC2: number
+  totalC3: number
   averageCommission: number
   monthlyGrowth: number
 }
@@ -53,30 +57,6 @@ export interface ChartData {
   earnings: number
   commissions: number
   withdrawals: number
-}
-
-const apiRequest = async <T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> => {
-  const url = buildApiUrl(endpoint)
-  const config: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  }
-  const token = localStorage.getItem('authToken')
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    }
-  }
-  const response = await fetch(url, config)
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-  return response.json()
 }
 
 // Commission service

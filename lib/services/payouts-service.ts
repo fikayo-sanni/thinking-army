@@ -1,4 +1,5 @@
 import { buildApiUrl, PAYOUTS_ENDPOINTS, HTTP_METHODS } from '../api-constants'
+import { apiRequest } from '../utils'
 
 // Types for payouts data
 export interface PayoutHistory {
@@ -56,30 +57,6 @@ export interface PayoutFilters {
   currency?: string
   minAmount?: number
   maxAmount?: number
-}
-
-const apiRequest = async <T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> => {
-  const url = buildApiUrl(endpoint)
-  const config: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  }
-  const token = localStorage.getItem('authToken')
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    }
-  }
-  const response = await fetch(url, config)
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-  return response.json()
 }
 
 // Payouts service

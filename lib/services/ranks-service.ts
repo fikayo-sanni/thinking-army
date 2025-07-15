@@ -1,4 +1,5 @@
 import { buildApiUrl } from '../api-constants'
+import { apiRequest } from '../utils'
 
 // Types for ranks data
 export interface Rank {
@@ -48,17 +49,6 @@ export interface AllRanksData {
   nextRankRequirements: NextRankRequirements
   rankHistory: RankHistoryItem[]
   allRanks: Rank[]
-}
-
-const apiRequest = async <T>(endpoint: string): Promise<T> => {
-  const url = buildApiUrl(endpoint)
-  const token = localStorage.getItem('authToken')
-  const headers: HeadersInit = token
-    ? { 'Authorization': `Bearer ${token}` }
-    : {}
-  const response = await fetch(url, { headers })
-  if (!response.ok) throw new Error('API error')
-  return response.json()
 }
 
 export const ranksService = {

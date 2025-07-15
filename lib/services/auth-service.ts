@@ -1,4 +1,5 @@
-import { buildApiUrl, AUTH_ENDPOINTS, HTTP_METHODS } from '../api-constants'
+import { AUTH_ENDPOINTS, HTTP_METHODS } from '../api-constants'
+import { apiRequest } from '../utils'
 
 // Types for authentication
 export interface LoginCredentials {
@@ -30,44 +31,7 @@ export interface AuthResponse {
 }
 
 // Generic API request function
-const apiRequest = async <T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> => {
-  const url = buildApiUrl(endpoint)
-  
-  const config: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  }
 
-  // Add auth token if available
-  const token = localStorage.getItem('authToken')
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    }
-  }
-
-  console.log('url', url);
-
-  try {
-    const response = await fetch(url, config)
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    
-    return await response.json()
-  } catch (error) {
-    console.error('API request failed:', error)
-    throw error
-  }
-}
 
 // Authentication service
 export const authService = {

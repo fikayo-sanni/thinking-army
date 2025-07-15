@@ -27,7 +27,7 @@ export default function CommissionPage() {
                 <Skeleton className="h-6 w-48 mb-4 dark:bg-[#2C2F3C]" />
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-[#2C2F3C]">
+                <table className="min-w-full divide-y divide-[#E5E7EB]">
                   <thead>
                     <tr>
                       {["Date","Amount","Type","Source","Status","Description","Currency"].map((col) => (
@@ -37,7 +37,7 @@ export default function CommissionPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#2C2F3C]">
+                  <tbody className="divide-y divide-[#E5E7EB]">
                     {[1,2,3,4,5].map(i => (
                       <tr key={i}>
                         {[1,2,3,4,5,6,7].map(j => (

@@ -1,4 +1,5 @@
-import { buildApiUrl, NETWORK_ENDPOINTS, HTTP_METHODS } from '../api-constants'
+import { NETWORK_ENDPOINTS, HTTP_METHODS } from '../api-constants'
+import { apiRequest } from '../utils'
 
 // Types for network data
 export interface NetworkUser {
@@ -16,7 +17,7 @@ export interface NetworkUser {
 export interface SponsorInfo {
   id: string
   name: string
-  username: string
+  nickname: string
   level: number
   joinDate: string
   rank: string
@@ -32,6 +33,7 @@ export interface NetworkStructure {
 
 export interface NetworkStats {
   totalDownlines: number
+  totalDirectDownlines: number
   activeMembers: number
   totalReferrals: number
   networkDepth: number
@@ -47,30 +49,6 @@ export interface InviteResponse {
   success: boolean
   inviteCode: string
   message: string
-}
-
-const apiRequest = async <T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> => {
-  const url = buildApiUrl(endpoint)
-  const config: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  }
-  const token = localStorage.getItem('authToken')
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    }
-  }
-  const response = await fetch(url, config)
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-  return response.json()
 }
 
 // Network service
