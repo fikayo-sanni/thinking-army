@@ -1,0 +1,61 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AWS_REGION: ap-southeast-1
+  S3_BUCKET: gcu.gamescoin.com-web
+  CLOUDFRONT_DISTRIBUTION: E3SUOOAHTV9TB3
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: |
+          echo "${{ secrets.ENV_FILE }}" > .env.production
+
+          if [ ! -f .env ]; then
+            touch .env
+          fi
+
+          if [ -f .env.production ]; then
+            awk -F= '
+              FNR==NR { a[$1]=$0; next }
+              { a[$1]=$0 }
+              END { for (k in a) print a[k] }
+            ' .env .env.production > .env.tmp
+
+            mv .env.tmp .env
+            rm .env.production
+          fi
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # oder deine gewünschte Version
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Next.js app
+        run: npx update-browserslist-db@latest && npx next build
+      - if: success()
+        run: aws s3 sync ./out s3://${S3_BUCKET}
+        env:
+            S3_BUCKET: ${{ env.S3_BUCKET }}
+      - uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ env.CLOUDFRONT_DISTRIBUTION }}
+          PATHS: '/*'
+          AWS_REGION: 'us-east-1'
+          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
