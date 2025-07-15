@@ -83,7 +83,7 @@ export default function NetworkPage() {
     )
   }
   const { structure } = networkData
-  const { currentUser, sponsor, downlines } = structure
+  const { currentUser, sponsor, downlines, totalReferrals } = structure
   const { totalDownlines, activeMembers } = statsData
 
   const getNetworkStats = (data: any[]) => {
@@ -229,7 +229,7 @@ export default function NetworkPage() {
                   {/* Current User Node (map) - only show if data exists */}
                     <div className="flex justify-center">
                     {currentUser && (downlines?.length > 0 || rootDownlines?.length > 0) ? (
-                      <NetworkNode user={currentUser} direction="down" isExpanded={true} />
+                      <NetworkNode user={currentUser} totalReferrals={totalReferrals} direction="down" isExpanded={true} />
                     ) : (
                       <div className="text-[#A0AFC0] text-center py-8 w-full">No network data to display.</div>
                     )}
