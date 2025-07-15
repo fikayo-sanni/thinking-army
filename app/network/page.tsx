@@ -160,6 +160,38 @@ export default function NetworkPage() {
                     <p className="text-[#A0AFC0] text-sm">Your direct sponsor information</p>
                   </CardHeader>
                   <CardContent className="space-y-6">
+
+                    {/* Sponsor Node */}
+                    <div className="flex justify-center">
+                      <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-4">
+                            <div className="h-10 w-10 rounded-full bg-[#6F00FF] flex items-center justify-center">
+                              <span className="text-white font-bold text-sm">
+                                {sponsor ? sponsor.nickname : "?"}
+                              </span>
+                            </div>
+                            <div>
+                              <h3 className="text-white font-medium uppercase text-sm">{sponsor ? sponsor.nickname : "No Sponsor"}</h3>
+                              <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
+                                {sponsor && sponsor.name && <span>@{sponsor.name}</span>}
+                                {sponsor && sponsor.rank && (
+                                  <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
+                                    {sponsor.rank}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Connection Line */}
+                    <div className="flex justify-center">
+                      <div className="w-px h-8 dark:bg-[#2C2F3C] bg-[#E5E7EB]" />
+                    </div>
+
                     {/* Current User Node */}
                     <div className="flex justify-center">
                       <Card className="bg-[#0846A6]/10 border-[#E5E7EB] dark:border-[#0846A6]">
@@ -174,37 +206,6 @@ export default function NetworkPage() {
                                 <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
                                   {currentUser?.rank}
                                 </Badge>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    {/* Connection Line */}
-                    <div className="flex justify-center">
-                      <div className="w-px h-8 dark:bg-[#2C2F3C]" />
-                    </div>
-
-                    {/* Sponsor Node */}
-                    <div className="flex justify-center">
-                      <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
-                        <CardContent className="p-4">
-                          <div className="flex items-center space-x-4">
-                            <div className="h-10 w-10 rounded-full bg-[#6F00FF] flex items-center justify-center">
-                              <span className="text-white font-bold text-sm">
-                                {sponsor ? sponsor.name.split(" ").map((n: string) => n[0]).join("") : "?"}
-                              </span>
-                            </div>
-                            <div>
-                              <h3 className="text-white font-medium uppercase text-sm">{sponsor ? sponsor.name : "No Sponsor"}</h3>
-                              <div className="flex items-center space-x-2 text-xs text-[#A0AFC0]">
-                                {sponsor && sponsor.username && <span>@{sponsor.username}</span>}
-                                {sponsor && sponsor.rank && (
-                                  <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">
-                                    {sponsor.rank}
-                                  </Badge>
-                                )}
                               </div>
                             </div>
                           </div>

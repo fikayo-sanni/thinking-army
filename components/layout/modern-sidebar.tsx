@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -27,51 +27,6 @@ import { formatThousands } from "@/lib/utils"
 import { useQuery } from '@tanstack/react-query'
 import { ranksService } from '@/lib/services/ranks-service'
 
-const navigationItems = [
-  {
-    name: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-    badge: null,
-    gradient: "from-[#0846A6] to-[#0099CC]",
-  },
-  {
-    name: "Network Purchases",
-    href: "/purchases",
-    icon: ShoppingCart,
-    badge: "156",
-    gradient: "from-[#00B28C] to-[#00CC99]",
-  },
-  {
-    name: "My Network",
-    href: "/network",
-    icon: Users,
-    badge: "12",
-    gradient: "from-[#6F00FF] to-[#5500CC]",
-  },
-  {
-    name: "Commissions",
-    href: "/commissions",
-    icon: TrendingUp,
-    badge: null,
-    gradient: "from-[#FFD700] to-[#FFA500]",
-  },
-  {
-    name: "Ranks",
-    href: "/ranks",
-    icon: Trophy,
-    badge: null,
-    gradient: "from-[#6B7280] to-[#4B5563]",
-  },
-  {
-    name: "Payouts",
-    href: "/payouts",
-    icon: Wallet,
-    badge: null,
-    gradient: "from-[#4ECDC4] to-[#26A69A]",
-  },
-]
-
 interface ModernSidebarProps {
   children: React.ReactNode
 }
@@ -80,6 +35,21 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const pathname = usePathname()
+
+  // Persist sidebar collapsed state in localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('sidebar:collapsed');
+    if (stored !== null) {
+      setIsCollapsed(stored === 'true');
+    }
+  }, []);
+
+  const handleToggleCollapse = () => {
+    setIsCollapsed((prev) => {
+      localStorage.setItem('sidebar:collapsed', String(!prev));
+      return !prev;
+    });
+  };
 
   // Fetch live stats
   const { data: dashboardStats, isLoading: isDashboardLoading } = useDashboardStats();
@@ -103,7 +73,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
     },
     {
       label: "Active Downlines",
-      value: isNetworkLoading ? <Skeleton className="h-4 w-8 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands(networkStats?.totalDownlines || 0)}`,
+      value: isNetworkLoading ? <Skeleton className="h-4 w-8 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands(networkStats?.totalDirectDownlines || 0)}`,
       icon: Users,
       color: "text-[#00B28C]",
     },
@@ -176,9 +146,9 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   }, [isMobileOpen])
 
   return (
-    <div className="min-h-screen bg-[#F9FAFC] dark:bg-gradient-to-br dark:from-[#0D0F1A] dark:via-[#1A1E2D] dark:to-[#0D0F1A] text-black dark:text-white">
+    <div className="h-screen min-h-0 bg-[#F9FAFC] dark:bg-gradient-to-br dark:from-[#0D0F1A] dark:via-[#1A1E2D] dark:to-[#0D0F1A] text-black dark:text-white flex">
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-[#1A1E2D]">
+      <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-[#1A1E2D] w-full shrink-0">
         <div className="flex items-center space-x-3">
           <div className="h-8 w-8 flex items-center justify-center">
             <img
@@ -209,13 +179,13 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         </Button>
       </div>
 
-      <div className="flex">
+      <div className="flex flex-1 min-h-0">
         {/* Desktop Sidebar */}
         <aside
-          className={`${isCollapsed ? "w-20" : "w-80"
-            } transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 min-h-screen sticky top-0 hidden lg:block text-black dark:text-white`}
+          className={`${isCollapsed ? "w-20" : "w-80"}
+            transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 h-screen sticky top-0 hidden lg:flex flex-col min-h-0 z-20`}
         >
-          <div className="p-6">
+          <div className="p-6 flex-1 min-h-0 overflow-y-auto">
             {/* Logo Section */}
             <div className="flex items-center space-x-4 mb-8">
               <div className="relative">
@@ -328,7 +298,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onClick={handleToggleCollapse}
               className="w-full justify-center dark:bg-[#1A1E2D]/50 dark:hover:bg-[#2C2F3C]/50 border dark:border-[#2C2F3C]/50 dark:text-[#A0AFC0] hover:text-white"
             >
               <ChevronRight
@@ -343,10 +313,10 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         {isMobileOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex" onClick={() => setIsMobileOpen(false)}>
             <aside
-              className="w-4/5 max-w-xs bg-[#0D0F1A]/95 backdrop-blur-xl border-r border-[#2C2F3C]/50 min-h-screen"
+              className="w-4/5 max-w-xs bg-[#0D0F1A]/95 backdrop-blur-xl border-r border-[#2C2F3C]/50 h-screen flex flex-col min-h-0"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-6">
+              <div className="p-6 flex-1 min-h-0 overflow-y-auto">
                 {/* Logo Section */}
                 <div className="flex items-center space-x-4 mb-8">
                   <div className="relative">
@@ -452,7 +422,9 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-screen">{children}</main>
+        <main className="flex-1 min-h-0 h-screen overflow-y-auto bg-inherit">
+          {children}
+        </main>
       </div>
     </div>
   )

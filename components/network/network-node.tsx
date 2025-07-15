@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronRight, Users, Calendar, Award } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useDirectDownlines } from '@/hooks/use-network'
 
 interface NetworkUser {
@@ -31,12 +31,53 @@ interface NetworkNodeProps {
 }
 
 export function NetworkNode({ user, isExpanded = false, onToggle, direction }: NetworkNodeProps) {
+  const PAGE_SIZE = 20;
   const [expanded, setExpanded] = useState(isExpanded)
-  const { data: directDownlines = [], isLoading: isLoadingChildren } = useDirectDownlines(user.id, 1, 20)
+  const [page, setPage] = useState(1)
+  const [children, setChildren] = useState<NetworkUser[]>([])
+  const [hasMore, setHasMore] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+
+  // Fetch children for the current page
+  const { data: directDownlines = [], isLoading: isLoadingChildren } = useDirectDownlines(user.id, page, PAGE_SIZE)
+
+  // When expanded or page changes, update children
+  useEffect(() => {
+    if (!expanded) return;
+    if (page === 1) {
+      setChildren([]); // Reset children if first page
+    }
+    setLoadingMore(true);
+  }, [expanded, page])
+
+  // When data loads, append to children
+  useEffect(() => {
+    if (!expanded) return;
+    if (directDownlines && directDownlines.length > 0) {
+      setChildren((prev) => {
+        // If page is 1, replace; else, append
+        if (page === 1) return directDownlines;
+        // Avoid duplicates
+        const ids = new Set(prev.map((c) => c.id));
+        return [...prev, ...directDownlines.filter((c) => !ids.has(c.id))];
+      });
+      setHasMore(directDownlines.length === PAGE_SIZE);
+    } else {
+      setHasMore(false);
+    }
+    setLoadingMore(false);
+  }, [directDownlines, expanded, page])
 
   const handleToggle = () => {
     setExpanded((prev) => !prev)
+    if (!expanded) {
+      setPage(1);
+    }
     onToggle?.()
+  }
+
+  const handleLoadMore = () => {
+    setPage((prev) => prev + 1)
   }
 
   // Only fetch and show children if expanded
@@ -48,7 +89,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
   // Handle both old and new data structures
   const displayName = user.nickname || user.name || "Unknown"
   const displayIdentifier = user.anonymizedEmail || `@${user.username}` || "Unknown"
-  
+
   // Generate avatar fallback from nickname or name
   const avatarFallback = displayName
     .split(" ")
@@ -89,11 +130,10 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
               <div className="flex items-center space-x-2 mb-1">
                 <h3 className="text-white font-medium uppercase text-sm">{displayName}</h3>
                 <Badge
-                  className={`text-xs ${
-                    user.isActive
+                  className={`text-xs ${user.isActive
                       ? "bg-green-500/20 text-green-400 border-green-500/30"
                       : "bg-gray-500/20 text-gray-400 border-gray-500/30"
-                  }`}
+                    }`}
                 >
                   {user.isActive ? "ACTIVE" : "INACTIVE"}
                 </Badge>
@@ -130,16 +170,31 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction }: N
         <div className="ml-8 relative">
           {/* Vertical line for children */}
           <div className="absolute left-2 top-0 bottom-0 w-px dark:bg-[#2C2F3C]" />
-          {isLoadingChildren ? (
+          {isLoadingChildren && page === 1 ? (
             <div className="text-[#A0AFC0] text-xs ml-4">Loading...</div>
           ) : (
-            directDownlines.map((child) => (
-            <div key={child.id} className="relative">
-              {/* Horizontal line to child */}
-              <div className="absolute left-2 top-6 w-4 h-px dark:bg-[#2C2F3C]" />
-                <NetworkNode user={{ ...child, level: (user.level ?? 0) + 1 }} direction={direction} />
-            </div>
-            ))
+            <>
+              {children.map((child) => (
+                <div key={child.id} className="relative">
+                  {/* Horizontal line to child */}
+                  <div className="absolute left-2 top-6 w-4 h-px dark:bg-[#2C2F3C]" />
+                  <NetworkNode user={{ ...child, level: (user.level ?? 0) + 1 }} direction={direction} />
+                </div>
+              ))}
+              {hasMore && (
+                <center><div className="ml-8 my-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="text-[#0846A6] border-[#0846A6] hover:bg-[#0846A6]/10"
+                  >
+                    {loadingMore ? "Loading..." : "LOAD MORE"}
+                  </Button>
+                </div></center>
+              )}
+            </>
           )}
         </div>
       )}

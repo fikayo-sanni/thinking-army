@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gc-frontend-app
+    ports:
+      - '5005:3000'
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

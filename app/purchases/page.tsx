@@ -39,7 +39,7 @@ const chartConfig = {
 }
 
 export default function PurchasesPage() {
-  const [timeRange, setTimeRange] = useState("last-month")
+  const [timeRange, setTimeRange] = useState("this-week")
   const [statusFilter, setStatusFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -258,32 +258,32 @@ export default function PurchasesPage() {
           onExport={() => console.log("Export data")}
         >
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-[#2C2F3C] hover:bg-[#1A1E2D]/30">
-                  <TableHead className="dark:text-[#A0AFC0] uppercase text-xs tracking-wider">DATE</TableHead>
-                  <TableHead className="dark:text-[#A0AFC0] uppercase text-xs tracking-wider">TOKEN ID</TableHead>
-                  <TableHead className="dark:text-[#A0AFC0] uppercase text-xs tracking-wider">AMOUNT</TableHead>
-                  <TableHead className="dark:text-[#A0AFC0] uppercase text-xs tracking-wider">BUYER</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <table className="min-w-full divide-y divide-[#E5E7EB] dark:divide-[#2C2F3C]">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Date</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Token ID</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Amount</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Buyer</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E5E7EB]">
                 {purchases.map((purchase) => (
-                  <TableRow key={purchase.id} className="dark:border-[#2C2F3C] dark:hover:bg-[#1A1E2D]/30">
-                    <TableCell className="dark:text-[#A0AFC0]">
+                  <tr key={purchase.id} className="dark:border-[#2C2F3C] dark:hover:bg-[#1A1E2D]/30 border-b">
+                    <td className="px-4 py-2 dark:text-[#A0AFC0]">
                       {new Date(purchase.date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       })}
-                    </TableCell>
-                    <TableCell className="dark:text-white font-medium uppercase">{purchase.tokenId}</TableCell>
-                    <TableCell className="dark:text-[#0846A6] font-bold">{purchase.amount.toFixed(2)} {purchase.currency}</TableCell>
-                    <TableCell className="dark:text-[#A0AFC0]">{purchase.source}</TableCell>
-                  </TableRow>
+                    </td>
+                    <td className="px-4 py-2 dark:text-white font-medium uppercase">{purchase.tokenId}</td>
+                    <td className="px-4 py-2 dark:text-[#0846A6] font-bold">{purchase.amount.toFixed(2)} {purchase.currency}</td>
+                    <td className="px-4 py-2 dark:text-[#A0AFC0]">{purchase.source}</td>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
+              </tbody>
+            </table>
           </div>
 
           {purchases.length === 0 && (
@@ -293,6 +293,7 @@ export default function PurchasesPage() {
             </div>
           )}
 
+          {/* Pagination styled like commissions page */}
           <div className="flex items-center justify-between mt-4">
             <div className="flex-1 text-[#A0AFC0] text-sm">
               Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
@@ -319,7 +320,7 @@ export default function PurchasesPage() {
               </button>
               {/* First page */}
               <button
-                className={`px-3 py-2 rounded-lg border-[#E5E7EB] border text-sm font-medium transition ${currentPage === 1 ? 'bg-[#0846A6] text-black border-[#0846A6]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#0846A6]'}`}
+                className={`px-3 py-2 rounded-lg border-[#E5E7EB] border text-sm font-medium transition ${currentPage === 1 ? 'text-black border-[#0846A6]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#0846A6]'}`}
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
               >
