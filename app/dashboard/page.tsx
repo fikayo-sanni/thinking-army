@@ -26,9 +26,17 @@ import {
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useProtectedRoute } from "@/hooks/use-protected-route"
-import { formatThousands } from "@/lib/utils"
+import { formatThousands, formatShortNumber } from "@/lib/utils"
 import { useTheme } from "@/components/theme/theme-provider"
 import { Button } from "@/components/ui/button"
+
+// Helper to safely get a number from recharts payload value
+function safeNumber(val: any): number {
+  if (Array.isArray(val)) {
+    return val.length > 0 ? Number(val[0]) : 0;
+  }
+  return Number(val) || 0;
+}
 
 export default function DashboardPage() {
   useProtectedRoute()
@@ -59,7 +67,8 @@ export default function DashboardPage() {
   };
 
   const totalVP = data?.immediateDownlines?.reduce((sum, d) => sum + Number(d.revenue), 0) ?? 0
-  const top3 = (data?.immediateDownlines?.slice() ?? []).sort((a, b) => Number(b.revenue) - Number(a.revenue)).slice(0, 3)
+  const sortedDownlines = (data?.immediateDownlines?.slice() ?? []).sort((a, b) => Number(b.revenue) - Number(a.revenue));
+  const topDownlines = sortedDownlines.slice(0, 4);
 
   if (isError) {
     return (
@@ -158,14 +167,14 @@ export default function DashboardPage() {
               </div>
               <div className="space-y-2">
                 <MetricCardContent title="TOTAL PURCHASES IN PERIOD"
-                  value={stats?.purchases ?? 0}
+                  value={formatThousands(Number(stats?.purchases || 0)) ?? 0}
                   icon={TrendingUp}
-                  change={{ value: `+${formatThousands(stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }} />
+                  change={{ value: `+${formatThousands(Number(stats?.successRate) > 100? 100 :stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }} />
 
                 <MetricCardContent title="TOTAL VP IN PERIOD"
-                  value={formatThousands(Number(stats?.monthlyEarnings||0).toFixed(2)) ?? 0}
+                  value={formatThousands(Math.floor(Number(stats?.monthlyEarnings||0))) ?? 0}
                   icon={TrendingUp}
-                  change={{ value: `+${formatThousands(stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }} />
+                  change={{ value: `+${formatThousands(Number(stats?.successRate) > 100? 100 :stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }} />
               </div>
             </CardContent>
           </Card>
@@ -180,7 +189,7 @@ export default function DashboardPage() {
                   <div>
                     <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">COMMISSION ELIGIBLE BASE</div>
                     <div className="text-2xl font-bold text-white">
-                      {formatThousands(totalVP.toFixed(2)) || '0.00'} VP
+                      {formatThousands(Math.floor(totalVP)) || '0'} VP
                     </div>
                   </div>
                 </div>
@@ -192,7 +201,7 @@ export default function DashboardPage() {
                       
                     </div>
                     <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
-                    {formatThousands(Number(balances? balances['HE'] : 0.00).toFixed(2))}
+                    {formatThousands(Math.floor(Number(balances? balances['HE'] : 0.00)))}
                     </span>
                   </div>
 
@@ -202,7 +211,7 @@ export default function DashboardPage() {
                       
                     </div>
                     <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
-                    {formatThousands(Number(balances? balances['H'] : 0.00).toFixed(2))}
+                    {formatThousands(Math.floor(Number(balances? balances['H'] : 0.00)))}
                     </span>
                   </div>
 
@@ -212,7 +221,7 @@ export default function DashboardPage() {
                       
                     </div>
                     <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
-                    {formatThousands(Number(balances? balances['GCC1'] : 0.00).toFixed(2))}
+                    {formatThousands(Math.floor(Number(balances? balances['GCC1'] : 0.00)))}
                     </span>
                   </div>
 
@@ -222,7 +231,7 @@ export default function DashboardPage() {
                       
                     </div>
                     <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
-                      {formatThousands(Number(balances? balances['USDT'] : 0.00).toFixed(2))}
+                      {formatThousands(Math.floor(Number(balances? balances['USDT'] : 0.00)))}
                     </span>
                   </div>
               </div>
@@ -244,7 +253,12 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                {top3.map((downline: any) => (
+                {topDownlines.length === 0 && (
+                  <div className="text-[#A0AFC0] text-xs text-center pt-2">
+                    No active downlines in selected period
+                  </div>
+                )}
+                {topDownlines.map((downline: any) => (
                   <div key={downline.id} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className={`w-2 h-2 rounded-full ${downline.status === 'active' ? 'bg-green-400' : 'bg-gray-400'}`}></div>
@@ -254,14 +268,14 @@ export default function DashboardPage() {
                       </Badge>
                     </div>
                     <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
-                      {Number(downline.revenue).toFixed(2)} VP
+                      {formatThousands(Math.floor(Number(downline.revenue)))} VP
                     </span>
                   </div>
                 ))}
-                {data?.immediateDownlines && data.immediateDownlines.length > 3 && (
-                  <div className="text-[#A0AFC0] text-xs text-center pt-2">
-                    +{data.immediateDownlines.length - 3} more downlines
-                  </div>
+                {data?.immediateDownlines && data.immediateDownlines.length > 4 && (
+                  <a href="/purchases" className="text-[#A0AFC0] text-xs text-center pt-2 block hover:underline cursor-pointer">
+                    +{data.immediateDownlines.length - 4} more downlines
+                  </a>
                 )}
               </div>
             </CardContent>
@@ -287,19 +301,37 @@ export default function DashboardPage() {
                   yAxisId="left"
                   stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                  tickFormatter={formatShortNumber}
                 />
                 <YAxis
                   yAxisId="right"
                   orientation="right"
                   stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                  tickFormatter={formatShortNumber}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1A1E2D",
-                    border: "1px solid #2C2F3C",
-                    borderRadius: "8px",
-                    color: "#A0AFC0",
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      const purchasesRaw = payload.find(p => p.dataKey === 'purchases')?.value ?? 0;
+                      const volumeRaw = payload.find(p => p.dataKey === 'volume')?.value ?? 0;
+                      const purchases = Math.floor(safeNumber(purchasesRaw));
+                      const volume = Math.floor(safeNumber(volumeRaw));
+                      return (
+                        <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
+                          <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                            <span>Purchases:</span>
+                            <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(purchases))}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                            <span>Volume:</span>
+                            <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(volume))} VP</span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
                 />
                 <Line
@@ -346,7 +378,7 @@ export default function DashboardPage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1A1E2D",
+                    backgroundColor: "#FFFFFF",
                     border: "1px solid #2C2F3C",
                     borderRadius: "8px",
                     color: "#A0AFC0",
@@ -383,13 +415,36 @@ export default function DashboardPage() {
                 <YAxis
                   stroke={theme === "dark" ? tickColors.gray : tickColors.green}
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
+                  tickFormatter={formatShortNumber}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1A1E2D",
-                    border: "1px solid #2C2F3C",
-                    borderRadius: "8px",
-                    color: "#A0AFC0",
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      const c1Raw = payload.find(p => p.dataKey === 'c1')?.value ?? 0;
+                      const c2Raw = payload.find(p => p.dataKey === 'c2')?.value ?? 0;
+                      const c3Raw = payload.find(p => p.dataKey === 'c3')?.value ?? 0;
+                      const c1 = Math.floor(safeNumber(c1Raw));
+                      const c2 = Math.floor(safeNumber(c2Raw));
+                      const c3 = Math.floor(safeNumber(c3Raw));
+                      return (
+                        <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
+                          <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                            <span>C1:</span>
+                            <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(c1))}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                            <span>C2:</span>
+                            <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(c2))}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                            <span>C3:</span>
+                            <span style={{ color: '#6F00FF', fontWeight: 600 }}>{formatThousands(Number(c3))}</span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
                 />
                 <Legend
@@ -421,13 +476,36 @@ export default function DashboardPage() {
                 <YAxis
                   stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                  tickFormatter={formatShortNumber}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1A1E2D",
-                    border: "1px solid #2C2F3C",
-                    borderRadius: "8px",
-                    color: "#A0AFC0",
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      const totalMembersRaw = payload.find(p => p.dataKey === 'totalMembers')?.value ?? 0;
+                      const activeMembersRaw = payload.find(p => p.dataKey === 'activeMembers')?.value ?? 0;
+                      const newReferralsRaw = payload.find(p => p.dataKey === 'newReferrals')?.value ?? 0;
+                      const totalMembers = Math.floor(safeNumber(totalMembersRaw));
+                      const activeMembers = Math.floor(safeNumber(activeMembersRaw));
+                      const newReferrals = Math.floor(safeNumber(newReferralsRaw));
+                      return (
+                        <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
+                          <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                            <span>Total Members:</span>
+                            <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(totalMembers))}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                            <span>Active Members:</span>
+                            <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(activeMembers))}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                            <span>New Referrals:</span>
+                            <span style={{ color: '#6F00FF', fontWeight: 600 }}>{formatThousands(Number(newReferrals))}</span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
                 />
                 <Legend

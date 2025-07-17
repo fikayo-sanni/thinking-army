@@ -23,7 +23,7 @@ import {
 } from "recharts"
 import { usePurchasesData, usePurchaseHistory } from "@/hooks"
 import { Skeleton } from "@/components/ui/skeleton"
-import { formatThousands } from "@/lib/utils"
+import { formatThousands, formatShortNumber, groupChartData, formatXAxisLabel } from "@/lib/utils"
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
@@ -128,6 +128,21 @@ export default function PurchasesPage() {
   const chartData = purchasesData?.charts || []
   const totalPages = historyData?.totalPages || 1;
 
+  console.log(chartData)
+
+  // Determine groupBy for chart
+  let groupBy: 'day' | 'week' | 'month' = 'day';
+  if (["all-time", "this-month", "last-month", "this-quarter", "last-quarter"].includes(timeRange)) {
+    groupBy = 'month';
+  }
+  if (["this-week", "last-week"].includes(timeRange)) {
+    groupBy = 'day';
+  }
+  if (["this-quarter", "last-quarter"].includes(timeRange)) {
+    groupBy = 'week';
+  }
+  const groupedChartData = groupChartData(chartData, groupBy);
+
   return (
     <div className="min-h-screen">
       <div className="p-6 space-y-6">
@@ -138,12 +153,12 @@ export default function PurchasesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <SummaryCard
             title="TOTAL VOLUME POINTS IN PERIOD"
-            value={`${formatThousands(overview?.totalSpent.toFixed(1) || '0.0')} ${overview?.currency || 'VP'}`}
+            value={`${formatThousands(parseInt(overview?.totalSpent.toFixed(1)) || '0.0')} ${overview?.currency || 'VP'}`}
             color="dark:text-[#0846A6]"
           />
           <SummaryCard
             title="TOTAL PURCHASES IN PERIOD"
-            value={overview?.totalPurchases || 0}
+            value={formatThousands(overview?.totalPurchases) || 0}
             color="dark:text-[#00B28C]"
           />
         </div>
@@ -185,40 +200,43 @@ export default function PurchasesPage() {
 
         {/* Network Purchases Over Time Chart */}
         {chartData.length ? <div style={{ width: "70%", transform: "scale(0.9)", transformOrigin: "top left" }} className="mb-4">
-          <ChartCard title="NETWORK PURCHASES OVER TIME" description="Daily purchase activity and volume trends">
+          <ChartCard title="NETWORK TRANSACTIONS OVER TIME" description="Daily purchase activity and volume trends">
             <ChartContainer config={chartConfig}>
-              <LineChart data={chartData} width={600} height={300}>
+              <LineChart data={groupedChartData} width={600} height={300}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="date"
                   stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  tick={{ fontSize: 15 }}
+                  tickFormatter={date => formatXAxisLabel(date, groupBy)}
                 />
                 <YAxis
                   yAxisId="left"
                   stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  tick={{ fontSize: 15 }}
+                  tickFormatter={formatShortNumber}
                 />
                 <YAxis
                   yAxisId="right"
                   orientation="right"
                   stroke="#A0AFC0"
-                  tick={{ fill: "#A0AFC0", fontSize: 12 }}
+                  tick={{ fontSize: 15 }}
+                  tickFormatter={formatShortNumber}
                 />
                 <ChartTooltip
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-3 shadow-lg">
-                          <div className="text-white font-medium mb-2">{label}</div>
+                        <div className="dark:bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-3 shadow-lg">
+                          <div className="dark:text-white font-medium mb-2">{label}</div>
                           <div className="space-y-1">
                             <div className="flex justify-between text-sm">
                               <span className="text-[#0846A6]">Purchases:</span>
-                              <span className="text-white font-medium">{payload[0]?.value}</span>
+                              <span className="text-white font-medium">{formatThousands(String(payload[0]?.value))}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                               <span className="text-[#00B28C]">Volume:</span>
-                              <span className="text-white font-medium">{payload[1]?.value} VP</span>
+                              <span className="text-white font-medium">{formatThousands(String(parseInt(String(payload[1]?.value))))} VP</span>
                             </div>
                           </div>
                         </div>
@@ -278,7 +296,7 @@ export default function PurchasesPage() {
                       })}
                     </td>
                     <td className="px-4 py-2 dark:text-white font-medium uppercase">{purchase.tokenId}</td>
-                    <td className="px-4 py-2 dark:text-[#0846A6] font-bold">{purchase.amount.toFixed(2)} {purchase.currency}</td>
+                    <td className="px-4 py-2 dark:text-[#0846A6] font-bold">{formatThousands(parseInt(String(purchase.amount)))} {purchase.currency}</td>
                     <td className="px-4 py-2 dark:text-[#A0AFC0]">{purchase.source}</td>
                   </tr>
                 ))}

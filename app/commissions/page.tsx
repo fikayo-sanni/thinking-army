@@ -120,7 +120,7 @@ export default function CommissionsPage() {
                   </div>
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30">+{monthlyGrowthRounded}%</Badge>
                 </div>
-                <div className="text-3xl font-bold mb-1 text-white">{formatThousands(Number(totalEarned).toFixed(2))} {currency}</div>
+                <div className="text-3xl font-bold mb-1 text-white">{formatThousands(Number(totalEarned).toFixed(0))} {currency}</div>
                 <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">TOTAL EARNED</div>
               </CardContent>
             </Card>
@@ -134,21 +134,21 @@ export default function CommissionsPage() {
                       <span className="inline-block w-2 h-2 rounded-full bg-[#0846A6] mr-2"></span>
                       <span className="text-[#0846A6] font-bold">C1</span>
                     </span>
-                    <span className="text-white font-medium">{formatThousands(Number(c1Total).toFixed(2))} {currency}</span>
+                    <span className="text-white font-medium">{formatThousands(Number(c1Total).toFixed(0))} {currency}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-[#00B28C] mr-2"></span>
                       <span className="text-[#00B28C] font-bold">C2</span>
                     </span>
-                    <span className="text-white font-medium">{formatThousands(Number(c2Total).toFixed(2))} {currency}</span>
+                    <span className="text-white font-medium">{formatThousands(Number(c2Total).toFixed(0))} {currency}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center space-x-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-[#6F00FF] mr-2"></span>
                       <span className="text-[#6F00FF] font-bold">C3</span>
                     </span>
-                    <span className="text-white font-medium">{formatThousands(Number(c3Total).toFixed(2))} {currency}</span>
+                    <span className="text-white font-medium">{formatThousands(Number(c3Total).toFixed(0))} {currency}</span>
                   </div>
                 </div>
               </CardContent>
@@ -161,7 +161,7 @@ export default function CommissionsPage() {
                     <CheckCircle className="h-6 w-6 text-[#0846A6]" />
                   </div>
                 </div>
-                <div className="text-3xl font-bold mb-1 text-white">{formatThousands(Number(totalEarned).toFixed(2))} {currency}</div>
+                <div className="text-3xl font-bold mb-1 text-white">{formatThousands(Number(totalEarned).toFixed(0))} {currency}</div>
                 <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">PAID</div>
               </CardContent>
             </Card>
