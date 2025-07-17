@@ -18,6 +18,7 @@ import {
   BarChart3,
   Menu,
   X,
+  DollarSign,
 } from "lucide-react"
 import { useState } from "react"
 import { useDashboardStats } from "@/hooks/use-dashboard"
@@ -67,7 +68,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   const quickStats = [
     {
       label: "AllTime VP",
-      value: isDashboardLoading ? <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(dashboardStats?.personalEarnings?.toFixed(2) ?? 0)} VP`,
+      value: isDashboardLoading ? <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(dashboardStats?.personalEarnings?.toFixed(0) ?? 0)} VP`,
       icon: TrendingUp,
       color: "text-[#0846A6]",
     },
@@ -84,6 +85,14 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         : (currentRankData?.name.split(" Member")[0] || "Member"),
       icon: Trophy,
       color: "text-[#FFD700]",
+    },
+    {
+      label: "Own Turnover",
+      value: isDashboardLoading
+        ? <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
+        : formatThousands(dashboardStats?.ownTurnover?.toFixed(2) ?? 0),
+      icon: DollarSign,
+      color: "text-green-800",
     },
   ];
 

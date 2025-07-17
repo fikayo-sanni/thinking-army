@@ -179,7 +179,7 @@ export default function PayoutsPage() {
             <MetricCard
               title="TOTAL AMOUNT"
               value={`${formatThousands(
-                statsData?.totalAmount.toFixed(2) ?? 0
+                Math.floor(Number(statsData?.totalAmount)) ?? 0
               )} VP`}
               icon={CheckCircle}
               change={{
@@ -382,8 +382,7 @@ export default function PayoutsPage() {
                       <td className="px-4 py-2 whitespace-nowrap">
                         {p.transactionHash ? (
                           <a
-                            href={`https://polygonscan.com/tx/${p.transactionHash}`}
-                            target="_blank"
+                            href={`#`}
                             rel="noopener noreferrer"
                             className="text-[#0846A6] underline hover:text-[#00B28C] transition"
                           >

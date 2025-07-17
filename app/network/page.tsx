@@ -25,7 +25,7 @@ export default function NetworkPage() {
   const {
     data: rootDownlines = [],
     isLoading: isLoadingRootDownlines,
-  } = useDirectDownlines(currentUserId)
+  } = useDirectDownlines(String(currentUserId), 0)
 
   if (isLoading || isStatsLoading) {
     return (

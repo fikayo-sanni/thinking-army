@@ -14,6 +14,7 @@ export interface DashboardStats {
   monthlyEarnings: number
   personalEarnings: number
   monthlyGrowth: number
+  ownTurnover: number
   purchases: number
   totalNetworkSize: number
   successRate: number
