@@ -24,6 +24,7 @@ export const DASHBOARD_ENDPOINTS = {
   CHARTS: '/api/v1/dashboard/charts',
   RECENT_ACTIVITY: '/api/v1/dashboard/recent-activity',
   ALL: '/api/v1/dashboard/all',
+  NETWORK_GROWTH: '/api/v1/dashboard/network-growth',
 } as const
 
 // Network endpoints

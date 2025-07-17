@@ -29,6 +29,7 @@ import { useProtectedRoute } from "@/hooks/use-protected-route"
 import { formatThousands, formatShortNumber } from "@/lib/utils"
 import { useTheme } from "@/components/theme/theme-provider"
 import { Button } from "@/components/ui/button"
+import { useNetworkGrowth } from "@/hooks/use-dashboard"
 
 // Helper to safely get a number from recharts payload value
 function safeNumber(val: any): number {
@@ -42,6 +43,7 @@ export default function DashboardPage() {
   useProtectedRoute()
   const [timeFilter, setTimeFilter] = useState("this-week")
   const { data, isLoading, isError, refetch } = useDashboardData(timeFilter)
+  const { data: networkGrowthData, isLoading: isNetworkGrowthLoading, isError: isNetworkGrowthError } = useNetworkGrowth(timeFilter)
   const { theme } = useTheme();
 
   // Extract data safely
@@ -69,6 +71,27 @@ export default function DashboardPage() {
   const totalVP = data?.immediateDownlines?.reduce((sum, d) => sum + Number(d.revenue), 0) ?? 0
   const sortedDownlines = (data?.immediateDownlines?.slice() ?? []).sort((a, b) => Number(b.revenue) - Number(a.revenue));
   const topDownlines = sortedDownlines.slice(0, 4);
+
+  // --- Dynamic scale logic for Purchases in Period ---
+  const purchasesData = charts?.purchasesOverTime || [];
+  const purchaseVals = purchasesData.map(d => d.purchases).filter(v => v > 0);
+  const volumeVals = purchasesData.map(d => d.volume).filter(v => v > 0);
+  const minPurchase = Math.min(...purchaseVals, Infinity);
+  const maxPurchase = Math.max(...purchaseVals, -Infinity);
+  const minVolume = Math.min(...volumeVals, Infinity);
+  const maxVolume = Math.max(...volumeVals, -Infinity);
+  const useLogScalePurchases = minPurchase > 0 && maxPurchase / minPurchase > 100;
+  const useLogScaleVolume = minVolume > 0 && maxVolume / minVolume > 100;
+
+  // --- Dynamic scale logic for Network Growth ---
+  const growthData = networkGrowthData || [];
+  const totalMembersVals = growthData.map(d => d.totalMembers).filter(v => v > 0);
+  const activeMembersVals = growthData.map(d => d.activeMembers).filter(v => v > 0);
+  const minTotalMembers = Math.min(...totalMembersVals, Infinity);
+  const maxTotalMembers = Math.max(...totalMembersVals, -Infinity);
+  const minActiveMembers = Math.min(...activeMembersVals, Infinity);
+  const maxActiveMembers = Math.max(...activeMembersVals, -Infinity);
+  const useLogScaleGrowth = minTotalMembers > 0 && maxTotalMembers / minTotalMembers > 100;
 
   if (isError) {
     return (
@@ -299,6 +322,9 @@ export default function DashboardPage() {
                 />
                 <YAxis
                   yAxisId="left"
+                  scale={useLogScalePurchases ? "log" : "linear"}
+                  domain={useLogScalePurchases ? [1, 'auto'] : ['auto', 'auto']}
+                  allowDataOverflow={useLogScalePurchases}
                   stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                   tickFormatter={formatShortNumber}
@@ -306,6 +332,9 @@ export default function DashboardPage() {
                 <YAxis
                   yAxisId="right"
                   orientation="right"
+                  scale={useLogScaleVolume ? "log" : "linear"}
+                  domain={useLogScaleVolume ? [1, 'auto'] : ['auto', 'auto']}
+                  allowDataOverflow={useLogScaleVolume}
                   stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                   tickFormatter={formatShortNumber}
@@ -460,13 +489,12 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           )}
         </ChartCard>
-
         <ChartCard title="NETWORK GROWTH" description="Your network expansion over time">
-          {isError ? (
+          {isError || isNetworkGrowthError ? (
             <div className="text-red-500">Failed to load chart data.</div>
           ) : (
             <ResponsiveContainer width="100%" height={256}>
-              <LineChart data={(charts as any)?.networkGrowth || []}>
+              <LineChart data={networkGrowthData || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="date"
@@ -474,6 +502,9 @@ export default function DashboardPage() {
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                 />
                 <YAxis
+                  scale={useLogScaleGrowth ? "log" : "linear"}
+                  domain={useLogScaleGrowth ? [1, 'auto'] : ['auto', 'auto']}
+                  allowDataOverflow={useLogScaleGrowth}
                   stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
                   tickFormatter={formatShortNumber}
@@ -483,10 +514,8 @@ export default function DashboardPage() {
                     if (active && payload && payload.length) {
                       const totalMembersRaw = payload.find(p => p.dataKey === 'totalMembers')?.value ?? 0;
                       const activeMembersRaw = payload.find(p => p.dataKey === 'activeMembers')?.value ?? 0;
-                      const newReferralsRaw = payload.find(p => p.dataKey === 'newReferrals')?.value ?? 0;
                       const totalMembers = Math.floor(safeNumber(totalMembersRaw));
                       const activeMembers = Math.floor(safeNumber(activeMembersRaw));
-                      const newReferrals = Math.floor(safeNumber(newReferralsRaw));
                       return (
                         <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
                           <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
@@ -497,10 +526,6 @@ export default function DashboardPage() {
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                             <span>Active Members:</span>
                             <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(activeMembers))}</span>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span>New Referrals:</span>
-                            <span style={{ color: '#6F00FF', fontWeight: 600 }}>{formatThousands(Number(newReferrals))}</span>
                           </div>
                         </div>
                       );

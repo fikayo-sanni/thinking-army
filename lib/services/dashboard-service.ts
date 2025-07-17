@@ -101,4 +101,13 @@ export const dashboardService = {
     const url = `${DASHBOARD_ENDPOINTS.ALL}?timeRange=${timeRange}`
     return apiRequest(url, { method: HTTP_METHODS.GET })
   },
+  async getNetworkGrowth(timeRange: string = 'last-month'): Promise<Array<{
+    date: string
+    totalMembers: number
+    activeMembers: number
+    newReferrals: number
+  }>> {
+    const url = `${DASHBOARD_ENDPOINTS.NETWORK_GROWTH}?timeRange=${timeRange}`
+    return apiRequest(url, { method: HTTP_METHODS.GET })
+  },
 } 

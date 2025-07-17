@@ -44,4 +44,13 @@ export const useRecentActivity = (limit: number = 10) => {
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
   })
+}
+
+export const useNetworkGrowth = (timeRange: string = 'last-month') => {
+  return useQuery({
+    queryKey: ['dashboard', 'network-growth', timeRange],
+    queryFn: () => dashboardService.getNetworkGrowth(timeRange),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  })
 } 
