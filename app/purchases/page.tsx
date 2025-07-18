@@ -22,6 +22,7 @@ import {
   CartesianGrid,
 } from "recharts"
 import { usePurchasesData, usePurchaseHistory } from "@/hooks"
+import { useTimeRange } from "@/hooks/use-time-range"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatThousands, formatShortNumber, groupChartData, formatXAxisLabel } from "@/lib/utils"
 import { Card, CardContent } from '@/components/ui/card'
@@ -39,7 +40,7 @@ const chartConfig = {
 }
 
 export default function PurchasesPage() {
-  const [timeRange, setTimeRange] = useState("this-week")
+  const [timeRange, setTimeRange] = useTimeRange("this-week")
   const [statusFilter, setStatusFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10);

@@ -12,13 +12,14 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight, Coins, AlertTriangle } from "lucide-react"
 import { useCommissionData, useCommissionHistory } from "@/hooks/use-commission"
+import { useTimeRange } from "@/hooks/use-time-range"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { CommissionHistory } from "@/lib/services/commission-service"
 import { formatThousands } from "@/lib/utils"
 
 export default function CommissionsPage() {
   const [typeFilter, setTypeFilter] = useState("all")
-  const [timeRange, setTimeRange] = useState("this-week")
+  const [timeRange, setTimeRange] = useTimeRange("this-week")
   const [statusFilter, setStatusFilter] = useState("all")
   const [currencyFilter, setCurrencyFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)

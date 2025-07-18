@@ -45,12 +45,13 @@ import {
   usePayoutHistory,
   usePayoutStats,
 } from "@/hooks/use-payouts";
+import { useTimeRange } from "@/hooks/use-time-range";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatThousands } from "@/lib/utils";
 
 export default function PayoutsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
-  const [timeRange, setTimeRange] = useState("this-week");
+  const [timeRange, setTimeRange] = useTimeRange("this-week");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 

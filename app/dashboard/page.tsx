@@ -30,6 +30,7 @@ import { formatThousands, formatShortNumber } from "@/lib/utils"
 import { useTheme } from "@/components/theme/theme-provider"
 import { Button } from "@/components/ui/button"
 import { useNetworkGrowth } from "@/hooks/use-dashboard"
+import { useTimeRange } from "@/hooks/use-time-range"
 
 // Helper to safely get a number from recharts payload value
 function safeNumber(val: any): number {
@@ -41,7 +42,7 @@ function safeNumber(val: any): number {
 
 export default function DashboardPage() {
   useProtectedRoute()
-  const [timeFilter, setTimeFilter] = useState("this-week")
+  const [timeFilter, setTimeFilter] = useTimeRange("this-week")
   const { data, isLoading, isError, refetch } = useDashboardData(timeFilter)
   const { data: networkGrowthData, isLoading: isNetworkGrowthLoading, isError: isNetworkGrowthError } = useNetworkGrowth(timeFilter)
   const { theme } = useTheme();
@@ -80,8 +81,8 @@ export default function DashboardPage() {
   const maxPurchase = Math.max(...purchaseVals, -Infinity);
   const minVolume = Math.min(...volumeVals, Infinity);
   const maxVolume = Math.max(...volumeVals, -Infinity);
-  const useLogScalePurchases = minPurchase > 0 && maxPurchase / minPurchase > 100;
-  const useLogScaleVolume = minVolume > 0 && maxVolume / minVolume > 100;
+  const useLogScalePurchases = false; //minPurchase > 0 && maxPurchase / minPurchase > 100;
+  const useLogScaleVolume = false; //minVolume > 0 && maxVolume / minVolume > 100;
 
   // --- Dynamic scale logic for Network Growth ---
   const growthData = networkGrowthData || [];
@@ -91,7 +92,7 @@ export default function DashboardPage() {
   const maxTotalMembers = Math.max(...totalMembersVals, -Infinity);
   const minActiveMembers = Math.min(...activeMembersVals, Infinity);
   const maxActiveMembers = Math.max(...activeMembersVals, -Infinity);
-  const useLogScaleGrowth = minTotalMembers > 0 && maxTotalMembers / minTotalMembers > 100;
+  const useLogScaleGrowth = false; //minTotalMembers > 0 && maxTotalMembers / minTotalMembers > 100;
 
   if (isError) {
     return (
