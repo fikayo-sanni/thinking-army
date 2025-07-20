@@ -37,6 +37,7 @@ export interface NetworkStats {
   totalDirectDownlines: number
   activeMembers: number
   totalReferrals: number
+  totalActiveDownlines: number
   networkDepth: number
   monthlyGrowth: number
 }

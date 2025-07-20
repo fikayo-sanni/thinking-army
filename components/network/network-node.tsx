@@ -26,13 +26,15 @@ interface NetworkUser {
 
 interface NetworkNodeProps {
   user: NetworkUser
+  sponsor?: NetworkUser
   totalReferrals?: number
   isExpanded?: boolean
   onToggle?: () => void
   direction: "up" | "down"
+  isSponsorNode?: boolean
 }
 
-export function NetworkNode({ user, isExpanded = false, onToggle, direction, totalReferrals = 0 }: NetworkNodeProps) {
+export function NetworkNode({ user, sponsor, isExpanded = false, onToggle, direction, totalReferrals = 0, isSponsorNode = false }: NetworkNodeProps) {
   const PAGE_SIZE = 20;
   const [expanded, setExpanded] = useState(isExpanded)
   const [page, setPage] = useState(1)
@@ -101,6 +103,24 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction, tot
     .map((n) => n[0])
     .join("")
 
+  // If sponsor is provided, render sponsor node above user node
+  if (sponsor) {
+    return (
+      <div className="relative">
+        {/* Sponsor Node */}
+        <div className="relative">
+          <NetworkNode user={sponsor} direction="down" isSponsorNode={true} />
+        </div>
+        {/* Connecting line from sponsor to user */}
+        <div className="flex flex-col items-center">
+          <div className="w-px h-4 dark:bg-[#2C2F3C] bg-[#E5E7EB] mx-auto" />
+        </div>
+        {/* User Node (without sponsor prop to avoid infinite loop) */}
+        <NetworkNode user={user} direction={direction} totalReferrals={totalReferrals} isExpanded={isExpanded} onToggle={onToggle} />
+      </div>
+    )
+  }
+
   return (
     <div className="relative">
       {/* Connection Line */}
@@ -145,17 +165,20 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction, tot
               </div>
               <div className="flex items-center space-x-4 text-xs text-[#A0AFC0]">
                 <span className="font-mono">{displayIdentifier}</span>
-                <div className="flex items-center space-x-1">
+                {user.joinDate && <div className="flex items-center space-x-1">
                   <Calendar className="h-3 w-3" />
                   <span>{user.joinDate}</span>
-                </div>
+                </div>}
               </div>
             </div>
 
             {/* Level and Stats */}
             <div className="text-right">
-              <Badge className="bg-[#0846A6]/20 text-[#0846A6] border-[#0846A6]/30 mb-2">L{user.level}</Badge>
-              <div className="flex items-center space-x-3 text-xs text-[#A0AFC0]">
+              {/* Only show level badge if not sponsor node */}
+              {!isSponsorNode ? (
+                <Badge className="bg-[#0846A6]/20 text-[#0846A6] border-[#0846A6]/30 mb-2">{user.level> 0 ? `L${user.level}`: "ME" }</Badge>
+              ): <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30">SPONSOR</Badge>}
+              {!isSponsorNode && <div className="flex items-center space-x-3 text-xs text-[#A0AFC0]">
                 <div className="flex items-center space-x-1">
                   <Award className="h-3 w-3" />
                   <span>{user.rank}</span>
@@ -164,7 +187,7 @@ export function NetworkNode({ user, isExpanded = false, onToggle, direction, tot
                   <Users className="h-3 w-3" />
                   <span>{user.totalReferrals || totalReferrals}</span>
                 </div>
-              </div>
+              </div>}
             </div>
           </div>
         </CardContent>
