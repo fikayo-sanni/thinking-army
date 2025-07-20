@@ -27,6 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { formatThousands } from "@/lib/utils"
 import { useQuery } from '@tanstack/react-query'
 import { ranksService } from '@/lib/services/ranks-service'
+import { useTimeRange } from "@/hooks/use-time-range"
 
 interface ModernSidebarProps {
   children: React.ReactNode
@@ -53,8 +54,9 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   };
 
   // Fetch live stats
-  const { data: dashboardStats, isLoading: isDashboardLoading } = useDashboardStats();
-  const { data: networkStats, isLoading: isNetworkLoading } = useNetworkStats();
+  const [timeRange] = useTimeRange("this-week")
+  const { data: dashboardStats, isLoading: isDashboardLoading } = useDashboardStats(timeRange);
+  const { data: networkStats, isLoading: isNetworkLoading } = useNetworkStats(timeRange);
 
   // Fetch current rank using React Query
   const { data: currentRankData, isLoading: isCurrentRankLoading } = useQuery({

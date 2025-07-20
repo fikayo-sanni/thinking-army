@@ -19,10 +19,10 @@ export const useDashboardOverview = () => {
   })
 }
 
-export const useDashboardStats = () => {
+export const useDashboardStats = (timeRange?: string) => {
   return useQuery({
-    queryKey: ['dashboard', 'stats'],
-    queryFn: () => dashboardService.getStats(),
+    queryKey: ['dashboard', 'stats', timeRange],
+    queryFn: () => dashboardService.getStats(timeRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   })

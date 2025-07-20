@@ -73,8 +73,11 @@ export const dashboardService = {
   async getOverview(): Promise<DashboardOverview> {
     return apiRequest<DashboardOverview>(DASHBOARD_ENDPOINTS.OVERVIEW, { method: HTTP_METHODS.GET })
   },
-  async getStats(): Promise<DashboardStats> {
-    return apiRequest<DashboardStats>(DASHBOARD_ENDPOINTS.STATS, { method: HTTP_METHODS.GET })
+  async getStats(timeRange?: string): Promise<DashboardStats> {
+    const url = timeRange
+      ? `${DASHBOARD_ENDPOINTS.STATS}?timeRange=${timeRange}`
+      : DASHBOARD_ENDPOINTS.STATS
+    return apiRequest<DashboardStats>(url, { method: HTTP_METHODS.GET })
   },
   async getCharts(timeRange: string = 'last-month'): Promise<DashboardCharts> {
     const url = `${DASHBOARD_ENDPOINTS.CHARTS}?timeRange=${timeRange}`

@@ -3,6 +3,9 @@ import { apiRequest } from '../utils'
 
 // Types for commission data
 export interface CommissionHistory {
+  commission_percentage: number
+  volume_amount: number
+  reference_text: string
   id: string
   date: string
   amount: number
@@ -11,6 +14,7 @@ export interface CommissionHistory {
   status: 'completed' | 'pending' | 'failed'
   description: string
   currency: string
+  token_id?: string
 }
 
 export interface CommissionEarnings {
@@ -67,7 +71,8 @@ export const commissionService = {
     type?: string,
     status?: string,
     page: number = 1,
-    limit: number = 20
+    limit: number = 20,
+    currency?: string
   ): Promise<{
     commissions: CommissionHistory[]
     total: number
@@ -83,6 +88,7 @@ export const commissionService = {
     if (timeRange) params.append('timeRange', timeRange)
     if (type) params.append('type', type)
     if (status) params.append('status', status)
+    if (currency && currency !== 'all') params.append('currency', currency)
 
     const url = `${COMMISSION_ENDPOINTS.HISTORY}?${params.toString()}`
     return apiRequest(url, { method: HTTP_METHODS.GET })
@@ -151,6 +157,7 @@ export const commissionService = {
     timeRange?: string
     type?: string
     status?: string
+    currency?: string
   }): Promise<Blob> {
     const params = new URLSearchParams({ format })
     
@@ -158,6 +165,7 @@ export const commissionService = {
       if (filters.timeRange) params.append('timeRange', filters.timeRange)
       if (filters.type) params.append('type', filters.type)
       if (filters.status) params.append('status', filters.status)
+      if (filters.currency && filters.currency !== 'all') params.append('currency', filters.currency)
     }
 
     const url = `${COMMISSION_ENDPOINTS.HISTORY}/export?${params.toString()}`

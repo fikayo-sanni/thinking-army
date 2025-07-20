@@ -15,11 +15,12 @@ export const useCommissionHistory = (
   type?: string,
   status?: string,
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
+  currency?: string
 ) => {
   return useQuery({
-    queryKey: ['commission', 'history', timeRange, type, status, page, limit],
-    queryFn: () => commissionService.getHistory(timeRange, type, status, page, limit),
+    queryKey: ['commission', 'history', timeRange, type, status, page, limit, currency],
+    queryFn: () => commissionService.getHistory(timeRange, type, status, page, limit, currency),
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
   })

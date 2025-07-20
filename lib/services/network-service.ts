@@ -73,8 +73,11 @@ export const networkService = {
   },
 
   // Get network statistics
-  async getStats(): Promise<NetworkStats> {
-    return apiRequest<NetworkStats>(NETWORK_ENDPOINTS.STATS, { method: HTTP_METHODS.GET })
+  async getStats(timeRange?: string): Promise<NetworkStats> {
+    const url = timeRange
+      ? `${NETWORK_ENDPOINTS.STATS}?timeRange=${timeRange}`
+      : NETWORK_ENDPOINTS.STATS
+    return apiRequest<NetworkStats>(url, { method: HTTP_METHODS.GET })
   },
 
   // Send invitation

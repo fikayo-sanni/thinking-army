@@ -551,15 +551,6 @@ export default function DashboardPage() {
                 />
                 <Line
                   type="monotone"
-                  dataKey="activeMembers"
-                  stroke={chartColors.secondary}
-                  strokeWidth={2}
-                  dot={{ fill: chartColors.secondary, strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: chartColors.secondary, strokeWidth: 2 }}
-                  name="Active Members"
-                />
-                <Line
-                  type="monotone"
                   dataKey="newReferrals"
                   stroke={chartColors.tertiary}
                   strokeWidth={2}
