@@ -28,6 +28,18 @@ import { formatThousands, formatShortNumber, groupChartData, formatXAxisLabel } 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
+const categoryNames: Record<string, string> = {
+  '1': 'Star',
+  '2': 'SuperStar',
+  '3': 'GensisStar',
+  '20': 'SupraStar',
+  '90': 'PowerStar',
+  '91': 'PowerStar',
+  '92': 'PowerStar',
+  '93': 'PowerStar',
+  '94': 'PowerStar',
+};
+
 const chartConfig = {
   purchases: {
     label: "Purchases",
@@ -272,7 +284,7 @@ export default function PurchasesPage() {
         {/* Purchases Table Block */}
         <DataTableCard
           title="NETWORK ACTIVITY HISTORY"
-          subtitle={`Showing ${purchases.length} of ${historyData?.total || 0} purchases`}
+          subtitle={`Showing ${Number(purchases.length)} of ${formatThousands(Number(historyData?.total || 0))} transactions`}
           showExport
           onExport={() => console.log("Export data")}
         >
@@ -281,8 +293,8 @@ export default function PurchasesPage() {
               <thead>
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Date</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Token ID</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Amount</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Item ID</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Volume Points</th>
                   <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Buyer</th>
                 </tr>
               </thead>
@@ -296,9 +308,14 @@ export default function PurchasesPage() {
                         year: "numeric",
                       })}
                     </td>
-                    <td className="px-4 py-2 dark:text-white font-medium uppercase">{purchase.tokenId}</td>
+                    <td className="px-4 py-2 dark:text-white font-medium"><a
+                          href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${purchase.tokenId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-[#0846A6] hover:underline hover:text-[#00B28C] transition"
+                        >{categoryNames[purchase.category] || purchase.category} #{purchase.tokenId}</a></td>
                     <td className="px-4 py-2 dark:text-[#0846A6] font-bold">{formatThousands(parseInt(String(purchase.amount)))} {purchase.currency}</td>
-                    <td className="px-4 py-2 dark:text-[#A0AFC0]">{purchase.source}</td>
+                    <td className="px-4 py-2 dark:text-[#A0AFC0]">{purchase.source} (Level:{purchase.level})</td>
                   </tr>
                 ))}
               </tbody>
@@ -315,7 +332,7 @@ export default function PurchasesPage() {
           {/* Pagination styled like commissions page */}
           <div className="flex items-center justify-between mt-4">
             <div className="flex-1 text-[#A0AFC0] text-sm">
-              Page {currentPage} of {totalPages} ({historyData?.total || 0} total results)
+              Page {formatThousands(currentPage)} of {formatThousands(totalPages)} ({formatThousands(historyData?.total || 0)} total results)
             </div>
             <div className="flex items-center space-x-4 justify-end">
               {/* Items per page dropdown */}
@@ -353,7 +370,7 @@ export default function PurchasesPage() {
                   className="px-3 py-2 rounded-lg border text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6]"
                   disabled
                 >
-                  {currentPage}
+                  {formatThousands(currentPage)}
                 </button>
               )}
               {/* Ellipsis if needed */}
@@ -365,7 +382,7 @@ export default function PurchasesPage() {
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={currentPage === totalPages}
                 >
-                  {totalPages}
+                  {formatThousands(totalPages)}
                 </button>
               )}
               <button

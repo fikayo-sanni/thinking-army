@@ -7,6 +7,8 @@ export interface PurchaseHistory {
   date: string
   tokenId: string
   amount: number
+  category: string
+  level: number
   status: 'completed' | 'pending' | 'failed'
   currency: string
   source: string

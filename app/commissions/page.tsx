@@ -311,7 +311,8 @@ export default function CommissionsPage() {
                       <td className="px-4 py-2 whitespace-nowrap dark:text-[#0846A6] font-bold">{formatThousands(c.amount.toFixed(2))} {c.currency}</td>
                       <td className="px-4 py-2 whitespace-nowrap dark:text-[#A0AFC0] text-sm max-w-48 truncate" title={c.description}>
                         {c.commission_percentage * 100}% on {(formatThousands(c.volume_amount.toFixed(0)))} VP for star <a
-                          href={`#`}
+                          href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${c.token_id}`}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-[#0846A6] underline hover:text-[#00B28C] transition"
                         >#{c.token_id}</a>
