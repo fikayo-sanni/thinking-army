@@ -240,16 +240,16 @@ export default function PurchasesPage() {
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="dark:bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-3 shadow-lg">
-                          <div className="dark:text-white font-medium mb-2">{label}</div>
+                        <div className="dark:bg-[#1A1E2D] bg-white border border-[#2C2F3C] rounded-lg p-3 shadow-lg">
+                          <div className="dark:text-white text-black font-medium mb-2">{label}</div>
                           <div className="space-y-1">
                             <div className="flex justify-between text-sm">
                               <span className="text-[#0846A6]">Purchases:</span>
-                              <span className="text-white font-medium">{formatThousands(String(payload[0]?.value))}</span>
+                              <span className="dark:text-white text-black font-medium">{formatThousands(String(payload[0]?.value))}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                               <span className="text-[#00B28C]">Volume:</span>
-                              <span className="text-white font-medium">{formatThousands(String(parseInt(String(payload[1]?.value))))} VP</span>
+                              <span className="dark:text-white text-black font-medium">{formatThousands(String(parseInt(String(payload[1]?.value))))} VP</span>
                             </div>
                           </div>
                         </div>
