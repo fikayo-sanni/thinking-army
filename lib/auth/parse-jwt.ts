@@ -1,4 +1,4 @@
-export const parseJwt = (token: string): { nickslug?: string; sponsor?: string; } => {
+export const parseJwt = (token: string): { nickslug?: string; sponsor?: string; sub?: string } => {
     let parsedToken = {};
     try {
         const base64Url = token.split('.')[1];

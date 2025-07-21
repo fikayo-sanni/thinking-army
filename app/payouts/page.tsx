@@ -203,47 +203,6 @@ export default function PayoutsPage() {
         <FilterControls>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-[#A0AFC0]" />
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] dark:text-white">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
-                  <SelectItem
-                    value="all"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    All Statuses
-                  </SelectItem>
-                  <SelectItem
-                    value="completed"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    Completed
-                  </SelectItem>
-                  <SelectItem
-                    value="pending"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    Pending
-                  </SelectItem>
-                  <SelectItem
-                    value="processing"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    Processing
-                  </SelectItem>
-                  <SelectItem
-                    value="failed"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    Failed
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center space-x-2">
               <CalendarDays className="h-4 w-4 text-[#A0AFC0]" />
               <Select value={timeRange} onValueChange={setTimeRange}>
                 <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">

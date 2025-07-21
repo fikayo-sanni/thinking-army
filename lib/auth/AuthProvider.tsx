@@ -4,21 +4,30 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { User } from 'oidc-client-ts';
 import { parseJwt } from './parse-jwt';
 import { oidcUserManager } from './oidc';
+import { useRouter } from 'next/navigation';
+import { authService } from '@/lib/services/auth-service';
 
 interface AuthContextValue {
   user: User | null;
   status: string;
   login(): void;
   logout(): void;
+  youreId?: string;
+  isAuthenticated(): boolean;
 }
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<string>('');
   const [processingCallback, setProcessingCallback] = useState<boolean>(false);
+  const [youreId, setYoureId] = useState<string | undefined>(undefined);
+  const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
 
-  const handleUser = useCallback((u: User | null) => {
+  const isAuthenticated = () => !!user;
+
+  const handleUser = useCallback(async (u: User | null) => {
+    let parsed: any = {};
     setUser(prevUser => {
       // Explicitly avoid updating if the user hasn't changed
       if (prevUser?.id_token === u?.id_token) {
@@ -27,22 +36,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!u) {
         window.localStorage.removeItem('jwt');
+        setYoureId(undefined);
         return null;
       }
 
       const idToken = u.id_token || '';
-      const parsed = parseJwt(idToken);
+      parsed = parseJwt(idToken);
       if (!parsed.nickslug || !parsed.sponsor) {
         window.localStorage.removeItem('jwt');
         setStatus('Your account is not authorised');
         setTimeout(() => oidcUserManager.signoutRedirect(), 5000);
+        setYoureId(undefined);
         return null;
       }
 
       window.localStorage.setItem('jwt', idToken);
+      setYoureId(parsed.sub);
       return u;
     });
-  }, []);
+    // After setting user and youreId, login to backend if not already
+    if (u && parsed.nickslug && typeof window !== 'undefined') {
+      if (!localStorage.getItem('authToken')) {
+        try {
+          await authService.loginWithYoureId(parsed.sub);
+        } catch (e) {
+          console.error('Backend login failed', e);
+        }
+      }
+      if (router) {
+        router.replace('/dashboard');
+      }
+    }
+  }, [router]);
 
   // Explicitly handle redirect callbacks, setting processing flag
   useEffect(() => {
@@ -109,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [handleUser, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, status, login, logout }}>
+    <AuthContext.Provider value={{ user, status, login, logout, youreId, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

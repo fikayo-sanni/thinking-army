@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 
 function AuthGate({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, youreId } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
@@ -47,12 +47,13 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isMounted) return;
     if (isPublicRoute && authenticated) {
+
       router.replace("/dashboard");
     }
     if (!isPublicRoute && !authenticated) {
       router.replace("/login");
     }
-  }, [pathname, authenticated, isPublicRoute, router, isMounted]);
+  }, [pathname, authenticated, isPublicRoute, router, isMounted, youreId]);
 
   if (!isMounted) return null;
 

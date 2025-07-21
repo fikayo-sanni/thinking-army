@@ -31,6 +31,8 @@ import { useTheme } from "@/components/theme/theme-provider"
 import { Button } from "@/components/ui/button"
 import { useNetworkGrowth } from "@/hooks/use-dashboard"
 import { useTimeRange } from "@/hooks/use-time-range"
+import { useProfile } from '@/hooks/use-auth';
+import { addWeeks, addMonths, isBefore, format, parseISO } from 'date-fns';
 
 // Helper to safely get a number from recharts payload value
 function safeNumber(val: any): number {
@@ -45,6 +47,7 @@ export default function DashboardPage() {
   const [timeFilter, setTimeFilter] = useTimeRange("this-week")
   const { data, isLoading, isError, refetch } = useDashboardData(timeFilter)
   const { data: networkGrowthData, isLoading: isNetworkGrowthLoading, isError: isNetworkGrowthError } = useNetworkGrowth(timeFilter)
+  const { data: profileData } = useProfile();
   const { theme } = useTheme();
 
   // Extract data safely
@@ -93,6 +96,32 @@ export default function DashboardPage() {
   const minActiveMembers = Math.min(...activeMembersVals, Infinity);
   const maxActiveMembers = Math.max(...activeMembersVals, -Infinity);
   const useLogScaleGrowth = false; //minTotalMembers > 0 && maxTotalMembers / minTotalMembers > 100;
+
+  // --- Network Growth Data Grouping ---
+  let processedGrowthData = [];
+  if (networkGrowthData && profileData?.joinDate) {
+    const joinDate = parseISO(profileData.joinDate);
+    const now = new Date();
+    let current = joinDate;
+    let weekCount = 0;
+    // Weekly for first 12 weeks
+    while (weekCount < 12 && isBefore(current, now)) {
+      const weekLabel = format(current, 'MMM d, yyyy');
+      const dataPoint = networkGrowthData.find(d => d.date === weekLabel);
+      processedGrowthData.push(dataPoint || { date: weekLabel, totalMembers: 0 });
+      current = addWeeks(current, 1);
+      weekCount++;
+    }
+    // Monthly after 12 weeks
+    while (isBefore(current, now)) {
+      const monthLabel = format(current, 'MMM yyyy');
+      const dataPoint = networkGrowthData.find(d => d.date === monthLabel);
+      processedGrowthData.push(dataPoint || { date: monthLabel, totalMembers: 0 });
+      current = addMonths(current, 1);
+    }
+  } else {
+    processedGrowthData = networkGrowthData || [];
+  }
 
   if (isError) {
     return (
@@ -495,7 +524,7 @@ export default function DashboardPage() {
             <div className="text-red-500">Failed to load chart data.</div>
           ) : (
             <ResponsiveContainer width="100%" height={256}>
-              <LineChart data={networkGrowthData || []}>
+              <LineChart data={processedGrowthData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
                 <XAxis
                   dataKey="date"
@@ -514,19 +543,13 @@ export default function DashboardPage() {
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       const totalMembersRaw = payload.find(p => p.dataKey === 'totalMembers')?.value ?? 0;
-                      const activeMembersRaw = payload.find(p => p.dataKey === 'activeMembers')?.value ?? 0;
                       const totalMembers = Math.floor(safeNumber(totalMembersRaw));
-                      const activeMembers = Math.floor(safeNumber(activeMembersRaw));
                       return (
                         <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
                           <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                             <span>Total Members:</span>
                             <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(totalMembers))}</span>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span>Active Members:</span>
-                            <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(activeMembers))}</span>
                           </div>
                         </div>
                       );
@@ -548,15 +571,6 @@ export default function DashboardPage() {
                   dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: chartColors.primary, strokeWidth: 2 }}
                   name="Total Members"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="newReferrals"
-                  stroke={chartColors.tertiary}
-                  strokeWidth={2}
-                  dot={{ fill: chartColors.tertiary, strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: chartColors.tertiary, strokeWidth: 2 }}
-                  name="New Referrals"
                 />
               </LineChart>
             </ResponsiveContainer>
