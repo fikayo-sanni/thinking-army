@@ -384,8 +384,8 @@ export default function DashboardPage() {
                             <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(purchases))}</span>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span>Volume:</span>
-                            <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(volume))} VP</span>
+                            <span className="px-2">Volume:</span>
+                            <span style={{ color: '#00B28C', fontWeight: 600 }}> {formatThousands(Number(volume))} VP</span>
                           </div>
                         </div>
                       );
