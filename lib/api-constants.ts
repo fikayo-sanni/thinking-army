@@ -1,5 +1,5 @@
 // API Base URL - Update this based on your backend environment
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://reports.backend.gamescoin.com'
 
 // Debug logging for API configuration
 console.log('API Configuration:', {
