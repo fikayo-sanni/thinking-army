@@ -53,18 +53,18 @@ export interface AllRanksData {
 
 export const ranksService = {
   async getAllRanksData(): Promise<AllRanksData> {
-    return apiRequest('/api/v1/ranks/all')
+    return apiRequest('api/v1/ranks/all')
   },
   async getCurrentRank(): Promise<Rank> {
-    return apiRequest('/api/v1/ranks/current')
+    return apiRequest('api/v1/ranks/current')
   },
   async getNextRankRequirements(): Promise<Rank> {
-    return apiRequest('/api/v1/ranks/next')
+    return apiRequest('api/v1/ranks/next')
   },
   async getRankHistory(): Promise<Rank[]> {
-    return apiRequest('/api/v1/ranks/history')
+    return apiRequest('api/v1/ranks/history')
   },
   async getAllRanks(): Promise<Rank[]> {
-    return apiRequest('/api/v1/ranks/list')
+    return apiRequest('api/v1/ranks/list')
   },
 } 
