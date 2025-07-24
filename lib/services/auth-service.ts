@@ -112,6 +112,22 @@ export const authService = {
   },
 
   // Login with youre_id (for reports-service placeholder auth)
+  async adminLogin(email: string, password: string, youre_id: string): Promise<{ token: string }> {
+    const response = await apiRequest<{ token: string }>(AUTH_ENDPOINTS.ADMIN_LOGIN, {
+      method: "POST",
+      body: JSON.stringify({ youre_id, email, password }),
+    });
+
+    if (!response?.token) {
+      throw new Error("Invalid token response");
+    }
+
+
+    localStorage.setItem("authToken", response.token);
+    return response;
+  },
+
+  // Login with youre_id (for reports-service placeholder auth)
   async loginWithYoureId(youre_id: string): Promise<{ token: string }> {
     const response = await apiRequest<{ token: string }>(AUTH_ENDPOINTS.LOGIN, {
       method: HTTP_METHODS.POST,

@@ -123,8 +123,12 @@ export async function apiRequest<T>(
       // Remove session/token
       localStorage.removeItem('authToken');
       // Optionally clear other session data here
-      // Redirect to login
-      window.location.href = '/login';
+      
+      // Only redirect to admin if we're not already on the admin page
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/admin')) {
+        window.location.href = '/admin';
+      }
+      
       throw new Error('Unauthorized');
     }
 

@@ -23,7 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <AuthGate>{children}</AuthGate>
+              <AuthGate>
+                {children}
+              </AuthGate>
             </AuthProvider>
           </QueryClientProvider>
         </ThemeProvider>
@@ -33,29 +35,40 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 
 function AuthGate({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, youreId } = useAuth();
+  const { isAuthenticated, processingCallback } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => { setIsMounted(true); }, []);
+  useEffect(() => { 
+    // Small delay to ensure localStorage is ready
+    const timer = setTimeout(() => setIsMounted(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const publicRoutes = ["/login", "/"];
+  const publicRoutes = ["/admin", "/"];
   const isPublicRoute = publicRoutes.includes(pathname);
   const authenticated = isMounted ? isAuthenticated() : false;
 
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isMounted || processingCallback) return; // Don't redirect during OIDC callback processing
+    
     if (isPublicRoute && authenticated) {
-
       router.replace("/dashboard");
     }
     if (!isPublicRoute && !authenticated) {
-      router.replace("/login");
+      router.replace("/");
     }
-  }, [pathname, authenticated, isPublicRoute, router, isMounted, youreId]);
+  }, [pathname, authenticated, isPublicRoute, router, isMounted, processingCallback]);
 
   if (!isMounted) return null;
+  
+  // Show loading during OIDC callback processing
+  if (processingCallback) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="text-lg">Processing login...</div>
+    </div>;
+  }
 
   if (isPublicRoute) {
     return <>{children}</>;

@@ -11,6 +11,7 @@ console.log('API Configuration:', {
 // Auth endpoints
 export const AUTH_ENDPOINTS = {
   LOGIN: 'auth/login',
+  ADMIN_LOGIN: 'auth/admin/login',
   REGISTER: 'auth/register',
   LOGOUT: 'auth/logout',
   REFRESH: 'auth/refresh',

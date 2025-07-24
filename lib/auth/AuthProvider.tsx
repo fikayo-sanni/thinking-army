@@ -14,6 +14,7 @@ interface AuthContextValue {
   logout(): void;
   youreId?: string;
   isAuthenticated(): boolean;
+  processingCallback: boolean;
 }
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -24,7 +25,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [youreId, setYoureId] = useState<string | undefined>(undefined);
   const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
 
-  const isAuthenticated = () => !!user;
+  const isAuthenticated = () => {
+    // Check for OIDC user OR stored auth token
+    if (!!user) return true;
+    if (typeof window !== 'undefined') {
+      return !!localStorage.getItem('authToken');
+    }
+    return false;
+  };
 
   const handleUser = useCallback(async (u: User | null) => {
     let parsed: any = {};
@@ -105,7 +113,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   const login = () => oidcUserManager.signinRedirect();
-  const logout = () => oidcUserManager.signoutRedirect();
+  const logout = () => {
+    const wasOidcUser = !!user;
+    const wasAdminUser = !user && typeof window !== 'undefined' && !!localStorage.getItem('authToken');
+    
+    // Clear admin auth token if present
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
+    }
+    
+    // Clear OIDC user state
+    setUser(null);
+    setYoureId(undefined);
+    
+    // Redirect based on user type
+    if (wasOidcUser) {
+      // For OIDC users, do OIDC logout which redirects to landing page
+      oidcUserManager.signoutRedirect();
+    } else if (wasAdminUser) {
+      // For admin users, redirect to admin login page
+      if (router) {
+        router.replace('/admin');
+      }
+    } else {
+      // Default fallback to landing page
+      if (router) {
+        router.replace('/');
+      }
+    }
+  };
 
   useEffect(() => {
     const mgr = oidcUserManager;
@@ -134,7 +171,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [handleUser, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, status, login, logout, youreId, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, status, login, logout, youreId, isAuthenticated, processingCallback }}>
       {children}
     </AuthContext.Provider>
   );
