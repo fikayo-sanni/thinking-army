@@ -37,7 +37,11 @@ export interface PendingPayout {
 
 export interface PayoutStats {
   totalPayouts: number
+  totalPayoutsChange: number
   totalAmount: number
+  totalAmountChange: number
+  payoutAmount: number
+  payoutAmountChange: number
   pendingAmount: number
   successRate: number
   averagePayout: number

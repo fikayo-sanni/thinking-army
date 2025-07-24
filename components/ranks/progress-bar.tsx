@@ -30,7 +30,7 @@ export function ProgressBar({ label, current, target, unit = "", color = "bg-[#0
         />
       </div>
       <div className="text-xs text-[#A0AFC0]">
-        {percentage.toFixed(1)}% Complete
+        {percentage.toFixed(2)}% Complete
         {isComplete && " ✓"}
       </div>
     </div>

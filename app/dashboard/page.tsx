@@ -222,12 +222,18 @@ export default function DashboardPage() {
                 <MetricCardContent title="TOTAL PURCHASES IN PERIOD"
                   value={formatThousands(Number(stats?.purchases || 0)) ?? 0}
                   icon={TrendingUp}
-                  change={{ value: `+${formatThousands(Number(stats?.successRate) > 100? 100 :stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }} />
+                  change={{ 
+                    value: `${stats?.purchasesChange >= 0 ? '+' : ''}${stats?.purchasesChange?.toFixed(2) ?? 0}%`, 
+                    type: (stats?.purchasesChange ?? 0) >= 0 ? "positive" : "negative" 
+                  }} />
 
                 <MetricCardContent title="TOTAL VP IN PERIOD"
                   value={formatThousands(Math.floor(Number(stats?.monthlyEarnings||0))) ?? 0}
                   icon={TrendingUp}
-                  change={{ value: `+${formatThousands(Number(stats?.successRate) > 100? 100 :stats?.successRate.toFixed(2) ?? 0)}%`, type: "positive" }} />
+                  change={{ 
+                    value: `${stats?.vpChange >= 0 ? '+' : ''}${stats?.vpChange?.toFixed(2) ?? 0}%`, 
+                    type: (stats?.vpChange ?? 0) >= 0 ? "positive" : "negative" 
+                  }} />
               </div>
             </CardContent>
           </Card>

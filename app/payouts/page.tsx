@@ -169,12 +169,12 @@ export default function PayoutsPage() {
             <MetricCard
               title="TOTAL PAYOUTS"
               value={`${formatThousands(
-                statsData?.totalPayouts.toFixed(2) ?? 0
+                statsData?.totalPayouts ?? 0
               )}`}
               icon={TrendingUp}
               change={{
-                value: `+${statsData?.monthlyGrowth.toFixed(2) ?? 0}%`,
-                type: "positive",
+                value: `${(statsData?.totalPayoutsChange?? 0) >= 0 ? '+' : ''}${statsData?.totalPayoutsChange?.toFixed(2) ?? 0}%`,
+                type: (statsData?.totalPayoutsChange ?? 0) >= 0 ? "positive" : "negative",
               }}
             />
             <MetricCard
@@ -184,14 +184,14 @@ export default function PayoutsPage() {
               )} VP`}
               icon={CheckCircle}
               change={{
-                value: `+${statsData?.monthlyGrowth.toFixed(2) ?? 0}%`,
-                type: "positive",
+                value: `${(statsData?.totalAmountChange ?? 0) >= 0 ? '+' : ''}${(statsData?.totalAmountChange ?? 0).toFixed(2)}%`,
+                type: (statsData?.totalAmountChange ?? 0) >= 0 ? "positive" : "negative",
               }}
             />
             <MetricCard
               title="PENDING PAYOUTS"
               value={`${formatThousands(
-                statsData?.pendingAmount.toFixed(2) ?? 0
+                statsData?.pendingAmount?.toFixed(2) ?? 0
               )} VP`}
               icon={Clock}
               change={{ value: "PROCESSING", type: "neutral" }}

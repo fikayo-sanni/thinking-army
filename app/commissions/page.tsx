@@ -55,7 +55,7 @@ export default function CommissionsPage() {
   const c3Total = summaryData?.stats.totalC3 ?? 0
   const currency = summaryData?.earnings?.currency || 'VP'
   const monthlyGrowth = summaryData?.stats?.monthlyGrowth ?? 0
-  const monthlyGrowthRounded = Number(monthlyGrowth).toFixed(2)
+  const monthlyGrowthRounded = `${monthlyGrowth >= 0 ? '+' : ''}${monthlyGrowth.toFixed(2)}`
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -120,7 +120,7 @@ export default function CommissionsPage() {
                 <div className="p-2 rounded-lg bg-[#0846A6]/10">
                   <TrendingUp className="h-6 w-6 text-[#0846A6]" />
                 </div>
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">+{monthlyGrowthRounded}%</Badge>
+                <Badge className={monthlyGrowth >= 0 ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"}>{monthlyGrowthRounded}%</Badge>
               </div>
               <div className="text-3xl font-bold mb-1 text-white">{formatThousands(Number(totalEarned).toFixed(0))} {currency}</div>
               <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">TOTAL EARNED</div>

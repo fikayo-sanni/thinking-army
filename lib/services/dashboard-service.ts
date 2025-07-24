@@ -16,6 +16,8 @@ export interface DashboardStats {
   monthlyGrowth: number
   ownTurnover: number
   purchases: number
+  purchasesChange: number
+  vpChange: number
   totalNetworkSize: number
   successRate: number
   immediateDownlines?: Array<{

@@ -39,13 +39,13 @@ export function formatShortNumber(value: string | number): string {
   const number = typeof value === 'string' ? parseFloat(value) : value;
   if (isNaN(number)) return String(value);
   if (Math.abs(number) >= 1_000_000_000) {
-    return (number / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+    return (number / 1_000_000_000).toFixed(2).replace(/\.0$/, '') + 'B';
   }
   if (Math.abs(number) >= 1_000_000) {
-    return (number / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    return (number / 1_000_000).toFixed(2).replace(/\.0$/, '') + 'M';
   }
   if (Math.abs(number) >= 1_000) {
-    return (number / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return (number / 1_000).toFixed(2).replace(/\.0$/, '') + 'K';
   }
   return String(number);
 }
@@ -142,4 +142,25 @@ export async function apiRequest<T>(
     // Optionally handle other errors here
     throw error
   }
+}
+
+export function calculatePercentageChange(current: number, previous: number): number {
+  if (previous === 0) {
+    return current > 0 ? 100 : 0;
+  }
+  return ((current - previous) / previous) * 100;
+}
+
+export function getTimeRangeDescription(timeRange: string): { current: string; previous: string } {
+  const descriptions = {
+    'all-time': { current: 'all time', previous: 'baseline' },
+    'this-week': { current: 'this week', previous: 'last week' },
+    'last-week': { current: 'last week', previous: 'the week before' },
+    'this-month': { current: 'this month', previous: 'last month' },
+    'last-month': { current: 'last month', previous: 'the month before' },
+    'this-quarter': { current: 'this quarter', previous: 'last quarter' },
+    'last-quarter': { current: 'last quarter', previous: 'the quarter before' },
+  };
+  
+  return descriptions[timeRange as keyof typeof descriptions] || { current: 'current period', previous: 'previous period' };
 }

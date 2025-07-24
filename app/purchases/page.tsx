@@ -166,7 +166,7 @@ export default function PurchasesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <SummaryCard
             title="TOTAL VOLUME POINTS IN PERIOD"
-            value={`${formatThousands(parseInt(overview?.totalSpent.toFixed(1)) || '0.0')} ${overview?.currency || 'VP'}`}
+            value={`${formatThousands(parseInt(overview?.totalSpent.toFixed(2)) || '0.0')} ${overview?.currency || 'VP'}`}
             color="dark:text-[#0846A6]"
           />
           <SummaryCard
