@@ -83,9 +83,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setYoureId(undefined);
           window.localStorage.removeItem('jwt');
           // Redirect back to login instead of leaving user in limbo
-          /*if (router) {
+          if (router) {
             router.replace('/');
-          }*/
+          }
           return;
         }
       }
