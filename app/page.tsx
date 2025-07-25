@@ -7,6 +7,8 @@ import { useAuth } from "@/lib/auth/AuthProvider"
 export default function LoginPage() {
   const { login } = useAuth();
 
+  console.log('test v1')
+
   return (
     <AuthLayout title="SIGN IN" description="Sign in with your YOURE.ID account to access your dashboard">
       <div className="flex flex-col items-center justify-center min-h-[200px] ">

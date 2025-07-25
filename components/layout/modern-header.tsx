@@ -70,7 +70,7 @@ export function ModernHeader() {
 
   const handleLogout = () => {
     logout()
-    router.replace('/login')
+    router.replace('/')
   }
 
   return (
