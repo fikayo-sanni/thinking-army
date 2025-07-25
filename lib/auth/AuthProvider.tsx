@@ -186,14 +186,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mgr.signinSilent().catch(() => logout());
     };
 
+    // Listen for localStorage changes to immediately respond to auth state changes
+    const onStorageChange = (e: StorageEvent) => {
+      if (e.key === 'authToken' && e.newValue === null) {
+        console.log('🔄 AuthToken removed from localStorage - clearing user state');
+        setUser(null);
+        setYoureId(undefined);
+      } else if (e.key === 'jwt' && e.newValue === null) {
+        console.log('🔄 JWT removed from localStorage - clearing user state');
+        setUser(null);
+        setYoureId(undefined);
+      }
+    };
+
     mgr.events.addUserLoaded(onUserLoaded);
     mgr.events.addAccessTokenExpiring(onTokenExpiring);
     mgr.events.addAccessTokenExpired(onTokenExpired);
+    window.addEventListener('storage', onStorageChange);
 
     return () => {
       mgr.events.removeUserLoaded(onUserLoaded);
       mgr.events.removeAccessTokenExpiring(onTokenExpiring);
       mgr.events.removeAccessTokenExpired(onTokenExpired);
+      window.removeEventListener('storage', onStorageChange);
     };
   }, [handleUser, logout]);
 

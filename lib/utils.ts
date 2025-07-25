@@ -92,6 +92,36 @@ export function formatXAxisLabel(
 }
 
 
+// Clear all authentication data to fix infinite loop issue
+export function clearAllAuthData() {
+  if (typeof window === 'undefined') return;
+  
+  // Clear all localStorage authentication items
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('jwt');
+  
+  // Clear OIDC session storage
+  const oidcKeys = Object.keys(localStorage).filter(key => 
+    key.startsWith('oidc.') || 
+    key.includes('authority') ||
+    key.includes('client_id')
+  );
+  oidcKeys.forEach(key => localStorage.removeItem(key));
+  
+  // Clear session storage as well
+  if (sessionStorage) {
+    const sessionKeys = Object.keys(sessionStorage).filter(key => 
+      key.startsWith('oidc.') || 
+      key.includes('authority') ||
+      key.includes('client_id')
+    );
+    sessionKeys.forEach(key => sessionStorage.removeItem(key));
+  }
+  
+  console.log('🧹 Cleared all authentication data');
+}
+
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -120,14 +150,43 @@ export async function apiRequest<T>(
 
     console.log("RESP", response);
     if (response.status === 401) {
-      // Remove session/token
-      localStorage.removeItem('authToken');
-      // Optionally clear other session data here
+      console.log('🚨 401 Unauthorized - Clearing all auth data');
       
-      // Only redirect to admin if we're not already on the admin page
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/admin')) {
-        window.location.href = '/admin';
-      }
+      // Clear ALL authentication data (OIDC + admin tokens)
+      clearAllAuthData();
+      
+      // Force trigger auth state re-evaluation by dispatching a storage event
+      // This ensures AuthProvider immediately recognizes the user is no longer authenticated
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'authToken',
+        oldValue: token,
+        newValue: null,
+        storageArea: localStorage
+      }));
+      
+      // Add a small delay to allow auth state to update
+      setTimeout(() => {
+        const currentPath = window.location.pathname;
+        const isOnAdminPage = currentPath.includes('/admin');
+        const isOnLoginPage = currentPath === '/admin' || currentPath === '/';
+        
+        // Only redirect if we're not already on a login page to prevent loops
+        if (!isOnLoginPage) {
+          if (isOnAdminPage) {
+            // If we're on an admin page, redirect to admin login
+            console.log('🔄 Redirecting to admin login');
+            window.location.href = '/admin';
+          } else {
+            // If we're on a regular page, redirect to main landing
+            console.log('🔄 Redirecting to landing page');
+            window.location.href = '/';
+          }
+        } else {
+          // If we're already on a login page, just reload to reset state
+          console.log('🔄 Reloading current page to reset state');
+          window.location.reload();
+        }
+      }, 100); // Small delay to ensure auth state updates
       
       throw new Error('Unauthorized');
     }

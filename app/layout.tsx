@@ -51,18 +51,20 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
   const publicRoutes = ["/admin", "/"];
   const isPublicRoute = publicRoutes.includes(pathname);
+  const isAdminRoute = pathname.startsWith('/admin'); // Check if any admin route
   const authenticated = isMounted ? isAuthenticated() : false;
 
   useEffect(() => {
     if (!isMounted || processingCallback) return; // Don't redirect during OIDC callback processing
     
-    if (isPublicRoute && authenticated) {
+    // Don't redirect admin users away from admin pages - let them stay on admin routes
+    if (isPublicRoute && authenticated && !isAdminRoute) {
       router.replace("/dashboard");
     }
-    if (!isPublicRoute && !authenticated) {
+    if (!isPublicRoute && !authenticated && !isAdminRoute) {
       router.replace("/");
     }
-  }, [pathname, authenticated, isPublicRoute, router, isMounted, processingCallback]);
+  }, [pathname, authenticated, isPublicRoute, isAdminRoute, router, isMounted, processingCallback]);
 
   if (!isMounted) return <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A]" />;
   
@@ -73,10 +75,17 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     </div>;
   }
 
+  // ✅ ADMIN ROUTES: Always use clean layout (no sidebar/header) regardless of auth status
+  if (isAdminRoute) {
+    return <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A]">{children}</div>;
+  }
+
+  // ✅ PUBLIC ROUTES: Use clean layout  
   if (isPublicRoute) {
     return <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A]">{children}</div>;
   }
 
+  // ✅ PROTECTED USER ROUTES: Use full layout with sidebar and header
   return (
     <ModernSidebar>
       <div className="min-h-screen bg-[#F7F8F8] dark:bg-[#1A1E2D] text-black dark:text-white">
