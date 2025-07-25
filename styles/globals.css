@@ -125,3 +125,35 @@ html.dark {
 .light .card-white {
   background-color: #fff;
 }
+
+/* Mobile Typography Optimizations */
+@media (max-width: 768px) {
+  /* Ensure minimum touch target sizes */
+  button, 
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve text readability on mobile */
+  body {
+    font-size: 16px; /* Prevent iOS zoom on input focus */
+    line-height: 1.5;
+  }
+  
+  /* Card content spacing for mobile */
+  .mobile-card-content {
+    padding: 1rem !important;
+  }
+  
+  /* Better spacing for mobile forms */
+  .mobile-form-spacing > * + * {
+    margin-top: 1rem;
+  }
+  
+  /* Responsive table text */
+  .mobile-table-text {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}

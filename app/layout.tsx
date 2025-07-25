@@ -81,7 +81,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     <ModernSidebar>
       <div className="min-h-screen bg-[#F7F8F8] dark:bg-[#1A1E2D] text-black dark:text-white">
         <ModernHeader />
-        <div className="p-6 space-y-6 bg-white dark:bg-[#23263A] rounded-xl shadow-sm" >
+        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 bg-white dark:bg-[#23263A] rounded-none sm:rounded-xl shadow-sm" >
           {children}
         </div>
       </div>

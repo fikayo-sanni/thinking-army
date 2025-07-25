@@ -225,7 +225,7 @@ export default function DashboardPage() {
                   value={formatThousands(Number(stats?.purchases || 0)) ?? 0}
                   icon={TrendingUp}
                   change={{ 
-                    value: `${stats?.purchasesChange >= 0 ? '+' : ''}${stats?.purchasesChange?.toFixed(2) ?? 0}%`, 
+                    value: `${(stats?.purchasesChange ?? 0) >= 0 ? '+' : ''}${(stats?.purchasesChange ?? 0).toFixed(2)}%`, 
                     type: (stats?.purchasesChange ?? 0) >= 0 ? "positive" : "negative" 
                   }} />
 
@@ -233,7 +233,7 @@ export default function DashboardPage() {
                   value={formatThousands(Math.floor(Number(stats?.monthlyEarnings||0))) ?? 0}
                   icon={TrendingUp}
                   change={{ 
-                    value: `${stats?.vpChange >= 0 ? '+' : ''}${stats?.vpChange?.toFixed(2) ?? 0}%`, 
+                    value: `${(stats?.vpChange ?? 0) >= 0 ? '+' : ''}${(stats?.vpChange ?? 0).toFixed(2)}%`, 
                     type: (stats?.vpChange ?? 0) >= 0 ? "positive" : "negative" 
                   }} />
               </div>
@@ -541,7 +541,7 @@ export default function DashboardPage() {
                 />
                 <YAxis
                   scale={useLogScaleGrowth ? "log" : "linear"}
-                  domain={useLogScaleGrowth ? [1, 'auto'] : ['auto', 'auto']}
+                  domain={useLogScaleGrowth ? [1, 'auto'] : [0, 'auto']}
                   allowDataOverflow={useLogScaleGrowth}
                   stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
                   tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
