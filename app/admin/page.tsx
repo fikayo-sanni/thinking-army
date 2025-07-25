@@ -39,6 +39,7 @@ export default function LoginPage() {
       await authService.adminLogin(email, password, youre_id);
       router.push("/dashboard");
     } catch (err) {
+      console.log(err)
       setServerError("Login failed. Please check your login details and try again.");
     } finally {
       setIsSubmitting(false);

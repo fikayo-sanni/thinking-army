@@ -1,5 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { decryptResponse, isEncryptedResponse } from './utils/encryption.utils'
+import { shouldEncryptEndpoint, shouldLogStats } from './config/encryption.config'
 import { buildApiUrl } from './api-constants'
 import { parseISO, format, getISOWeek } from "date-fns";
 import type { ChartData as PurchaseChartData } from './services/purchases-service';
@@ -128,9 +130,12 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const url = buildApiUrl(endpoint)
   
+  const shouldEncrypt = shouldEncryptEndpoint(endpoint);
+  
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
+      ...(shouldEncrypt && { 'X-Encrypted-Response': 'true' }),
       ...options.headers,
     },
     ...options,
@@ -195,7 +200,55 @@ export async function apiRequest<T>(
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    return await response.json()
+    const jsonData = await response.json()
+    
+    // Check if encryption was skipped due to smart compression
+    const encryptionSkipped = response.headers.get('X-Encryption-Skipped');
+    if (encryptionSkipped && shouldLogStats()) {
+      const originalSize = response.headers.get('X-Original-Size');
+      const wouldBeSize = response.headers.get('X-Would-Be-Size');
+      const reason = response.headers.get('X-Encryption-Reason');
+      const potentialSavings = response.headers.get('X-Potential-Savings');
+      
+      if (encryptionSkipped === 'insufficient-benefit' && originalSize && wouldBeSize) {
+        const savingsText = potentialSavings ? `, would save ${potentialSavings}B` : '';
+        console.log(`🤔 Smart compression: Encryption skipped - ${reason} (${originalSize}B → ${wouldBeSize}B${savingsText})`);
+      } else if (encryptionSkipped === 'error') {
+        console.log('⚠️ Smart compression: Encryption skipped due to error');
+      }
+    }
+    
+    // Check if response is encrypted and decrypt it
+    if (isEncryptedResponse(jsonData)) {
+      if (shouldLogStats()) {
+        console.log('🔓 Decrypting encrypted response...');
+      }
+      
+      // Log compression stats from headers if available and logging is enabled
+      if (shouldLogStats()) {
+        const originalSize = response.headers.get('X-Original-Size');
+        const compressedSize = response.headers.get('X-Compressed-Size');
+        const compressionRatio = response.headers.get('X-Compression-Ratio');
+        const sizeSaved = response.headers.get('X-Size-Saved');
+        
+        if (originalSize && compressedSize && compressionRatio) {
+          console.log(`📊 Smart compression: ${originalSize}B → ${compressedSize}B (${compressionRatio}% reduction, saved ${sizeSaved}B)`);
+        }
+      }
+      
+      try {
+        const decryptedData = await decryptResponse(jsonData);
+        if (shouldLogStats()) {
+          console.log('✅ Response decrypted successfully');
+        }
+        return decryptedData;
+      } catch (error) {
+        console.error('❌ Decryption failed:', error);
+        throw new Error('Failed to decrypt response');
+      }
+    }
+
+    return jsonData
   } catch (error) {
     console.log("ERROR!", error)
     // Optionally handle other errors here
