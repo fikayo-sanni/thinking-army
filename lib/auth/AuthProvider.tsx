@@ -67,12 +67,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!localStorage.getItem('authToken')) {
         try {
           await authService.loginWithYoureId(parsed.sub);
+          if (router) {
+            router.replace('/dashboard');
+          }
         } catch (e) {
-          console.error('Backend login failed', e);
+          console.error('Backend login failed', e, parsed.sub);
         }
-      }
-      if (router) {
-        router.replace('/dashboard');
       }
     }
   }, [router]);
