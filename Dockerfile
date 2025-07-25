@@ -13,12 +13,10 @@ COPY package.json ./
 
 RUN npm install --legacy-peer-deps
 
-# add app
-COPY . ./
-
-RUN npm run build
+#RUN npm run build
 
 EXPOSE 5005
 
-# start app
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+CMD ["npm","run","dev"]

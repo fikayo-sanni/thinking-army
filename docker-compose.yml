@@ -4,8 +4,11 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: gc-frontend-app
+    volumes:
+      - .:/app
+      - /app/node_modules
     ports:
-      - '5005:3000'
+      - '5005:5005'
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     restart: unless-stopped
