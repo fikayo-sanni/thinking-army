@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import type { CommissionHistory } from "@/lib/services/commission-service"
 import { formatThousands } from "@/lib/utils"
 import { useSetPageTitle } from "@/hooks/use-page-title"
+import { MobileTable } from "@/components/ui/mobile-table"
 
 export default function CommissionsPage() {
   // Set page title
