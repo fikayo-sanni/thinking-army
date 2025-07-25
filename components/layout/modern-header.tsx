@@ -51,7 +51,7 @@ export function ModernHeader() {
   const [searchQuery, setSearchQuery] = useState("")
   const unreadCount = notifications.filter((n) => n.unread).length
   const { logout, user } = useAuth()
-  console.log(user)
+  // console.log(user) // Removed for performance
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
 

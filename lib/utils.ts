@@ -153,7 +153,7 @@ export async function apiRequest<T>(
   try {
     const response = await fetch(url, config)
 
-    console.log("RESP", response);
+    // console.log("RESP", response); // Removed for performance
     if (response.status === 401) {
       console.log('🚨 401 Unauthorized - Clearing all auth data');
       
@@ -212,7 +212,7 @@ export async function apiRequest<T>(
       
       if (encryptionSkipped === 'insufficient-benefit' && originalSize && wouldBeSize) {
         const savingsText = potentialSavings ? `, would save ${potentialSavings}B` : '';
-        console.log(`🤔 Smart compression: Encryption skipped - ${reason} (${originalSize}B → ${wouldBeSize}B${savingsText})`);
+        // console.log(`🤔 Smart compression: Encryption skipped - ${reason} (${originalSize}B → ${wouldBeSize}B${savingsText})`); // Removed for performance
       } else if (encryptionSkipped === 'error') {
         console.log('⚠️ Smart compression: Encryption skipped due to error');
       }
@@ -221,7 +221,7 @@ export async function apiRequest<T>(
     // Check if response is encrypted and decrypt it
     if (isEncryptedResponse(jsonData)) {
       if (shouldLogStats()) {
-        console.log('🔓 Decrypting encrypted response...');
+        //console.log('🔓 Decrypting encrypted response...');
       }
       
       // Log compression stats from headers if available and logging is enabled
@@ -232,14 +232,14 @@ export async function apiRequest<T>(
         const sizeSaved = response.headers.get('X-Size-Saved');
         
         if (originalSize && compressedSize && compressionRatio) {
-          console.log(`📊 Smart compression: ${originalSize}B → ${compressedSize}B (${compressionRatio}% reduction, saved ${sizeSaved}B)`);
+          // console.log(`📊 Smart compression: ${originalSize}B → ${compressedSize}B (${compressionRatio}% reduction, saved ${sizeSaved}B)`); // Removed for performance
         }
       }
       
       try {
         const decryptedData = await decryptResponse(jsonData);
         if (shouldLogStats()) {
-          console.log('✅ Response decrypted successfully');
+          //console.log('✅ Response decrypted successfully');
         }
         return decryptedData;
       } catch (error) {

@@ -19,12 +19,13 @@ export const useNetworkStructure = () => {
   })
 }
 
-export const useNetworkStats = (timeRange?: string) => {
+export const useNetworkStats = (timeRange?: string, options?: any) => {
   return useQuery({
     queryKey: ['network', 'stats', timeRange],
     queryFn: () => networkService.getStats(timeRange),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    ...options, // Allow overriding default options
   })
 }
 

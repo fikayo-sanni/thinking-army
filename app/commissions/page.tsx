@@ -50,7 +50,7 @@ export default function CommissionsPage() {
   //   : paginatedCommissions
   const filteredCommissions = paginatedCommissions;
 
-  console.log("COMMISSIONS", filteredCommissions);
+  // console.log("COMMISSIONS", filteredCommissions); // Removed for performance
 
   // Calculate summary stats from filtered data
   const totalEarned = summaryData?.earnings?.totalEarnings ?? 0

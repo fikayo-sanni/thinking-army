@@ -53,17 +53,26 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
     });
   };
 
-  // Fetch live stats
+  // 🚀 OPTIMIZED: Only fetch stats if sidebar is expanded (reduce API calls)
   const [timeRange] = useTimeRange("this-week")
-  const { data: dashboardStats, isLoading: isDashboardLoading } = useDashboardStats(timeRange);
-  const { data: networkStats, isLoading: isNetworkLoading } = useNetworkStats(timeRange);
+  const { data: dashboardStats, isLoading: isDashboardLoading } = useDashboardStats(timeRange, {
+    enabled: !isCollapsed, // Only fetch when sidebar is visible
+    staleTime: 10 * 60 * 1000, // Increase cache time to 10 minutes
+    gcTime: 20 * 60 * 1000, // Keep in cache for 20 minutes
+  });
+  const { data: networkStats, isLoading: isNetworkLoading } = useNetworkStats(timeRange, {
+    enabled: !isCollapsed, // Only fetch when sidebar is visible
+    staleTime: 10 * 60 * 1000, // Increase cache time to 10 minutes
+    gcTime: 20 * 60 * 1000, // Keep in cache for 20 minutes
+  });
 
-  // Fetch current rank using React Query
+  // 🚀 OPTIMIZED: Fetch current rank with longer cache and only when needed
   const { data: currentRankData, isLoading: isCurrentRankLoading } = useQuery({
     queryKey: ['current-rank'],
     queryFn: () => ranksService.getCurrentRank(),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    enabled: !isCollapsed, // Only fetch when sidebar is visible
+    staleTime: 15 * 60 * 1000, // Cache for 15 minutes (ranks don't change often)
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
   });
 
   // Prepare live quick stats

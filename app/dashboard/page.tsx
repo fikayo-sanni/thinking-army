@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { PageHeader } from "@/components/layout/page-header"
 import { MetricCard, MetricCardContent } from "@/components/ui/metric-card"
 import { ChartCard } from "@/components/dashboard/chart-card"
@@ -74,25 +74,43 @@ export default function DashboardPage() {
     gray: "#A0AFC0", // for dark mode
   };
 
-  const totalVP = data?.immediateDownlines?.reduce((sum, d) => sum + Number(d.revenue), 0) ?? 0
-  const sortedDownlines = (data?.immediateDownlines?.slice() ?? []).sort((a, b) => Number(b.revenue) - Number(a.revenue));
-  const topDownlines = sortedDownlines.slice(0, 4);
+  // 🚀 OPTIMIZED: Memoize expensive calculations to prevent re-computation on every render
+  const { totalVP, sortedDownlines, topDownlines } = useMemo(() => {
+    const downlines = data?.immediateDownlines || [];
+    const total = downlines.reduce((sum, d) => sum + Number(d.revenue), 0);
+    const sorted = [...downlines].sort((a, b) => Number(b.revenue) - Number(a.revenue));
+    const top = sorted.slice(0, 4);
+    
+    return { totalVP: total, sortedDownlines: sorted, topDownlines: top };
+  }, [data?.immediateDownlines]);
 
-  // --- Dynamic scale logic for Purchases in Period ---
-  const purchasesData = charts?.purchasesOverTime || [];
-  const purchaseVals = purchasesData.map(d => d.purchases).filter(v => v > 0);
-  const volumeVals = purchasesData.map(d => d.volume).filter(v => v > 0);
-  const minPurchase = Math.min(...purchaseVals, Infinity);
-  const maxPurchase = Math.max(...purchaseVals, -Infinity);
-  const minVolume = Math.min(...volumeVals, Infinity);
-  const maxVolume = Math.max(...volumeVals, -Infinity);
+  // 🚀 OPTIMIZED: Memoize chart data processing for Purchases in Period
+  const { purchaseVals, volumeVals, minPurchase, maxPurchase, minVolume, maxVolume } = useMemo(() => {
+    const purchasesData = charts?.purchasesOverTime || [];
+    const purchases = purchasesData.map(d => d.purchases).filter(v => v > 0);
+    const volumes = purchasesData.map(d => d.volume).filter(v => v > 0);
+    
+    return {
+      purchaseVals: purchases,
+      volumeVals: volumes,
+      minPurchase: Math.min(...purchases, Infinity),
+      maxPurchase: Math.max(...purchases, -Infinity),
+      minVolume: Math.min(...volumes, Infinity),
+      maxVolume: Math.max(...volumes, -Infinity),
+    };
+  }, [charts?.purchasesOverTime]);
+
   const useLogScalePurchases = false; //minPurchase > 0 && maxPurchase / minPurchase > 100;
   const useLogScaleVolume = false; //minVolume > 0 && maxVolume / minVolume > 100;
 
-  // --- Dynamic scale logic for Network Growth ---
-  const growthData = networkGrowthData || [];
-  const totalMembersVals = growthData.map(d => d.totalMembers).filter(v => v > 0);
-  const activeMembersVals = growthData.map(d => d.activeMembers).filter(v => v > 0);
+  // 🚀 OPTIMIZED: Memoize network growth data processing
+  const { totalMembersVals, activeMembersVals } = useMemo(() => {
+    const growthData = networkGrowthData || [];
+    return {
+      totalMembersVals: growthData.map(d => d.totalMembers).filter(v => v > 0),
+      activeMembersVals: growthData.map(d => d.activeMembers).filter(v => v > 0),
+    };
+  }, [networkGrowthData]);
   const minTotalMembers = Math.min(...totalMembersVals, Infinity);
   const maxTotalMembers = Math.max(...totalMembersVals, -Infinity);
   const minActiveMembers = Math.min(...activeMembersVals, Infinity);

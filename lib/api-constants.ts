@@ -84,7 +84,7 @@ export const NFT_ENDPOINTS = {
 // Utility function to build full API URLs
 export const buildApiUrl = (endpoint: string): string => {
   const fullUrl = `${API_BASE_URL}${endpoint}`
-  console.log(`Built API URL: ${fullUrl}`)
+  //console.log(`Built API URL: ${fullUrl}`)
   return fullUrl
 }
 
