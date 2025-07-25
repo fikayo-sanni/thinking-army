@@ -18,8 +18,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="bg-[#F9FAFC] dark:bg-[#0D0F1A]">
+      <body className={`${inter.className} bg-[#F9FAFC] dark:bg-[#0D0F1A]`}>
         <ThemeProvider>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
@@ -61,17 +61,17 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     }
   }, [pathname, authenticated, isPublicRoute, router, isMounted, processingCallback]);
 
-  if (!isMounted) return null;
+  if (!isMounted) return <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A]" />;
   
   // Show loading during OIDC callback processing
   if (processingCallback) {
-    return <div className="flex items-center justify-center min-h-screen">
-      <div className="text-lg">Processing login...</div>
+    return <div className="flex items-center justify-center min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A]">
+      <div className="text-lg text-black dark:text-white">Processing login...</div>
     </div>;
   }
 
   if (isPublicRoute) {
-    return <>{children}</>;
+    return <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A]">{children}</div>;
   }
 
   return (

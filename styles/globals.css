@@ -93,13 +93,24 @@ body {
   }
 }
 
+/* Explicit body background colors for theme classes */
 body.light {
-  background-color: #F9FAFC;
+  background-color: #F9FAFC !important;
   color: #000;
 }
 
 body.dark {
-  /* Keep existing dark backgrounds */
+  background-color: #0D0F1A !important;
+  color: #fff;
+}
+
+/* Fallback for any undefined background */
+html {
+  background-color: #F9FAFC;
+}
+
+html.dark {
+  background-color: #0D0F1A;
 }
 
 .subtext {

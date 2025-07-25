@@ -79,6 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             parsed.sub  = parsed.sub .replace(/^google-oauth2\|/, '');
           }
           await authService.loginWithYoureId(parsed.sub);
+          // Ensure redirect happens after successful backend login
           if (router && localStorage.getItem('authToken')) {
             router.replace('/dashboard');
           }
@@ -106,9 +107,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProcessingCallback(true);
       oidcUserManager
         .signinRedirectCallback()
-        .then(user => {
+        .then(async user => {
           if (user.id_token) {
-            handleUser(user);
+            await handleUser(user);
             window.localStorage.setItem('jwt', user.id_token);
             console.log('user id token: ', user.id_token)
           }
@@ -118,7 +119,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setStatus('Login error, please try again.');
         })
         .finally(() => {
-          window.history.replaceState({}, document.title, window.location.pathname);
+          // Only clean URL if we're still on a page with OIDC params (haven't been redirected yet)
+          if (window.location.search.includes('code=') || window.location.search.includes('state=')) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
           setProcessingCallback(false);
           console.log('finally block reached')
         });

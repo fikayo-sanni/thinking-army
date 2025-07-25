@@ -27,9 +27,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isMounted) return;
+    const html = window.document.documentElement;
     const body = window.document.body;
+    
+    // Apply theme to both html and body for better coverage
+    html.classList.remove("light", "dark");
+    html.classList.add(theme);
     body.classList.remove("light", "dark");
     body.classList.add(theme);
+    
     localStorage.setItem("theme", theme);
   }, [theme, isMounted]);
 
@@ -37,7 +43,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  if (!isMounted) return null;
+  if (!isMounted) {
+    // Render with light theme as default to prevent flash of unstyled content
+    return (
+      <ThemeProviderContext.Provider value={{ theme: "light", setTheme, toggleTheme }}>
+        {children}
+      </ThemeProviderContext.Provider>
+    );
+  }
 
   return (
     <ThemeProviderContext.Provider value={{ theme, setTheme, toggleTheme }}>{children}</ThemeProviderContext.Provider>
