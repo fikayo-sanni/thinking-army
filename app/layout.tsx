@@ -8,6 +8,7 @@ import { useState } from "react"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { ModernSidebar } from "@/components/layout/modern-sidebar"
 import { ModernHeader } from "@/components/layout/modern-header"
+import { PageTitleProvider } from "@/components/providers/page-title-provider"
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,15 +21,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="bg-[#F9FAFC] dark:bg-[#0D0F1A]">
       <body className={`${inter.className} bg-[#F9FAFC] dark:bg-[#0D0F1A]`}>
-        <ThemeProvider>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <AuthGate>
-                {children}
-              </AuthGate>
-            </AuthProvider>
-          </QueryClientProvider>
-        </ThemeProvider>
+        <PageTitleProvider>
+          <ThemeProvider>
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <AuthGate>
+                  {children}
+                </AuthGate>
+              </AuthProvider>
+            </QueryClientProvider>
+          </ThemeProvider>
+        </PageTitleProvider>
       </body>
     </html>
   );

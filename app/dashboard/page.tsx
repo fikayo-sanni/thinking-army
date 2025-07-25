@@ -33,6 +33,7 @@ import { useNetworkGrowth } from "@/hooks/use-dashboard"
 import { useTimeRange } from "@/hooks/use-time-range"
 import { useProfile } from '@/hooks/use-auth';
 import { addWeeks, addMonths, isBefore, format, parseISO } from 'date-fns';
+import { useSetPageTitle } from "@/hooks/use-page-title"
 
 // Helper to safely get a number from recharts payload value
 function safeNumber(val: any): number {
@@ -44,6 +45,7 @@ function safeNumber(val: any): number {
 
 export default function DashboardPage() {
   useProtectedRoute()
+  useSetPageTitle("Dashboard")
   const [timeFilter, setTimeFilter] = useTimeRange("this-week")
   const { data, isLoading, isError, refetch } = useDashboardData(timeFilter)
   const { data: networkGrowthData, isLoading: isNetworkGrowthLoading, isError: isNetworkGrowthError } = useNetworkGrowth(timeFilter)

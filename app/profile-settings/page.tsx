@@ -239,7 +239,7 @@ export default function ProfileSettingsPage() {
                 <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#2C2F3C]">
                   <span className="text-[#A0AFC0] text-sm">AllTime VP</span>
                   <span className="dark:text-[#0846A6] text-[#0846A6] font-bold">
-                    {formatThousands(profileData.totalEarnings.toFixed(2))} VP
+                    {formatThousands(profileData.totalEarnings.toFixed(0))} VP
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#2C2F3C]">

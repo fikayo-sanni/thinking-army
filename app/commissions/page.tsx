@@ -16,8 +16,12 @@ import { useTimeRange } from "@/hooks/use-time-range"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { CommissionHistory } from "@/lib/services/commission-service"
 import { formatThousands } from "@/lib/utils"
+import { useSetPageTitle } from "@/hooks/use-page-title"
 
 export default function CommissionsPage() {
+  // Set page title
+  useSetPageTitle("Commissions");
+
   const [typeFilter, setTypeFilter] = useState("all")
   const [timeRange, setTimeRange] = useTimeRange("this-week")
   const [statusFilter, setStatusFilter] = useState("all")
