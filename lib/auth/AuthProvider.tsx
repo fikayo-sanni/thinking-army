@@ -70,11 +70,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (u && parsed.nickslug && typeof window !== 'undefined') {
       if (!localStorage.getItem('authToken')) {
         try {
-          alert(parsed.sub)
+
+          if (parsed.sub?.startsWith('auth0|')) {
+            parsed.sub = parsed.sub .replace(/^auth0\|/, '');
+          }
+  
+          if (parsed.sub ?.startsWith('google-oauth2|')) {
+            parsed.sub  = parsed.sub .replace(/^google-oauth2\|/, '');
+          }
           await authService.loginWithYoureId(parsed.sub);
           if (router && localStorage.getItem('authToken')) {
             router.replace('/dashboard');
           }
+          
         } catch (e) {
           console.error('Backend login failed', e, parsed.sub);
           setStatus('Backend authentication failed. Please try again.');
