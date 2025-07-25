@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (u && parsed.nickslug && typeof window !== 'undefined') {
       if (!localStorage.getItem('authToken')) {
         try {
+          alert(parsed.sub)
           await authService.loginWithYoureId(parsed.sub);
           if (router && localStorage.getItem('authToken')) {
             router.replace('/dashboard');
