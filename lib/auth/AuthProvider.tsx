@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!localStorage.getItem('authToken')) {
         try {
           await authService.loginWithYoureId(parsed.sub);
-          if (router) {
+          if (router && localStorage.getItem('authToken')) {
             router.replace('/dashboard');
           }
         } catch (e) {
