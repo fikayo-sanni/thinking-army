@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth/AuthProvider"
 export default function LoginPage() {
   const { login } = useAuth();
 
-  console.log('test v1')
+  console.log('test v2')
 
   return (
     <AuthLayout title="SIGN IN" description="Sign in with your YOURE.ID account to access your dashboard">

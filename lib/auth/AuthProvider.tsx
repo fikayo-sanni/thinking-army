@@ -26,10 +26,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
 
   const isAuthenticated = () => {
-    // Check for OIDC user OR stored auth token
-    if (!!user) return true;
+    // For full authentication, we need both OIDC user AND backend auth token
+    // OR just admin auth token (for admin users)
     if (typeof window !== 'undefined') {
-      return !!localStorage.getItem('authToken');
+      const hasAuthToken = !!localStorage.getItem('authToken');
+      // Admin users: just need auth token
+      if (!user && hasAuthToken) return true;
+      // Regular users: need both OIDC user and auth token
+      if (!!user && hasAuthToken) return true;
     }
     return false;
   };
@@ -72,6 +76,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         } catch (e) {
           console.error('Backend login failed', e, parsed.sub);
+          setStatus('Backend authentication failed. Please try again.');
+          // Clear the OIDC user since backend auth failed
+          setUser(null);
+          setYoureId(undefined);
+          window.localStorage.removeItem('jwt');
+          // Redirect back to login instead of leaving user in limbo
+          /*if (router) {
+            router.replace('/');
+          }*/
+          return;
         }
       }
     }
