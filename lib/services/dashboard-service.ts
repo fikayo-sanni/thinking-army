@@ -71,6 +71,14 @@ export interface DashboardCharts {
   }>
 }
 
+export interface ImmediateDownline {
+  id: string
+  nickname: string
+  revenue: number
+  status: 'active' | 'inactive'
+  rank: string
+}
+
 export const dashboardService = {
   async getOverview(): Promise<DashboardOverview> {
     return apiRequest<DashboardOverview>(DASHBOARD_ENDPOINTS.OVERVIEW, { method: HTTP_METHODS.GET })
@@ -88,6 +96,18 @@ export const dashboardService = {
   async getRecentActivity(limit: number = 10): Promise<ActivityItem[]> {
     const url = `${DASHBOARD_ENDPOINTS.RECENT_ACTIVITY}?limit=${limit}`
     return apiRequest<ActivityItem[]>(url, { method: HTTP_METHODS.GET })
+  },
+  async getImmediateDownlines(timeRange?: string): Promise<ImmediateDownline[]> {
+    const url = timeRange
+      ? `${DASHBOARD_ENDPOINTS.IMMEDIATE_DOWNLINES}?timeRange=${timeRange}`
+      : DASHBOARD_ENDPOINTS.IMMEDIATE_DOWNLINES
+    return apiRequest<ImmediateDownline[]>(url, { method: HTTP_METHODS.GET })
+  },
+  async getCommissionBalances(timeRange?: string): Promise<Record<string, number>> {
+    const url = timeRange
+      ? `${DASHBOARD_ENDPOINTS.COMMISSION_BALANCES}?timeRange=${timeRange}`
+      : DASHBOARD_ENDPOINTS.COMMISSION_BALANCES
+    return apiRequest<Record<string, number>>(url, { method: HTTP_METHODS.GET })
   },
   async getAllDashboardData(timeRange: string = 'last-month'): Promise<{
     overview: DashboardOverview

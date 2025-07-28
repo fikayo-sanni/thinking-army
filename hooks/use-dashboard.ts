@@ -47,6 +47,24 @@ export const useRecentActivity = (limit: number = 10) => {
   })
 }
 
+export const useImmediateDownlines = (timeRange?: string) => {
+  return useQuery({
+    queryKey: ['dashboard', 'immediate-downlines', timeRange],
+    queryFn: () => dashboardService.getImmediateDownlines(timeRange),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  })
+}
+
+export const useCommissionBalances = (timeRange?: string) => {
+  return useQuery({
+    queryKey: ['dashboard', 'commission-balances', timeRange],
+    queryFn: () => dashboardService.getCommissionBalances(timeRange),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  })
+}
+
 export const useNetworkGrowth = (timeRange: string = 'last-month') => {
   return useQuery({
     queryKey: ['dashboard', 'network-growth', timeRange],

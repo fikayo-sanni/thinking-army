@@ -24,6 +24,8 @@ export const DASHBOARD_ENDPOINTS = {
   STATS: 'api/v1/dashboard/stats',
   CHARTS: 'api/v1/dashboard/charts',
   RECENT_ACTIVITY: 'api/v1/dashboard/recent-activity',
+  IMMEDIATE_DOWNLINES: 'api/v1/dashboard/immediate-downlines',
+  COMMISSION_BALANCES: 'api/v1/dashboard/commission-balances',
   ALL: 'api/v1/dashboard/all',
   NETWORK_GROWTH: 'api/v1/dashboard/network-growth',
 } as const

@@ -6,8 +6,22 @@ import { MetricCard, MetricCardContent } from "@/components/ui/metric-card"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { TrendingUp, Users, Coins, Trophy, BarChart3, PieChart, Calendar, AlertTriangle } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useDashboardData } from "@/hooks/use-dashboard"
+import { 
+  useDashboardOverview, 
+  useDashboardStats, 
+  useDashboardCharts, 
+  useRecentActivity, 
+  useImmediateDownlines, 
+  useCommissionBalances, 
+  useNetworkGrowth 
+} from "@/hooks/use-dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  PerformanceCardSkeleton,
+  CommissionBalancesSkeleton,
+  DownlinesSkeleton,
+  ChartCardSkeleton
+} from "@/components/dashboard/dashboard-skeletons"
 import {
   LineChart,
   Line,
@@ -29,7 +43,6 @@ import { useProtectedRoute } from "@/hooks/use-protected-route"
 import { formatThousands, formatShortNumber } from "@/lib/utils"
 import { useTheme } from "@/components/theme/theme-provider"
 import { Button } from "@/components/ui/button"
-import { useNetworkGrowth } from "@/hooks/use-dashboard"
 import { useTimeRange } from "@/hooks/use-time-range"
 import { useProfile } from '@/hooks/use-auth';
 import { addWeeks, addMonths, isBefore, format, parseISO } from 'date-fns';
@@ -47,16 +60,18 @@ export default function DashboardPage() {
   useProtectedRoute()
   useSetPageTitle("Dashboard")
   const [timeFilter, setTimeFilter] = useTimeRange("this-week")
-  const { data, isLoading, isError, refetch } = useDashboardData(timeFilter)
+
+  // 🚀 OPTIMIZED: Use individual hooks for parallel loading
+  const { data: overview, isLoading: isOverviewLoading, isError: isOverviewError } = useDashboardOverview()
+  const { data: stats, isLoading: isStatsLoading, isError: isStatsError } = useDashboardStats(timeFilter)
+  const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useDashboardCharts(timeFilter)
+  const { data: recentActivity, isLoading: isActivityLoading, isError: isActivityError } = useRecentActivity(10)
+  const { data: immediateDownlines, isLoading: isDownlinesLoading, isError: isDownlinesError } = useImmediateDownlines(timeFilter)
+  const { data: balances, isLoading: isBalancesLoading, isError: isBalancesError } = useCommissionBalances(timeFilter)
   const { data: networkGrowthData, isLoading: isNetworkGrowthLoading, isError: isNetworkGrowthError } = useNetworkGrowth(timeFilter)
+  
   const { data: profileData } = useProfile();
   const { theme } = useTheme();
-
-  // Extract data safely
-  const overview = data?.overview
-  const stats = data?.stats
-  const balances = data?.commissionBalances
-  const charts = data?.charts
 
   // Chart colors
   const chartColors = {
@@ -76,13 +91,13 @@ export default function DashboardPage() {
 
   // 🚀 OPTIMIZED: Memoize expensive calculations to prevent re-computation on every render
   const { totalVP, sortedDownlines, topDownlines } = useMemo(() => {
-    const downlines = data?.immediateDownlines || [];
+    const downlines = immediateDownlines || [];
     const total = downlines.reduce((sum, d) => sum + Number(d.revenue), 0);
     const sorted = [...downlines].sort((a, b) => Number(b.revenue) - Number(a.revenue));
     const top = sorted.slice(0, 4);
     
     return { totalVP: total, sortedDownlines: sorted, topDownlines: top };
-  }, [data?.immediateDownlines]);
+  }, [immediateDownlines]);
 
   // 🚀 OPTIMIZED: Memoize chart data processing for Purchases in Period
   const { purchaseVals, volumeVals, minPurchase, maxPurchase, minVolume, maxVolume } = useMemo(() => {
@@ -143,7 +158,10 @@ export default function DashboardPage() {
     processedGrowthData = networkGrowthData || [];
   }
 
-  if (isError) {
+  // Check if any critical data failed to load
+  const hasCriticalError = isOverviewError || isStatsError;
+  
+  if (hasCriticalError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="max-w-md w-full border-red-400 bg-red-50 dark:bg-[#2C2F3C] dark:border-red-800 shadow-lg">
@@ -151,30 +169,10 @@ export default function DashboardPage() {
             <AlertTriangle className="h-12 w-12 text-red-500 mb-4 animate-bounce" />
             <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">Dashboard Load Failed</h2>
             <p className="text-center text-[#A0AFC0] mb-6">We couldn't load your dashboard data right now. Please check your connection or try again in a moment.</p>
-            <Button onClick={() => refetch()} className="bg-[#0846A6] text-white hover:bg-[#06377a]">Retry</Button>
+            <Button onClick={() => window.location.reload()} className="bg-[#0846A6] text-white hover:bg-[#06377a]">Retry</Button>
           </CardContent>
         </Card>
       </div>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <>
-        <PageHeader title="MY DASHBOARD" description="Overview of my network performance" />
-        {/* Metric Cards Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-28 w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
-          ))}
-        </div>
-        {/* Charts Skeleton */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-72 w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
-          ))}
-        </div>
-      </>
     )
   }
 
@@ -217,12 +215,13 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Top Metrics Row */}
-      {isError ? (
-        <div className="text-red-500">Failed to load dashboard data.</div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Top Metrics Row - Each section loads independently */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
+        {/* Performance Card */}
+        {isStatsLoading ? (
+          <PerformanceCardSkeleton />
+        ) : (
           <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -257,7 +256,12 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
+        )}
 
+        {/* Commission Balances Card */}
+        {isBalancesLoading ? (
+          <CommissionBalancesSkeleton />
+        ) : (
           <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -316,7 +320,12 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-          
+        )}
+        
+        {/* Downlines Card */}
+        {isDownlinesLoading ? (
+          <DownlinesSkeleton />
+        ) : (
           <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -351,257 +360,280 @@ export default function DashboardPage() {
                     </span>
                   </div>
                 ))}
-                {data?.immediateDownlines && data.immediateDownlines.length > 4 && (
+                {immediateDownlines && immediateDownlines.length > 4 && (
                   <a href="/purchases" className="text-[#A0AFC0] text-xs text-center pt-2 block hover:underline cursor-pointer">
-                    +{data.immediateDownlines.length - 4} more downlines
+                    +{immediateDownlines.length - 4} more downlines
                   </a>
                 )}
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Middle Section - 2 Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="PURCHASES IN PERIOD" description="My network's activity in selected period">
-          {isError ? (
-            <div className="text-red-500">Failed to load chart data.</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={256}>
-              <LineChart data={charts?.purchasesOverTime || []}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
-                <XAxis
-                  dataKey="date"
-                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
-                />
-                <YAxis
-                  yAxisId="left"
-                  scale={useLogScalePurchases ? "log" : "linear"}
-                  domain={useLogScalePurchases ? [1, 'auto'] : ['auto', 'auto']}
-                  allowDataOverflow={useLogScalePurchases}
-                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
-                  tickFormatter={formatShortNumber}
-                />
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  scale={useLogScaleVolume ? "log" : "linear"}
-                  domain={useLogScaleVolume ? [1, 'auto'] : ['auto', 'auto']}
-                  allowDataOverflow={useLogScaleVolume}
-                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
-                  tickFormatter={formatShortNumber}
-                />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      const purchasesRaw = payload.find(p => p.dataKey === 'purchases')?.value ?? 0;
-                      const volumeRaw = payload.find(p => p.dataKey === 'volume')?.value ?? 0;
-                      const purchases = Math.floor(safeNumber(purchasesRaw));
-                      const volume = Math.floor(safeNumber(volumeRaw));
-                      return (
-                        <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
-                          <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span>Purchases:</span>
-                            <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(purchases))}</span>
+        
+        {/* Purchases Chart */}
+        {isChartsLoading ? (
+          <ChartCardSkeleton title="PURCHASES IN PERIOD" />
+        ) : (
+          <ChartCard title="PURCHASES IN PERIOD" description="My network's activity in selected period">
+            {isChartsError ? (
+              <div className="text-red-500">Failed to load chart data.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={256}>
+                <LineChart data={charts?.purchasesOverTime || []}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
+                  <XAxis
+                    dataKey="date"
+                    stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                    tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                  />
+                  <YAxis
+                    yAxisId="left"
+                    scale={useLogScalePurchases ? "log" : "linear"}
+                    domain={useLogScalePurchases ? [1, 'auto'] : ['auto', 'auto']}
+                    allowDataOverflow={useLogScalePurchases}
+                    stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                    tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                    tickFormatter={formatShortNumber}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    scale={useLogScaleVolume ? "log" : "linear"}
+                    domain={useLogScaleVolume ? [1, 'auto'] : ['auto', 'auto']}
+                    allowDataOverflow={useLogScaleVolume}
+                    stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                    tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                    tickFormatter={formatShortNumber}
+                  />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        const purchasesRaw = payload.find(p => p.dataKey === 'purchases')?.value ?? 0;
+                        const volumeRaw = payload.find(p => p.dataKey === 'volume')?.value ?? 0;
+                        const purchases = Math.floor(safeNumber(purchasesRaw));
+                        const volume = Math.floor(safeNumber(volumeRaw));
+                        return (
+                          <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
+                            <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                              <span>Purchases:</span>
+                              <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(purchases))}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                              <span className="px-2">Volume:</span>
+                              <span style={{ color: '#00B28C', fontWeight: 600 }}> {formatThousands(Number(volume))} VP</span>
+                            </div>
                           </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span className="px-2">Volume:</span>
-                            <span style={{ color: '#00B28C', fontWeight: 600 }}> {formatThousands(Number(volume))} VP</span>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Line
-                  yAxisId="left"
-                  type="monotone"
-                  dataKey="purchases"
-                  stroke={chartColors.primary}
-                  strokeWidth={2}
-                  dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: chartColors.primary, strokeWidth: 2 }}
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="volume"
-                  stroke={chartColors.secondary}
-                  strokeWidth={2}
-                  dot={{ fill: chartColors.secondary, strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: chartColors.secondary, strokeWidth: 2 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          )}
-        </ChartCard>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="purchases"
+                    stroke={chartColors.primary}
+                    strokeWidth={2}
+                    dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, stroke: chartColors.primary, strokeWidth: 2 }}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="volume"
+                    stroke={chartColors.secondary}
+                    strokeWidth={2}
+                    dot={{ fill: chartColors.secondary, strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, stroke: chartColors.secondary, strokeWidth: 2 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </ChartCard>
+        )}
 
-        <ChartCard title="COMMISSION SOURCES" description="Breakdown by commission type for selected period">
-          {isError ? (
-            <div className="text-red-500">Failed to load chart data.</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={256}>
-              <RechartsPieChart>
-                <Pie
-                  data={(charts as any)?.commissionSources || []}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {(charts as any)?.commissionSources?.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#FFFFFF",
-                    border: "1px solid #2C2F3C",
-                    borderRadius: "8px",
-                    color: "#A0AFC0",
-                  }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  wrapperStyle={{
-                    color: theme === "dark" ? tickColors.gray : tickColors.purple,
-                    fontSize: "12px",
-                  }}
-                />
-              </RechartsPieChart>
-            </ResponsiveContainer>
-          )}
-        </ChartCard>
+        {/* Commission Sources Chart */}
+        {isChartsLoading ? (
+          <ChartCardSkeleton title="COMMISSION SOURCES" />
+        ) : (
+          <ChartCard title="COMMISSION SOURCES" description="Breakdown by commission type for selected period">
+            {isChartsError ? (
+              <div className="text-red-500">Failed to load chart data.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={256}>
+                <RechartsPieChart>
+                  <Pie
+                    data={(charts as any)?.commissionSources || []}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {(charts as any)?.commissionSources?.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#FFFFFF",
+                      border: "1px solid #2C2F3C",
+                      borderRadius: "8px",
+                      color: "#A0AFC0",
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={36}
+                    wrapperStyle={{
+                      color: theme === "dark" ? tickColors.gray : tickColors.purple,
+                      fontSize: "12px",
+                    }}
+                  />
+                </RechartsPieChart>
+              </ResponsiveContainer>
+            )}
+          </ChartCard>
+        )}
       </div>
 
       {/* Bottom Section - 2 Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="COMMISSION BREAKDOWN" description="Detailed commission analysis">
-          {isError ? (
-            <div className="text-red-500">Failed to load chart data.</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={256}>
-              <BarChart data={(charts as any)?.commissionBreakdown || []}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
-                <XAxis
-                  dataKey="month"
-                  stroke={theme === "dark" ? tickColors.gray : tickColors.green}
-                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
-                />
-                <YAxis
-                  stroke={theme === "dark" ? tickColors.gray : tickColors.green}
-                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
-                  tickFormatter={formatShortNumber}
-                />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      const c1Raw = payload.find(p => p.dataKey === 'c1')?.value ?? 0;
-                      const c2Raw = payload.find(p => p.dataKey === 'c2')?.value ?? 0;
-                      const c3Raw = payload.find(p => p.dataKey === 'c3')?.value ?? 0;
-                      const c1 = Math.floor(safeNumber(c1Raw));
-                      const c2 = Math.floor(safeNumber(c2Raw));
-                      const c3 = Math.floor(safeNumber(c3Raw));
-                      return (
-                        <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
-                          <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span>C1:</span>
-                            <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(c1))}</span>
+        
+        {/* Commission Breakdown Chart */}
+        {isChartsLoading ? (
+          <ChartCardSkeleton title="COMMISSION BREAKDOWN" />
+        ) : (
+          <ChartCard title="COMMISSION BREAKDOWN" description="Detailed commission analysis">
+            {isChartsError ? (
+              <div className="text-red-500">Failed to load chart data.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={256}>
+                <BarChart data={(charts as any)?.commissionBreakdown || []}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
+                  <XAxis
+                    dataKey="month"
+                    stroke={theme === "dark" ? tickColors.gray : tickColors.green}
+                    tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
+                  />
+                  <YAxis
+                    stroke={theme === "dark" ? tickColors.gray : tickColors.green}
+                    tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
+                    tickFormatter={formatShortNumber}
+                  />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        const c1Raw = payload.find(p => p.dataKey === 'c1')?.value ?? 0;
+                        const c2Raw = payload.find(p => p.dataKey === 'c2')?.value ?? 0;
+                        const c3Raw = payload.find(p => p.dataKey === 'c3')?.value ?? 0;
+                        const c1 = Math.floor(safeNumber(c1Raw));
+                        const c2 = Math.floor(safeNumber(c2Raw));
+                        const c3 = Math.floor(safeNumber(c3Raw));
+                        return (
+                          <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
+                            <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                              <span>C1:</span>
+                              <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(c1))}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                              <span>C2:</span>
+                              <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(c2))}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                              <span>C3:</span>
+                              <span style={{ color: '#6F00FF', fontWeight: 600 }}>{formatThousands(Number(c3))}</span>
+                            </div>
                           </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span>C2:</span>
-                            <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(c2))}</span>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      color: theme === "dark" ? tickColors.gray : tickColors.green,
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Bar dataKey="c1" fill={chartColors.primary} name="C1" />
+                  <Bar dataKey="c2" fill={chartColors.secondary} name="C2" />
+                  <Bar dataKey="c3" fill={chartColors.tertiary} name="C3" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </ChartCard>
+        )}
+
+        {/* Network Growth Chart */}
+        {isNetworkGrowthLoading ? (
+          <ChartCardSkeleton title="NETWORK GROWTH" />
+        ) : (
+          <ChartCard title="NETWORK GROWTH" description="Your network expansion over time">
+            {isNetworkGrowthError ? (
+              <div className="text-red-500">Failed to load chart data.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={256}>
+                <LineChart data={processedGrowthData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
+                  <XAxis
+                    dataKey="date"
+                    stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                    tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                  />
+                  <YAxis
+                    scale={useLogScaleGrowth ? "log" : "linear"}
+                    domain={useLogScaleGrowth ? [1, 'auto'] : [0, 'auto']}
+                    allowDataOverflow={useLogScaleGrowth}
+                    stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
+                    tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                    tickFormatter={formatShortNumber}
+                  />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        const totalMembersRaw = payload.find(p => p.dataKey === 'totalMembers')?.value ?? 0;
+                        const totalMembers = Math.floor(safeNumber(totalMembersRaw));
+                        return (
+                          <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
+                            <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                              <span>Total Members:</span>
+                              <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(totalMembers))}</span>
+                            </div>
                           </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span>C3:</span>
-                            <span style={{ color: '#6F00FF', fontWeight: 600 }}>{formatThousands(Number(c3))}</span>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Legend
-                  wrapperStyle={{
-                    color: theme === "dark" ? tickColors.gray : tickColors.green,
-                    fontSize: "12px",
-                  }}
-                />
-                <Bar dataKey="c1" fill={chartColors.primary} name="C1" />
-                <Bar dataKey="c2" fill={chartColors.secondary} name="C2" />
-                <Bar dataKey="c3" fill={chartColors.tertiary} name="C3" />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </ChartCard>
-        <ChartCard title="NETWORK GROWTH" description="Your network expansion over time">
-          {isError || isNetworkGrowthError ? (
-            <div className="text-red-500">Failed to load chart data.</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={256}>
-              <LineChart data={processedGrowthData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
-                <XAxis
-                  dataKey="date"
-                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
-                />
-                <YAxis
-                  scale={useLogScaleGrowth ? "log" : "linear"}
-                  domain={useLogScaleGrowth ? [1, 'auto'] : [0, 'auto']}
-                  allowDataOverflow={useLogScaleGrowth}
-                  stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                  tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
-                  tickFormatter={formatShortNumber}
-                />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      const totalMembersRaw = payload.find(p => p.dataKey === 'totalMembers')?.value ?? 0;
-                      const totalMembers = Math.floor(safeNumber(totalMembersRaw));
-                      return (
-                        <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
-                          <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                            <span>Total Members:</span>
-                            <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(totalMembers))}</span>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Legend
-                  wrapperStyle={{
-                    color: theme === "dark" ? tickColors.gray : tickColors.blue,
-                    fontSize: "12px",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="totalMembers"
-                  stroke={chartColors.primary}
-                  strokeWidth={2}
-                  dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: chartColors.primary, strokeWidth: 2 }}
-                  name="Total Members"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          )}
-        </ChartCard>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      color: theme === "dark" ? tickColors.gray : tickColors.blue,
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="totalMembers"
+                    stroke={chartColors.primary}
+                    strokeWidth={2}
+                    dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, stroke: chartColors.primary, strokeWidth: 2 }}
+                    name="Total Members"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </ChartCard>
+        )}
       </div>
     </>
   )
