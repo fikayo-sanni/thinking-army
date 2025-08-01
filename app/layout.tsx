@@ -6,8 +6,9 @@ import { AuthProvider } from "@/lib/auth/AuthProvider"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
 import { ThemeProvider } from "@/components/theme/theme-provider"
-import { ModernSidebar } from "@/components/layout/modern-sidebar"
 import { ModernHeader } from "@/components/layout/modern-header"
+import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { PageTitleProvider } from "@/components/providers/page-title-provider"
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -87,13 +88,14 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
   // ✅ PROTECTED USER ROUTES: Use full layout with sidebar and header
   return (
-    <ModernSidebar>
-      <div className="min-h-screen bg-[#F7F8F8] dark:bg-[#1A1E2D] text-black dark:text-white">
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
         <ModernHeader />
-        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 bg-white dark:bg-[#23263A] rounded-none sm:rounded-xl shadow-sm" >
+        <div className="p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6 bg-white dark:bg-[#23263A] rounded-none sm:rounded-xl shadow-sm mx-2 sm:mx-0">
           {children}
         </div>
-      </div>
-    </ModernSidebar>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

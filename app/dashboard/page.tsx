@@ -272,7 +272,7 @@ export default function DashboardPage() {
                   <div>
                     <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">COMMISSION ELIGIBLE BASE</div>
                     <div className="text-2xl font-bold text-white">
-                      {formatThousands(Math.floor(totalVP)) || '0'} VP
+                      {formatThousands(Math.floor(balances?.totalVP || 0)) || '0'} VP
                     </div>
                   </div>
                 </div>

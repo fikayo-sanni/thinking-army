@@ -168,55 +168,70 @@ export default function CommissionsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
         <PageHeader title="COMMISSIONS" description="My commissions breakdown" />
 
-        {/* Summary Cards Layout - Load independently */}
+        {/* Summary Cards Layout - Mobile-optimized grid */}
         {(isEarningsLoading || isStatsLoading) ? (
           <CommissionsSummaryCardsSkeleton />
         ) : (earningsData && statsData) ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {/* Total Earned */}
-            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] col-span-1 md:col-span-1">
-              <CardContent className="p-6 flex flex-col h-full justify-between">
+            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card col-span-1 sm:col-span-2 lg:col-span-1">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
                 <div className="flex items-center justify-between mb-2">
                   <div className="p-2 rounded-lg bg-[#0846A6]/10">
-                    <TrendingUp className="h-6 w-6 text-[#0846A6]" />
+                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-[#0846A6]" />
                   </div>
                   <Badge className={monthlyGrowth >= 0 ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"}>{monthlyGrowthRounded}%</Badge>
                 </div>
-                <div className="text-3xl font-bold mb-1 text-white">{formatThousands(Number(totalEarned).toFixed(0))} {currency}</div>
-                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">TOTAL EARNED</div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">{formatThousands(Number(totalEarned).toFixed(0))} {currency}</div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">TOTAL EARNED</div>
               </CardContent>
             </Card>
             
             {/* Commission Types Breakdown */}
-            <Card className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB] col-span-1 md:col-span-1 flex flex-col justify-center">
-              <CardContent className="p-6 flex flex-col h-full justify-center">
-                <div className="text-[#A0AFC0] text-sm uppercase tracking-wider mb-2">COMMISSION TYPES</div>
-                <div className="flex flex-col space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center space-x-2">
-                      <span className="inline-block w-2 h-2 rounded-full bg-[#0846A6] mr-2"></span>
-                      <span className="text-[#0846A6] font-bold">C1</span>
-                    </span>
-                    <span className="text-white font-medium">{formatThousands(Number(c1Total).toFixed(0))} {currency}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center space-x-2">
-                      <span className="inline-block w-2 h-2 rounded-full bg-[#00B28C] mr-2"></span>
-                      <span className="text-[#00B28C] font-bold">C2</span>
-                    </span>
-                    <span className="text-white font-medium">{formatThousands(Number(c2Total).toFixed(0))} {currency}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center space-x-2">
-                      <span className="inline-block w-2 h-2 rounded-full bg-[#6F00FF] mr-2"></span>
-                      <span className="text-[#6F00FF] font-bold">C3</span>
-                    </span>
-                    <span className="text-white font-medium">{formatThousands(Number(c3Total).toFixed(0))} {currency}</span>
+            <Card className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB] mobile-card sm:col-span-2 lg:col-span-1 flex flex-col justify-center">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 rounded-lg bg-[#00B28C]/10">
+                      <Coins className="h-5 w-5 sm:h-6 sm:w-6 text-[#00B28C]" />
+                    </div>
+                                         <div>
+                       <div className="text-[#A0AFC0] text-xs uppercase tracking-wider mobile-text-sm">COMMISSION BREAKDOWN</div>
+                       <div className="text-xl sm:text-2xl font-bold text-white mobile-text-lg">{formatThousands(Number(c1Total + c2Total + c3Total).toFixed(0))} {currency}</div>
+                     </div>
+                   </div>
+                 </div>
+                 <div className="space-y-2">
+                   <div className="flex items-center justify-between text-sm">
+                     <span className="text-[#A0AFC0] mobile-text-sm">C1 Direct Sales</span>
+                     <span className="text-white font-medium">{formatThousands(Number(c1Total).toFixed(0))} {currency}</span>
+                   </div>
+                   <div className="flex items-center justify-between text-sm">
+                     <span className="text-[#A0AFC0] mobile-text-sm">C2 Team Sales</span>
+                     <span className="text-white font-medium">{formatThousands(Number(c2Total).toFixed(0))} {currency}</span>
+                   </div>
+                   <div className="flex items-center justify-between text-sm">
+                     <span className="text-[#A0AFC0] mobile-text-sm">C3 Team Matching</span>
+                     <span className="text-white font-medium">{formatThousands(Number(c3Total).toFixed(0))} {currency}</span>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+            
+            {/* Pending Commissions */}
+            <Card className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB] mobile-card sm:col-span-2 lg:col-span-1">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#FF6B00]/10">
+                    <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-[#FF6B00]" />
+                  </div>
+                  <Badge className="bg-[#FF6B00]/20 text-[#FF6B00] border-[#FF6B00]/30">PROCESSING</Badge>
+                </div>
+                                 <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">{formatThousands(Number(pendingAmount).toFixed(0))} {currency}</div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">PENDING COMMISSIONS</div>
               </CardContent>
             </Card>
           </div>

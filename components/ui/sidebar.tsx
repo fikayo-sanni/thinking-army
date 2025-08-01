@@ -21,8 +21,8 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
+const SIDEBAR_WIDTH = "19.2rem"
+const SIDEBAR_WIDTH_MOBILE = "21.6rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
@@ -194,21 +194,32 @@ const Sidebar = React.forwardRef<
 
     if (isMobile) {
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-          <SheetContent
-            data-sidebar="sidebar"
-            data-mobile="true"
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+        <>
+          {/* Backdrop overlay */}
+          {openMobile && (
+            <div 
+              className="fixed inset-0 z-40 bg-transparent"
+              onClick={() => setOpenMobile(false)}
+            />
+          )}
+          
+          {/* Sidebar */}
+          <div 
+            className={cn(
+              "fixed inset-y-0 z-50 flex h-full w-[--sidebar-width] flex-col bg-white dark:bg-[#1A1E2D] text-sidebar-foreground transition-transform duration-300 ease-in-out border-r border-[#E5E7EB] dark:border-[#2C2F3C]",
+              openMobile ? "translate-x-0" : "-translate-x-full",
+              side === "right" ? "right-0" : "left-0"
+            )}
             style={
               {
                 "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
               } as React.CSSProperties
             }
-            side={side}
+            {...props}
           >
             <div className="flex h-full w-full flex-col">{children}</div>
-          </SheetContent>
-        </Sheet>
+          </div>
+        </>
       )
     }
 

@@ -1,21 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ModernSidebar } from "@/components/layout/modern-sidebar";
-import { ModernHeader } from "@/components/layout/modern-header";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterControls } from "@/components/layout/filter-controls";
 import { DataTableCard } from "@/components/ui/data-table-card";
 import { MetricCard } from "@/components/ui/metric-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,8 +44,14 @@ import {
   PayoutsPendingSkeleton,
 } from "@/components/payouts/payouts-skeletons";
 import { formatThousands } from "@/lib/utils";
+import { MobileTable } from "@/components/ui/mobile-table";
+import { MobileFilterControls } from "@/components/layout/mobile-filter-controls";
+import { useSetPageTitle } from "@/hooks/use-page-title";
 
 export default function PayoutsPage() {
+  // Set page title
+  useSetPageTitle("Payouts");
+
   const [statusFilter, setStatusFilter] = useState("all");
   const [timeRange, setTimeRange] = useTimeRange("this-week");
   const [currentPage, setCurrentPage] = useState(1);
@@ -165,116 +161,145 @@ export default function PayoutsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="p-6 space-y-6">
+      <div className="p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
         {/* Page Title Block */}
         <PageHeader
           title="PAYOUTS"
           description="Manage your withdrawals and payout history"
         />
 
-        {/* Balance Overview Block - Load independently */}
+        {/* Balance Overview Block - Mobile-optimized grid */}
         {isStatsLoading ? (
           <PayoutsStatsSkeleton />
         ) : statsData ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <MetricCard
-              title="TOTAL PAYOUTS"
-              value={`${formatThousands(
-                statsData.totalPayouts ?? 0
-              )}`}
-              icon={TrendingUp}
-              change={{
-                value: `${(statsData.totalPayoutsChange?? 0) >= 0 ? '+' : ''}${statsData.totalPayoutsChange?.toFixed(2) ?? 0}%`,
-                type: (statsData.totalPayoutsChange ?? 0) >= 0 ? "positive" : "negative",
-              }}
-            />
-            <MetricCard
-              title="TOTAL AMOUNT"
-              value={`${formatThousands(
-                Math.floor(Number(statsData.totalAmount)) ?? 0
-              )} VP`}
-              icon={CheckCircle}
-              change={{
-                value: `${(statsData.totalAmountChange ?? 0) >= 0 ? '+' : ''}${(statsData.totalAmountChange ?? 0).toFixed(2)}%`,
-                type: (statsData.totalAmountChange ?? 0) >= 0 ? "positive" : "negative",
-              }}
-            />
-            <MetricCard
-              title="PENDING PAYOUTS"
-              value={`${formatThousands(
-                statsData.pendingAmount?.toFixed(2) ?? 0
-              )} VP`}
-              icon={Clock}
-              change={{ value: "PROCESSING", type: "neutral" }}
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-[#0846A6]" />
+                  </div>
+                  <Badge className={
+                    (statsData.totalPayoutsChange ?? 0) >= 0 
+                      ? "bg-green-500/20 text-green-400 border-green-500/30" 
+                      : "bg-red-500/20 text-red-400 border-red-500/30"
+                  }>
+                    {`${(statsData.totalPayoutsChange?? 0) >= 0 ? '+' : ''}${statsData.totalPayoutsChange?.toFixed(2) ?? 0}%`}
+                  </Badge>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
+                  {formatThousands(statsData.totalPayouts ?? 0)}
+                </div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">TOTAL PAYOUTS</div>
+              </CardContent>
+            </Card>
+
+            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#00B28C]/10">
+                    <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-[#00B28C]" />
+                  </div>
+                  <Badge className={
+                    (statsData.totalAmountChange ?? 0) >= 0 
+                      ? "bg-green-500/20 text-green-400 border-green-500/30" 
+                      : "bg-red-500/20 text-red-400 border-red-500/30"
+                  }>
+                    {`${(statsData.totalAmountChange ?? 0) >= 0 ? '+' : ''}${(statsData.totalAmountChange ?? 0).toFixed(2)}%`}
+                  </Badge>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
+                  {formatThousands(Math.floor(Number(statsData.totalAmount)) ?? 0)} VP
+                </div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">TOTAL AMOUNT</div>
+              </CardContent>
+            </Card>
+
+            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card sm:col-span-2 lg:col-span-1">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#FF6B00]/10">
+                    <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-[#FF6B00]" />
+                  </div>
+                  <Badge className="bg-[#FF6B00]/20 text-[#FF6B00] border-[#FF6B00]/30">PROCESSING</Badge>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
+                  {formatThousands(statsData.pendingAmount?.toFixed(2) ?? 0)} VP
+                </div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">PENDING PAYOUTS</div>
+              </CardContent>
+            </Card>
           </div>
         ) : (
           <div className="text-[#A0AFC0] text-center py-8">No payout statistics available.</div>
         )}
 
         {/* Filter Controls Block */}
-        <FilterControls>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex items-center space-x-2">
-              <CalendarDays className="h-4 w-4 text-[#A0AFC0]" />
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">
-                  <SelectValue placeholder="Select time range" />
-                </SelectTrigger>
-                <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
-                  <SelectItem
-                    value="all-time"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    All Time
-                  </SelectItem>
-                  <SelectItem
-                    value="this-week"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    This Week
-                  </SelectItem>
-                  <SelectItem
-                    value="this-month"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    This Month
-                  </SelectItem>
-                  <SelectItem
-                    value="this-quarter"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    This Quarter
-                  </SelectItem>
-                  <SelectItem
-                    value="last-week"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    Last Week
-                  </SelectItem>
-                  <SelectItem
-                    value="last-month"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    Last Month
-                  </SelectItem>
-                  <SelectItem
-                    value="last-quarter"
-                    className="text-white hover:bg-[#2C2F3C]"
-                  >
-                    Last Quarter
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        <MobileFilterControls title="Payout Filters">
+          <div className="flex items-center space-x-2 md:space-x-2">
+            <CalendarDays className="h-4 w-4 text-[#A0AFC0] hidden md:block" />
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger className="w-full md:w-48 h-12 md:h-auto dark:bg-[#1A1E2D] dark:border-[#E5E7EB] text-white">
+                <SelectValue placeholder="Select time range" />
+              </SelectTrigger>
+              <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-none">
+                <SelectItem value="all-time" className="text-white hover:bg-[#E5E7EB]">
+                  All Time
+                </SelectItem>
+                <SelectItem value="this-week" className="text-white hover:bg-[#E5E7EB]">
+                  This Week
+                </SelectItem>
+                <SelectItem value="this-month" className="text-white hover:bg-[#E5E7EB]">
+                  This Month
+                </SelectItem>
+                <SelectItem value="this-quarter" className="text-white hover:bg-[#E5E7EB]">
+                  This Quarter
+                </SelectItem>
+                <SelectItem value="last-week" className="text-white hover:bg-[#E5E7EB]">
+                  Last Week
+                </SelectItem>
+                <SelectItem value="last-month" className="text-white hover:bg-[#E5E7EB]">
+                  Last Month
+                </SelectItem>
+                <SelectItem value="last-quarter" className="text-white hover:bg-[#E5E7EB]">
+                  Last Quarter
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </FilterControls>
+
+          <div className="flex items-center space-x-2 md:space-x-2">
+            <Filter className="h-4 w-4 text-[#A0AFC0] hidden md:block" />
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full md:w-48 h-12 md:h-auto dark:bg-[#1A1E2D] dark:border-[#E5E7EB] text-white">
+                <SelectValue placeholder="Status filter" />
+              </SelectTrigger>
+              <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-none">
+                <SelectItem value="all" className="text-white hover:bg-[#E5E7EB]">
+                  All Status
+                </SelectItem>
+                <SelectItem value="completed" className="text-white hover:bg-[#E5E7EB]">
+                  Completed
+                </SelectItem>
+                <SelectItem value="pending" className="text-white hover:bg-[#E5E7EB]">
+                  Pending
+                </SelectItem>
+                <SelectItem value="processing" className="text-white hover:bg-[#E5E7EB]">
+                  Processing
+                </SelectItem>
+                <SelectItem value="failed" className="text-white hover:bg-[#E5E7EB]">
+                  Failed
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </MobileFilterControls>
 
         {/* ✨ Pending Payouts Section - Load independently */}
         {isPendingLoading ? (
           <PayoutsPendingSkeleton />
         ) : (pendingData && pendingData.length > 0) ? (
-          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -312,157 +337,159 @@ export default function PayoutsPage() {
             showExport
             onExport={() => console.log("Export data")}
           >
-            <table className="min-w-full divide-y dark:divide-[#2C2F3C]">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">
-                    Date
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">
-                    Amount
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">
-                    Status
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">
-                    Transaction
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">
-                    Notes
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E5E7EB]">
-                {payouts.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="text-center py-12 dark:text-[#A0AFC0]"
+            <MobileTable
+              columns={[
+                {
+                  key: 'date',
+                  header: 'Date',
+                  mobileLabel: 'Date'
+                },
+                {
+                  key: 'amount',
+                  header: 'Amount',
+                  render: (value, row) => (
+                    <span className="text-[#0846A6] font-bold">
+                      {formatThousands(value.toFixed(2))} {row.currency}
+                    </span>
+                  )
+                },
+                {
+                  key: 'status',
+                  header: 'Status',
+                  render: (value) => getStatusBadge(value)
+                },
+                {
+                  key: 'transactionHash',
+                  header: 'Transaction',
+                  mobileLabel: 'Tx',
+                  render: (value) => value ? (
+                    <a
+                      href={`#`}
+                      rel="noopener noreferrer"
+                      className="text-[#0846A6] underline hover:text-[#00B28C] transition"
                     >
-                      {isHistoryError ? "Failed to load payout history." : "No payouts found"}
-                    </td>
-                  </tr>
-                ) : (
-                  payouts.map((p) => (
-                    <tr key={p.id}>
-                      <td className="px-4 py-2 whitespace-nowrap">{p.date}</td>
-                      <td className="px-4 py-2 whitespace-nowrap text-[#0846A6] font-bold">
-                        {formatThousands(p.amount.toFixed(2))} {p.currency}
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        {getStatusBadge(p.status)}
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        {p.transactionHash ? (
-                          <a
-                            href={`#`}
-                            rel="noopener noreferrer"
-                            className="text-[#0846A6] underline hover:text-[#00B28C] transition"
-                          >
-                            {p.transactionHash}
-                          </a>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        {p.notes || "-"}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      {value}
+                    </a>
+                  ) : "-"
+                },
+                {
+                  key: 'notes',
+                  header: 'Notes',
+                  mobileLabel: 'Notes',
+                  render: (value) => value || "-"
+                }
+              ]}
+              data={payouts}
+              keyField="id"
+              emptyMessage={isHistoryError ? "Failed to load payout history." : "No payouts found"}
+            />
             
             {/* Pagination - only show if not error and has data */}
             {!isHistoryError && payouts.length > 0 && (
-              <div className="flex items-center justify-between mt-4">
-                <div className="flex-1 text-[#A0AFC0] text-sm">
-                  Page {currentPage} of {totalPages} ({historyData?.total || 0}{" "}
-                  total results)
+              <div className="mt-4 space-y-4">
+                {/* Mobile Stats */}
+                <div className="text-center md:hidden">
+                  <div className="text-[#A0AFC0] text-sm">
+                    Page {formatThousands(currentPage)} of {formatThousands(totalPages)}
+                  </div>
+                  <div className="text-[#A0AFC0] text-xs">
+                    {formatThousands(historyData?.total || 0)} total results
+                  </div>
                 </div>
-                <div className="flex items-center space-x-4 justify-end">
-                  {/* Items per page dropdown */}
-                  <Select
-                    value={String(itemsPerPage)}
-                    onValueChange={(v) => {
-                      setItemsPerPage(Number(v));
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <SelectTrigger className="w-24 dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C] text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
-                      {[5, 10, 20, 50].map((opt) => (
-                        <SelectItem
-                          key={opt}
-                          value={String(opt)}
-                          className="text-white hover:bg-[#2C2F3C]"
+
+                {/* Controls */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  {/* Desktop Stats */}
+                  <div className="hidden md:block flex-1 text-[#A0AFC0] text-sm">
+                    Page {formatThousands(currentPage)} of {formatThousands(totalPages)} ({formatThousands(historyData?.total || 0)} total results)
+                  </div>
+
+                  {/* Items per page - Full width on mobile */}
+                  <div className="w-full md:w-auto">
+                    <Select
+                      value={String(itemsPerPage)}
+                      onValueChange={(v) => {
+                        setItemsPerPage(Number(v));
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <SelectTrigger className="w-full md:w-32 h-12 md:h-auto dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] border-none">
+                        {[5, 10, 20, 50].map((opt) => (
+                          <SelectItem
+                            key={opt}
+                            value={String(opt)}
+                            className="text-white hover:bg-[#E5E7EB]"
+                          >
+                            {opt} / page
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Pagination controls - Simplified for mobile */}
+                  <div className="flex items-center space-x-2 w-full md:w-auto justify-center">
+                    <button
+                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#2C2F3C] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    >
+                      Previous
+                    </button>
+
+                    {/* Page numbers - Hidden on mobile if too many pages */}
+                    <div className="hidden md:flex items-center space-x-2">
+                      <button
+                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition min-h-[44px] md:min-h-0 ${
+                          currentPage === 1
+                            ? "dark:bg-[#0846A6] text-black dark:border-[#0846A6]"
+                            : "dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#E5E7EB] hover:text-white dark:hover:border-[#0846A6]"
+                        }`}
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                      >
+                        1
+                      </button>
+                      {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
+                      {currentPage !== 1 && currentPage !== totalPages && (
+                        <button
+                          className="px-3 py-2 rounded-lg border text-sm font-medium border-[#E5E7EB] dark:bg-[#0846A6] text-black dark:border-[#0846A6] min-h-[44px] md:min-h-0"
+                          disabled
                         >
-                          {opt} / page
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {/* Pagination controls */}
-                  <button
-                    className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#0846A6] transition disabled:opacity-50`}
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  >
-                    Previous
-                  </button>
-                  {/* First page */}
-                  <button
-                    className={`px-3 py-2 rounded-lg border-[#E5E7EB] border text-sm font-medium transition ${
-                      currentPage === 1
-                        ? "dark:bg-[#0846A6] text-black dark:border-[#0846A6]"
-                        : "dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#2C2F3C] dark:hover:text-white dark:hover:border-[#0846A6]"
-                    }`}
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                  >
-                    1
-                  </button>
-                  {/* Ellipsis if needed */}
-                  {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
-                  {/* Current page (if not first/last) */}
-                  {currentPage !== 1 && currentPage !== totalPages && (
+                          {currentPage}
+                        </button>
+                      )}
+                      {currentPage < totalPages - 2 && (
+                        <span className="text-[#A0AFC0]">...</span>
+                      )}
+                      {totalPages > 1 && (
+                        <button
+                          className={`px-3 py-2 rounded-lg border text-sm font-medium transition min-h-[44px] md:min-h-0 ${
+                            currentPage === totalPages
+                              ? "dark:bg-[#0846A6] text-black border-[#E5E7EB] dark:border-[#0846A6]"
+                              : "dark:bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] dark:border-[#2C2F3C] dark:hover:text-white dark:hover:border-[#0846A6]"
+                          }`}
+                          onClick={() => setCurrentPage(totalPages)}
+                          disabled={currentPage === totalPages}
+                        >
+                          {totalPages}
+                        </button>
+                      )}
+                    </div>
+
                     <button
-                      className="px-3 py-2 rounded-lg border text-sm font-medium border-[#E5E7EB] dark:bg-[#0846A6] text-black dark:border-[#0846A6]"
-                      disabled
-                    >
-                      {currentPage}
-                    </button>
-                  )}
-                  {/* Ellipsis if needed */}
-                  {currentPage < totalPages - 2 && (
-                    <span className="text-[#A0AFC0]">...</span>
-                  )}
-                  {/* Last page */}
-                  {totalPages > 1 && (
-                    <button
-                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${
-                        currentPage === totalPages
-                          ? "dark:bg-[#0846A6] text-black border-[#E5E7EB] dark:border-[#0846A6]"
-                          : "dark:bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] dark:border-[#2C2F3C] dark:hover:text-white dark:hover:border-[#0846A6]"
-                      }`}
-                      onClick={() => setCurrentPage(totalPages)}
+                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] border dark:border-[#2C2F3C] text-[#A0AFC0] dark:hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
                       disabled={currentPage === totalPages}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                     >
-                      {totalPages}
+                      Next
                     </button>
-                  )}
-                  <button
-                    className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] border dark:border-[#2C2F3C] text-[#A0AFC0] dark:hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50`}
-                    disabled={currentPage === totalPages}
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                  >
-                    Next
-                  </button>
+                  </div>
                 </div>
               </div>
             )}

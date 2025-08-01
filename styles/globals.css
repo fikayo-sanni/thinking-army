@@ -130,7 +130,8 @@ html.dark {
 @media (max-width: 768px) {
   /* Ensure minimum touch target sizes */
   button, 
-  .touch-target {
+  .touch-target,
+  [role="button"] {
     min-height: 44px;
     min-width: 44px;
   }
@@ -155,5 +156,120 @@ html.dark {
   .mobile-table-text {
     font-size: 14px;
     line-height: 1.4;
+  }
+
+  /* Mobile-specific grid improvements */
+  .mobile-grid-1 {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Mobile navigation improvements */
+  .mobile-nav-item {
+    padding: 0.75rem 1rem;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Mobile scrollable containers */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Improved mobile dropdowns */
+  .mobile-dropdown {
+    width: 100vw !important;
+    max-width: none !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: calc(-50vw + 50%) !important;
+  }
+
+  /* Mobile card improvements */
+  .mobile-card {
+    border-radius: 12px;
+    margin: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Better mobile spacing utilities */
+  .mobile-px-4 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .mobile-py-3 {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  /* Mobile-optimized text sizes */
+  .mobile-text-lg {
+    font-size: 1.125rem !important;
+    line-height: 1.6;
+  }
+
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+    line-height: 1.4;
+  }
+
+  /* Mobile-first loading states */
+  .mobile-skeleton {
+    border-radius: 8px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+
+  /* Dark mode mobile optimizations */
+  .dark .mobile-skeleton {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+  }
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Enhanced touch interactions */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .hover\:bg-gray-100:hover {
+    background-color: inherit;
+  }
+  
+  /* Enhanced touch feedback */
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
+}
+
+/* Safe area handling for modern mobile devices */
+@supports (padding: max(0px)) {
+  .safe-area-inset-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-inset-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  
+  .safe-area-inset-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 }

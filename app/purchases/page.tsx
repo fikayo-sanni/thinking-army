@@ -6,7 +6,6 @@ import { FilterControls } from "@/components/layout/filter-controls"
 import { DataTableCard } from "@/components/ui/data-table-card"
 import { SummaryCard } from "@/components/ui/summary-card"
 import { ChartCard } from "@/components/dashboard/chart-card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CalendarDays, Filter, AlertTriangle } from "lucide-react"
@@ -32,6 +31,9 @@ import {
 import { formatThousands, formatShortNumber, groupChartData, formatXAxisLabel } from "@/lib/utils"
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { MobileTable } from "@/components/ui/mobile-table"
+import { MobileFilterControls } from "@/components/layout/mobile-filter-controls"
+import { useSetPageTitle } from "@/hooks/use-page-title"
 
 const categoryNames: Record<string, string> = {
   '1': 'Star',
@@ -57,6 +59,9 @@ const chartConfig = {
 }
 
 export default function PurchasesPage() {
+  // Set page title
+  useSetPageTitle("Network Activity");
+
   const [timeRange, setTimeRange] = useTimeRange("this-week")
   const [statusFilter, setStatusFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
@@ -122,7 +127,7 @@ export default function PurchasesPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="p-6 space-y-6">
+      <div className="p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
         {/* Page Title Block */}
         <PageHeader title="NETWORK ACTIVITY" description="Tracking my network's activity" />
 
@@ -130,129 +135,148 @@ export default function PurchasesPage() {
         {isOverviewLoading ? (
           <PurchasesSummaryCardsSkeleton />
         ) : overview ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <SummaryCard
-              title="TOTAL VOLUME POINTS IN PERIOD"
-              value={`${formatThousands(parseInt(overview.totalSpent.toFixed(2)) || '0.0')} ${overview.currency || 'VP'}`}
-              color="dark:text-[#0846A6]"
-            />
-            <SummaryCard
-              title="TOTAL PURCHASES IN PERIOD"
-              value={formatThousands(overview.totalPurchases) || 0}
-              color="dark:text-[#00B28C]"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded bg-[#0846A6]" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
+                  {formatThousands(parseInt(overview.totalSpent.toFixed(2)) || '0.0')} {overview.currency || 'VP'}
+                </div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">
+                  TOTAL VOLUME POINTS IN PERIOD
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#00B28C]/10">
+                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded bg-[#00B28C]" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
+                  {formatThousands(overview.totalPurchases) || 0}
+                </div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">
+                  TOTAL PURCHASES IN PERIOD
+                </div>
+              </CardContent>
+            </Card>
           </div>
         ) : (
           <div className="text-[#A0AFC0] text-center py-8">No purchase overview available.</div>
         )}
 
         {/* Filter Controls Block */}
-        <FilterControls>
-          <div className="flex items-center space-x-2">
-            <CalendarDays className="h-4 w-4 text-[#A0AFC0]" />
+        <MobileFilterControls title="Activity Filters">
+          <div className="flex items-center space-x-2 md:space-x-2">
+            <CalendarDays className="h-4 w-4 text-[#A0AFC0] hidden md:block" />
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">
+              <SelectTrigger className="w-full md:w-48 h-12 md:h-auto dark:bg-[#1A1E2D] dark:border-[#E5E7EB] text-white">
                 <SelectValue placeholder="Select time range" />
               </SelectTrigger>
-              <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
-                <SelectItem value="all-time" className="text-white hover:bg-[#2C2F3C]">
+              <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-none">
+                <SelectItem value="all-time" className="text-white hover:bg-[#E5E7EB]">
                   All Time
                 </SelectItem>
-                <SelectItem value="this-week" className="text-white hover:bg-[#2C2F3C]">
+                <SelectItem value="this-week" className="text-white hover:bg-[#E5E7EB]">
                   This Week
                 </SelectItem>
-                <SelectItem value="this-month" className="text-white hover:bg-[#2C2F3C]">
+                <SelectItem value="this-month" className="text-white hover:bg-[#E5E7EB]">
                   This Month
                 </SelectItem>
-                <SelectItem value="this-quarter" className="text-white hover:bg-[#2C2F3C]">
+                <SelectItem value="this-quarter" className="text-white hover:bg-[#E5E7EB]">
                   This Quarter
                 </SelectItem>
-                <SelectItem value="last-week" className="text-white hover:bg-[#2C2F3C]">
+                <SelectItem value="last-week" className="text-white hover:bg-[#E5E7EB]">
                   Last Week
                 </SelectItem>
-                <SelectItem value="last-month" className="text-white hover:bg-[#2C2F3C]">
+                <SelectItem value="last-month" className="text-white hover:bg-[#E5E7EB]">
                   Last Month
                 </SelectItem>
-                <SelectItem value="last-quarter" className="text-white hover:bg-[#2C2F3C]">
+                <SelectItem value="last-quarter" className="text-white hover:bg-[#E5E7EB]">
                   Last Quarter
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </FilterControls>
+        </MobileFilterControls>
 
         {/* Network Purchases Over Time Chart - Load independently */}
         {isChartLoading ? (
           <PurchasesChartSkeleton />
         ) : (chartData && chartData.length > 0) ? (
-          <div style={{ width: "70%", transform: "scale(0.9)", transformOrigin: "top left" }} className="mb-4">
-            <ChartCard title="NETWORK TRANSACTIONS OVER TIME" description="Daily purchase activity and volume trends">
-              <ChartContainer config={chartConfig}>
-                <LineChart data={groupedChartData} width={600} height={300}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
-                  <XAxis
-                    dataKey="date"
-                    stroke="#A0AFC0"
-                    tick={{ fontSize: 15 }}
-                    tickFormatter={date => formatXAxisLabel(date, groupBy)}
-                  />
-                  <YAxis
-                    yAxisId="left"
-                    stroke="#A0AFC0"
-                    tick={{ fontSize: 15 }}
-                    tickFormatter={formatShortNumber}
-                  />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    stroke="#A0AFC0"
-                    tick={{ fontSize: 15 }}
-                    tickFormatter={formatShortNumber}
-                  />
-                  <ChartTooltip
-                    content={({ active, payload, label }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="dark:bg-[#1A1E2D] bg-white border border-[#2C2F3C] rounded-lg p-3 shadow-lg">
-                            <div className="dark:text-white text-black font-medium mb-2">{label}</div>
-                            <div className="space-y-1">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-[#0846A6]">Purchases:</span>
-                                <span className="dark:text-white text-black font-medium">{formatThousands(String(payload[0]?.value))}</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-[#00B28C]">Volume:</span>
-                                <span className="dark:text-white text-black font-medium">{formatThousands(String(parseInt(String(payload[1]?.value))))} VP</span>
-                              </div>
+          <ChartCard title="NETWORK TRANSACTIONS OVER TIME" description="Daily purchase activity and volume trends">
+            <ChartContainer config={chartConfig}>
+              <LineChart data={groupedChartData} width={600} height={300}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
+                <XAxis
+                  dataKey="date"
+                  stroke="#A0AFC0"
+                  tick={{ fontSize: 15 }}
+                  tickFormatter={date => formatXAxisLabel(date, groupBy)}
+                />
+                <YAxis
+                  yAxisId="left"
+                  stroke="#A0AFC0"
+                  tick={{ fontSize: 15 }}
+                  tickFormatter={formatShortNumber}
+                />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  stroke="#A0AFC0"
+                  tick={{ fontSize: 15 }}
+                  tickFormatter={formatShortNumber}
+                />
+                <ChartTooltip
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="dark:bg-[#1A1E2D] bg-white border border-[#2C2F3C] rounded-lg p-3 shadow-lg">
+                          <div className="dark:text-white text-black font-medium mb-2">{label}</div>
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-[#0846A6]">Purchases:</span>
+                              <span className="dark:text-white text-black font-medium">{formatThousands(String(payload[0]?.value))}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-[#00B28C]">Volume:</span>
+                              <span className="dark:text-white text-black font-medium">{formatThousands(String(parseInt(String(payload[1]?.value))))} VP</span>
                             </div>
                           </div>
-                        )
-                      }
-                      return null
-                    }}
-                  />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="purchases"
-                    stroke="#0846A6"
-                    strokeWidth={1.5}
-                    dot={{ fill: "#0846A6", strokeWidth: 1, r: 3 }}
-                    activeDot={{ r: 4, stroke: "#0846A6", strokeWidth: 1 }}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="volume"
-                    stroke="#00B28C"
-                    strokeWidth={1.5}
-                    dot={{ fill: "#00B28C", strokeWidth: 1, r: 3 }}
-                    activeDot={{ r: 4, stroke: "#00B28C", strokeWidth: 1 }}
-                  />
-                </LineChart>
-              </ChartContainer>
-            </ChartCard>
-          </div>
+                        </div>
+                      )
+                    }
+                    return null
+                  }}
+                />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="purchases"
+                  stroke="#0846A6"
+                  strokeWidth={1.5}
+                  dot={{ fill: "#0846A6", strokeWidth: 1, r: 3 }}
+                  activeDot={{ r: 4, stroke: "#0846A6", strokeWidth: 1 }}
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="volume"
+                  stroke="#00B28C"
+                  strokeWidth={1.5}
+                  dot={{ fill: "#00B28C", strokeWidth: 1, r: 3 }}
+                  activeDot={{ r: 4, stroke: "#00B28C", strokeWidth: 1 }}
+                />
+              </LineChart>
+            </ChartContainer>
+          </ChartCard>
         ) : chartError ? (
           <div className="text-red-500 text-center py-8">Failed to load chart data.</div>
         ) : null}
@@ -267,115 +291,136 @@ export default function PurchasesPage() {
             showExport
             onExport={() => console.log("Export data")}
           >
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-[#E5E7EB] dark:divide-[#2C2F3C]">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Date</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Item ID</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Volume Points</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium dark:text-[#A0AFC0] uppercase">Buyer</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E5E7EB]">
-                  {purchases.map((purchase) => (
-                    <tr key={purchase.id} className="dark:border-[#2C2F3C] dark:hover:bg-[#1A1E2D]/30 border-b">
-                      <td className="px-4 py-2 dark:text-[#A0AFC0]">
-                        {new Date(purchase.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </td>
-                      <td className="px-4 py-2 dark:text-white font-medium"><a
-                            href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${purchase.tokenId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-[#0846A6] hover:underline hover:text-[#00B28C] transition"
-                          >{categoryNames[purchase.category] || purchase.category} #{purchase.tokenId}</a></td>
-                      <td className="px-4 py-2 dark:text-[#0846A6] font-bold">{formatThousands(parseInt(String(purchase.amount)))} {purchase.currency}</td>
-                      <td className="px-4 py-2 dark:text-[#A0AFC0]">{purchase.source} (Level:{purchase.level})</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {purchases.length === 0 && (
-              <div className="text-center py-12">
-                <div className="dark:text-[#A0AFC0] text-lg mb-2">
-                  {historyError ? "Failed to load purchase history." : "No purchases found"}
-                </div>
-                <div className="dark:text-[#A0AFC0] text-sm">
-                  {historyError ? "Please try again later." : "Try adjusting your filters to see more results"}
-                </div>
-              </div>
-            )}
-
-            {/* Pagination styled like commissions page */}
-            {!historyError && (
-              <div className="flex items-center justify-between mt-4">
-                <div className="flex-1 text-[#A0AFC0] text-sm">
-                  Page {formatThousands(currentPage)} of {formatThousands(totalPages)} ({formatThousands(historyData?.total || 0)} total results)
-                </div>
-                <div className="flex items-center space-x-4 justify-end">
-                  {/* Items per page dropdown */}
-                  <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
-                    <SelectTrigger className="w-24 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
-                      {[5, 10, 20, 50].map(opt => (
-                        <SelectItem key={opt} value={String(opt)} className="text-white dark:hover:bg-[#2C2F3C]">{opt} / page</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {/* Pagination controls */}
-                  <button
-                    className={`px-4 py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#2C2F3C] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50`}
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  >
-                    Previous
-                  </button>
-                  {/* First page */}
-                  <button
-                    className={`px-3 py-2 rounded-lg border-[#E5E7EB] border text-sm font-medium transition ${currentPage === 1 ? 'text-black border-[#0846A6]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#0846A6]'}`}
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                  >
-                    1
-                  </button>
-                  {/* Ellipsis if needed */}
-                  {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
-                  {/* Current page (if not first/last) */}
-                  {currentPage !== 1 && currentPage !== totalPages && (
-                    <button
-                      className="px-3 py-2 rounded-lg border text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6]"
-                      disabled
+            <MobileTable
+              columns={[
+                {
+                  key: 'date',
+                  header: 'Date',
+                  mobileLabel: 'Date',
+                  render: (value) => new Date(value).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                },
+                {
+                  key: 'tokenId',
+                  header: 'Item ID',
+                  mobileLabel: 'Item',
+                  render: (value, row) => (
+                    <a
+                      href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${value}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[#0846A6] hover:underline hover:text-[#00B28C] transition font-medium"
                     >
-                      {formatThousands(currentPage)}
-                    </button>
-                  )}
-                  {/* Ellipsis if needed */}
-                  {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
-                  {/* Last page */}
-                  {totalPages > 1 && (
+                      {categoryNames[row.category] || row.category} #{value}
+                    </a>
+                  )
+                },
+                {
+                  key: 'amount',
+                  header: 'Volume Points',
+                  render: (value, row) => (
+                    <span className="text-[#0846A6] font-bold">
+                      {formatThousands(parseInt(String(value)))} {row.currency}
+                    </span>
+                  )
+                },
+                {
+                  key: 'source',
+                  header: 'Buyer',
+                  mobileLabel: 'Buyer',
+                  render: (value, row) => `${value} (Level:${row.level})`
+                }
+              ]}
+              data={purchases}
+              keyField="id"
+              emptyMessage={historyError ? "Failed to load purchase history." : "No purchases found"}
+            />
+
+            {/* Pagination - only show if not error and has data */}
+            {!historyError && purchases.length > 0 && (
+              <div className="mt-4 space-y-4">
+                {/* Mobile Stats */}
+                <div className="text-center md:hidden">
+                  <div className="text-[#A0AFC0] text-sm">
+                    Page {formatThousands(currentPage)} of {formatThousands(totalPages)}
+                  </div>
+                  <div className="text-[#A0AFC0] text-xs">
+                    {formatThousands(historyData?.total || 0)} total results
+                  </div>
+                </div>
+
+                {/* Controls */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  {/* Desktop Stats */}
+                  <div className="hidden md:block flex-1 text-[#A0AFC0] text-sm">
+                    Page {formatThousands(currentPage)} of {formatThousands(totalPages)} ({formatThousands(historyData?.total || 0)} total results)
+                  </div>
+
+                  {/* Items per page - Full width on mobile */}
+                  <div className="w-full md:w-auto">
+                    <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
+                      <SelectTrigger className="w-full md:w-32 h-12 md:h-auto dark:bg-[#1A1E2D] dark:border-[#E5E7EB] text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-none">
+                        {[5, 10, 20, 50].map(opt => (
+                          <SelectItem key={opt} value={String(opt)} className="text-white hover:bg-[#E5E7EB]">{opt} / page</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Pagination controls - Simplified for mobile */}
+                  <div className="flex items-center space-x-2 w-full md:w-auto justify-center">
                     <button
-                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition ${currentPage === totalPages ? 'dark:bg-[#0846A6] text-black border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#0846A6]'}`}
-                      onClick={() => setCurrentPage(totalPages)}
+                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#2C2F3C] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    >
+                      Previous
+                    </button>
+
+                    {/* Page numbers - Hidden on mobile if too many pages */}
+                    <div className="hidden md:flex items-center space-x-2">
+                      <button
+                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === 1 ? 'text-black border-[#0846A6]' : 'bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#0846A6]'}`}
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                      >
+                        1
+                      </button>
+                      {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
+                      {currentPage !== 1 && currentPage !== totalPages && (
+                        <button
+                          className="px-3 py-2 rounded-lg border text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6] min-h-[44px] md:min-h-0"
+                          disabled
+                        >
+                          {formatThousands(currentPage)}
+                        </button>
+                      )}
+                      {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
+                      {totalPages > 1 && (
+                        <button
+                          className={`px-3 py-2 rounded-lg border text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === totalPages ? 'dark:bg-[#0846A6] text-black border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] border-[#2C2F3C] hover:text-white hover:border-[#0846A6]'}`}
+                          onClick={() => setCurrentPage(totalPages)}
+                          disabled={currentPage === totalPages}
+                        >
+                          {formatThousands(totalPages)}
+                        </button>
+                      )}
+                    </div>
+
+                    <button
+                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
                       disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     >
-                      {formatThousands(totalPages)}
+                      Next
                     </button>
-                  )}
-                  <button
-                    className={`px-4 py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#2C2F3C] text-[#A0AFC0] hover:text-white hover:border-[#0846A6] transition disabled:opacity-50`}
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  >
-                    Next
-                  </button>
+                  </div>
                 </div>
               </div>
             )}

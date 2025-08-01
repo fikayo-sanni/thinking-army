@@ -14,8 +14,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { NetworkStatsSkeleton, NetworkStructureSkeleton } from '@/components/network/network-skeletons'
 import { formatThousands } from "@/lib/utils"
 import { Button } from '@/components/ui/button'
+import { MobileFilterControls } from "@/components/layout/mobile-filter-controls"
+import { useSetPageTitle } from "@/hooks/use-page-title"
 
 export default function NetworkPage() {
+  // Set page title
+  useSetPageTitle("My Network");
+
   const [activeTab, setActiveTab] = useState("downlines")
   
   // 🚀 OPTIMIZED: Use individual hooks for parallel loading
@@ -50,7 +55,7 @@ export default function NetworkPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="p-6 space-y-6">
+      <div className="p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
         {/* Page Title Block */}
         <PageHeader title="MY NETWORK" description="Managing my network" />
 
@@ -58,73 +63,97 @@ export default function NetworkPage() {
         {isStatsLoading ? (
           <NetworkStatsSkeleton />
         ) : statsData ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SummaryCard 
-              title="ACTIVE/TOTAL MEMBERS" 
-              subtitle="DIRECT DOWNLINES" 
-              value={formatThousands((statsData as any).activeMembers || 0) + '/' + formatThousands((statsData as any).totalDirectDownlines || 0)} 
-              color="text-[#00B28C]" 
-            />
-            <SummaryCard 
-              title="ACTIVE/TOTAL DOWNLINES" 
-              subtitle="MY ENTIRE NETWORK" 
-              value={formatThousands((statsData as any).totalActiveDownlines || 0) + '/' + formatThousands((statsData as any).totalDownlines || 0)} 
-              color="text-[#0846A6]" 
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#00B28C]/10">
+                    <Users className="h-5 w-5 sm:h-6 sm:w-6 text-[#00B28C]" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
+                  {formatThousands((statsData as any).activeMembers || 0)}/{formatThousands((statsData as any).totalDirectDownlines || 0)}
+                </div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">
+                  ACTIVE/TOTAL MEMBERS
+                </div>
+                <div className="text-[#A0AFC0] text-xs">DIRECT DOWNLINES</div>
+              </CardContent>
+            </Card>
+
+            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
+                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-[#0846A6]" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
+                  {formatThousands((statsData as any).totalActiveDownlines || 0)}/{formatThousands((statsData as any).totalDownlines || 0)}
+                </div>
+                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">
+                  ACTIVE/TOTAL DOWNLINES
+                </div>
+                <div className="text-[#A0AFC0] text-xs">MY ENTIRE NETWORK</div>
+              </CardContent>
+            </Card>
           </div>
         ) : (
           <div className="text-[#A0AFC0] text-center py-8">No network statistics available.</div>
         )}
 
         {/* Main Content Area */}
-        <div className="space-y-6">
+        <div className="space-y-3 sm:space-y-4 lg:space-y-6">
           {/* Filter Controls Block */}
-          <FilterControls>
-            <div className="flex flex-col sm:flex-row gap-4">
+          <MobileFilterControls title="Network Filters">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               {/* Filter controls can be added here in the future */}
+              <div className="text-[#A0AFC0] text-sm">No filters available yet</div>
             </div>
-          </FilterControls>
+          </MobileFilterControls>
 
           {/* Network Structure - Load independently */}
-          <div className="mt-6">
+          <div>
             {isStructureLoading ? (
               <NetworkStructureSkeleton />
             ) : (
-              <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
-                <CardHeader>
+              <Card className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB] mobile-card">
+                <CardHeader className="p-4 sm:p-6">
                   <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                     <Users className="h-5 w-5 text-[#0846A6]" />
                     <span>DOWNLINE STRUCTURE</span>
                   </CardTitle>
                   <p className="text-[#A0AFC0] text-sm">Your referral network going downward</p>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                   {/* Current User Node (map) - only show if data exists */}
-                                     <div className="flex justify-center">
-                     {networkStructure?.currentUser && (networkStructure?.downlines?.length > 0 || rootDownlines?.length > 0) ? (
-                       <NetworkNode 
-                         user={{
-                           ...networkStructure.currentUser,
-                           directReferrals: networkStructure.currentUser.totalReferrals || 0
-                         } as any} 
-                         sponsor={networkStructure.sponsor ? {
-                           ...networkStructure.sponsor,
-                           directReferrals: networkStructure.sponsor.totalReferrals || 0
-                         } as any : undefined} 
-                         totalReferrals={networkStructure.currentUser.totalReferrals || 0} 
-                         direction="down" 
-                         isExpanded={true} 
-                       />
-                     ) : (
-                       <div className="text-[#A0AFC0] text-center py-8 w-full">
-                         {isStructureError ? (
-                           <div className="text-red-500">Failed to load network structure.</div>
-                         ) : (
-                           "No network data to display."
-                         )}
-                       </div>
-                     )}
-                   </div>
+                  <div className="flex justify-center">
+                    {networkStructure?.currentUser && (networkStructure?.downlines?.length > 0 || rootDownlines?.length > 0) ? (
+                      <div className="w-full max-w-4xl">
+                        <NetworkNode 
+                          user={{
+                            ...networkStructure.currentUser,
+                            directReferrals: networkStructure.currentUser.totalReferrals || 0
+                          } as any} 
+                          sponsor={networkStructure.sponsor ? {
+                            ...networkStructure.sponsor,
+                            directReferrals: networkStructure.sponsor.totalReferrals || 0
+                          } as any : undefined} 
+                          totalReferrals={networkStructure.currentUser.totalReferrals || 0} 
+                          direction="down" 
+                          isExpanded={true} 
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-[#A0AFC0] text-center py-8 w-full">
+                        {isStructureError ? (
+                          <div className="text-red-500">Failed to load network structure.</div>
+                        ) : (
+                          "No network data to display."
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             )}

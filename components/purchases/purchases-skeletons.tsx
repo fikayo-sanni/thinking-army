@@ -2,13 +2,13 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 
 export const PurchasesSummaryCardsSkeleton = () => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
     {[1, 2].map((i) => (
-      <Card key={i} className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
-        <CardContent className="p-6">
+      <Card key={i} className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+        <CardContent className="p-4 sm:p-6">
           <div className="space-y-3">
-            <Skeleton className="h-4 w-32 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-            <Skeleton className="h-8 w-24 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+            <Skeleton className="h-3 sm:h-4 w-24 sm:w-32 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+            <Skeleton className="h-6 sm:h-8 w-20 sm:w-24 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
           </div>
         </CardContent>
       </Card>
@@ -17,36 +17,56 @@ export const PurchasesSummaryCardsSkeleton = () => (
 )
 
 export const PurchasesChartSkeleton = () => (
-  <div style={{ width: "70%", transform: "scale(0.9)", transformOrigin: "top left" }} className="mb-4">
-    <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
-      <CardContent className="p-6">
-        <div className="space-y-4">
-          <div>
-            <Skeleton className="h-6 w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-            <Skeleton className="h-4 w-64 mt-2 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-          </div>
-          <Skeleton className="h-[300px] w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
+  <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+    <CardContent className="p-4 sm:p-6">
+      <div className="space-y-4">
+        <div>
+          <Skeleton className="h-5 sm:h-6 w-32 sm:w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+          <Skeleton className="h-3 sm:h-4 w-48 sm:w-64 mt-2 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
         </div>
-      </CardContent>
-    </Card>
-  </div>
+        <Skeleton className="h-48 sm:h-64 lg:h-[300px] w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
+      </div>
+    </CardContent>
+  </Card>
 )
 
 export const PurchasesTableSkeleton = () => (
-  <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
-    <CardContent className="p-6">
+  <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
+    <CardContent className="p-4 sm:p-6">
       <div className="space-y-4">
         {/* Table header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
           <div>
-            <Skeleton className="h-6 w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-            <Skeleton className="h-4 w-64 mt-2 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+            <Skeleton className="h-5 sm:h-6 w-32 sm:w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+            <Skeleton className="h-3 sm:h-4 w-48 sm:w-64 mt-2 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
           </div>
-          <Skeleton className="h-10 w-24 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+          <Skeleton className="h-8 sm:h-10 w-20 sm:w-24 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
         </div>
 
-        {/* Table content */}
-        <div className="space-y-4">
+        {/* Mobile Card Layout */}
+        <div className="block md:hidden space-y-3">
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="border border-[#E5E7EB] dark:border-[#2C2F3C] rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+                <Skeleton className="h-6 w-12 rounded-full bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-3 w-16 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+                  <Skeleton className="h-4 w-24 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-3 w-12 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+                  <Skeleton className="h-4 w-28 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table Layout */}
+        <div className="hidden md:block space-y-4">
           {/* Table headers */}
           <div className="grid grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
@@ -65,15 +85,30 @@ export const PurchasesTableSkeleton = () => (
           ))}
         </div>
 
-        {/* Pagination skeleton */}
-        <div className="flex items-center justify-between mt-4">
-          <Skeleton className="h-4 w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-          <div className="flex items-center space-x-2">
-            <Skeleton className="h-8 w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-            <Skeleton className="h-8 w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-            <Skeleton className="h-8 w-8 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-            <Skeleton className="h-8 w-8 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-            <Skeleton className="h-8 w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+        {/* Mobile Pagination */}
+        <div className="block md:hidden space-y-4 pt-2">
+          <div className="text-center">
+            <Skeleton className="h-4 w-32 mx-auto mb-1 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+            <Skeleton className="h-3 w-24 mx-auto bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+          </div>
+          <div className="flex space-x-2">
+            <Skeleton className="h-12 flex-1 bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
+            <Skeleton className="h-12 flex-1 bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
+          </div>
+          <Skeleton className="h-12 w-full bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
+        </div>
+
+        {/* Desktop Pagination */}
+        <div className="hidden md:block">
+          <div className="flex items-center justify-between mt-4">
+            <Skeleton className="h-4 w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+            <div className="flex items-center space-x-2">
+              <Skeleton className="h-8 w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+              <Skeleton className="h-8 w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+              <Skeleton className="h-8 w-8 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+              <Skeleton className="h-8 w-8 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+              <Skeleton className="h-8 w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+            </div>
           </div>
         </div>
       </div>
@@ -83,20 +118,22 @@ export const PurchasesTableSkeleton = () => (
 
 export const PurchasesPageSkeleton = () => (
   <div className="min-h-screen">
-    <div className="p-6 space-y-6">
+    <div className="p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
       {/* Page Header Skeleton */}
       <div className="space-y-2">
-        <Skeleton className="h-8 w-64 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-        <Skeleton className="h-4 w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+        <Skeleton className="h-6 sm:h-8 w-48 sm:w-64 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+        <Skeleton className="h-3 sm:h-4 w-32 sm:w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
       </div>
 
       {/* Summary Cards Skeleton */}
       <PurchasesSummaryCardsSkeleton />
 
-      {/* Filter Controls Skeleton */}
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-4 w-4 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
-        <Skeleton className="h-10 w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+      {/* Mobile Filter Controls Skeleton */}
+      <div className="space-y-3 sm:space-y-4">
+        <Skeleton className="h-4 w-16 sm:w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <Skeleton className="h-12 w-full sm:w-48 bg-[#F9F8FC] dark:bg-[#2C2F3C] rounded-lg" />
+        </div>
       </div>
 
       {/* Chart Skeleton */}
