@@ -443,7 +443,7 @@ export default function PayoutsPage() {
                     {/* Page numbers - Hidden on mobile if too many pages */}
                     <div className="hidden md:flex items-center space-x-2">
                       <button
-                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition min-h-[44px] md:min-h-0 ${
+                        className={`px-3 py-2 rounded-lg border-[#E5E7EB] text-sm font-medium transition min-h-[44px] md:min-h-0 ${
                           currentPage === 1
                             ? "dark:bg-[#0846A6] text-black dark:border-[#0846A6]"
                             : "dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#E5E7EB] hover:text-white dark:hover:border-[#0846A6]"

@@ -466,7 +466,7 @@ export default function CommissionsPage() {
                     {/* Page numbers - Hidden on mobile if too many pages */}
                     <div className="hidden md:flex items-center space-x-2">
                       <button
-                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === 1 ? 'dark:bg-[#0846A6] text-black dark:border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#E5E7EB] hover:text-white dark:hover:border-[#0846A6]'}`}
+                        className={`px-3 py-2 rounded-lg border-[#E5E7EB] text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === 1 ? 'dark:bg-[#0846A6] text-black border-[#E5E7EB] dark:border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] hover:text-white dark:hover:border-[#0846A6]'}`}
                         onClick={() => setCurrentPage(1)}
                         disabled={currentPage === 1}
                       >
@@ -475,7 +475,7 @@ export default function CommissionsPage() {
                       {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
                       {currentPage !== 1 && currentPage !== totalPages && (
                         <button
-                          className="px-3 py-2 rounded-lg border text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6] min-h-[44px] md:min-h-0"
+                          className="px-3 py-2 rounded-lg border-[#E5E7EB] text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6] min-h-[44px] md:min-h-0"
                           disabled
                         >
                           {currentPage}
@@ -484,7 +484,7 @@ export default function CommissionsPage() {
                       {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
                       {totalPages > 1 && (
                         <button
-                          className={`px-3 py-2 rounded-lg border text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === totalPages ? 'dark:bg-[#0846A6] text-black dark:border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#E5E7EB] hover:text-white dark:hover:border-[#0846A6]'}`}
+                          className={`px-3 py-2 rounded-lg border-[#E5E7EB] text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === totalPages ? 'dark:bg-[#0846A6] text-black border-[#E5E7EB] dark:border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#E5E7EB] border-[#E5E7EB] hover:text-white dark:hover:border-[#0846A6]'}`}
                           onClick={() => setCurrentPage(totalPages)}
                           disabled={currentPage === totalPages}
                         >
@@ -494,7 +494,7 @@ export default function CommissionsPage() {
                     </div>
 
                     <button
-                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg dark:bg-[#181B23] border dark:border-[#E5E7EB] text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
+                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] dark:border-[#E5E7EB] text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
                       disabled={currentPage === totalPages}
                       onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     >
