@@ -15,6 +15,12 @@ import { Button } from '@/components/ui/button'
 
 export default function RanksPage() {
   const { data, isLoading, isError, refetch } = useRanksData()
+  
+  // Helper function to find current rank requirements from allRanks array
+  const getCurrentRankRequirements = (currentRankName: string, allRanks: any[]) => {
+    return allRanks.find(rank => rank.name === currentRankName)
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen">
@@ -75,6 +81,9 @@ export default function RanksPage() {
   }
   const { currentRank, nextRankRequirements, rankHistory, allRanks } = data
 
+  // Get current rank requirements
+  const currentRankRequirements = getCurrentRankRequirements(currentRank?.name, allRanks)
+
   return (
     <div className="min-h-screen">
       <div className="p-6 space-y-6">
@@ -124,29 +133,29 @@ export default function RanksPage() {
             </CardContent>
           </Card>
 
-          {/* Progress Tracker Block */}
-          {nextRankRequirements ? <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
+          {/* Progress Tracker Block - Now shows progress to maintain current rank */}
+          {currentRank && currentRankRequirements ? <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Target className="h-6 w-6 text-[#0846A6]" />
-                <span>PROGRESS TO {nextRankRequirements?.name}</span>
+                <span>MAINTAINING {currentRank.name}</span>
               </CardTitle>
-              <p className="text-[#A0AFC0] text-sm">Complete these requirements to unlock your next rank</p>
+              <p className="text-[#A0AFC0] text-sm">Track your progress to maintain your current rank requirements</p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <ProgressBar
                     label="TOTAL VOLUME"
-                    current={nextRankRequirements.currentVolume}
-                    target={nextRankRequirements.volumeRequired}
+                    current={currentRank.totalVolume}
+                    target={parseInt(currentRankRequirements.requirements.volume.replace(/[^0-9]/g, ''))}
                     unit="VP"
                     color="bg-[#0846A6]"
                   />
                   <ProgressBar
                     label="DIRECT REFERRALS"
-                    current={nextRankRequirements.currentDirectReferrals}
-                    target={nextRankRequirements.directReferralsRequired}
+                    current={currentRank.directReferrals}
+                    target={parseInt(currentRankRequirements.requirements.directReferrals.replace(/[^0-9]/g, ''))}
                     unit="users"
                     color="bg-[#00B28C]"
                   />
@@ -154,15 +163,15 @@ export default function RanksPage() {
                 <div className="space-y-4">
                   <ProgressBar
                     label="TEAM SIZE"
-                    current={nextRankRequirements.currentTeamSize}
-                    target={nextRankRequirements.teamSizeRequired}
+                    current={currentRank.teamSize}
+                    target={parseInt(currentRankRequirements.requirements.teamSize.replace(/[^0-9]/g, ''))}
                     unit="members"
                     color="bg-[#6F00FF]"
                   />
                   <ProgressBar
                     label="MONTHLY VOLUME"
-                    current={nextRankRequirements.currentMonthlyVolume}
-                    target={nextRankRequirements.monthlyVolumeRequired}
+                    current={nextRankRequirements?.currentMonthlyVolume || 0}
+                    target={nextRankRequirements?.monthlyVolumeRequired || 1}
                     unit="VP"
                     color="bg-yellow-500"
                   />
@@ -172,7 +181,7 @@ export default function RanksPage() {
           </Card> : null}
 
           {/* Rank History Block */}
-          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+          {/*<Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <TrendingUp className="h-6 w-6 text-[#0846A6]" />
@@ -219,7 +228,6 @@ export default function RanksPage() {
             </CardContent>
           </Card>
 
-          {/* Ranks Table Block */}
           <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
@@ -288,7 +296,7 @@ export default function RanksPage() {
                 ))}
               </div>
             </CardContent>
-          </Card>
+          </Card>*/}
         </div>
       </div>
     </div>

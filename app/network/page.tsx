@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { NetworkNode } from "@/components/network/network-node"
 import { Users, TrendingUp, User, AlertTriangle, Share2, Copy, Check, Loader2 } from "lucide-react"
 import { useNetworkStructure, useNetworkStats, useDirectDownlines } from '@/hooks/use-network'
+import { useProfile } from '@/hooks/use-auth'
 import { Skeleton } from '@/components/ui/skeleton'
 import { NetworkStatsSkeleton, NetworkStructureSkeleton } from '@/components/network/network-skeletons'
 import { formatThousands } from "@/lib/utils"
@@ -48,6 +49,7 @@ export default function NetworkPage() {
   // 🚀 OPTIMIZED: Use individual hooks for parallel loading
   const { data: networkStructure, isLoading: isStructureLoading, isError: isStructureError, refetch: refetchStructure } = useNetworkStructure()
   const { data: statsData, isLoading: isStatsLoading, isError: isStatsError, refetch: refetchStats } = useNetworkStats('all-time')
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
 
   // Always call the hook at the top level, passing currentUser?.id (may be undefined)
   // We'll get currentUser from networkStructure after loading
@@ -61,14 +63,24 @@ export default function NetworkPage() {
   const copyInviteLink = async () => {
     if (loading) return // Prevent multiple clicks while loading
     
-    setLoading(true)
-    try {
-      const { referralService } = await import("@/lib/services/referral-service")
-      const result = await referralService.generateReferralLink()
-      const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
-      const fullLink = `${baseUrl}/invite?code=${result.code}`
-      
-      await navigator.clipboard.writeText(fullLink)
+          setLoading(true)
+      try {
+        /*const { referralService } = await import("@/lib/services/referral-service")
+        const result = await referralService.generateReferralLink()
+        const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+        const fullLink = `${baseUrl}/invite?code=${result.code}`*/
+
+        // Use the profile data from the backend
+
+        alert(JSON.stringify(userProfile))
+        const nickname = userProfile?.username
+        if (!nickname) {
+          alert('Username not available')
+        }
+        
+        const fullLink = `https://gcuniverse.io/start/${nickname}`
+        
+        await navigator.clipboard.writeText(fullLink)
       setCopied(true)
       toast({
         title: "Invite link copied!",
@@ -114,8 +126,8 @@ export default function NetworkPage() {
           <div className="flex gap-2">
             <Button 
               onClick={copyInviteLink}
-              className="bg-[#0846A6] hover:bg-[#06377a] text-white flex items-center gap-2"
-              disabled={!canGenerateLink || loading}
+              className="bg-[#0846A6] hover:bg-[#06377a] text-white !text-white flex items-center gap-2"
+              disabled={!canGenerateLink || loading || isProfileLoading}
             >
               {loading ? (
                 <>

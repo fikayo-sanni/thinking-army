@@ -16,11 +16,14 @@ export interface RegisterData {
 
 export interface UserProfile {
   id: string
-  email: string
+  youre_id: string
+  firstName: string
+  lastName: string
   username: string
-  rank: string
+  email: string
   joinDate: string
-  isActive: boolean
+  rank: string
+  totalEarnings: number
   totalReferrals: number
 }
 

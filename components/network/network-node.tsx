@@ -105,20 +105,17 @@ export function NetworkNode({ user, sponsor, isExpanded = false, onToggle, direc
       .toUpperCase()
       .slice(0, 2) || "?"
 
-  // Early return for sponsor above the current user
-  if (sponsor && direction === "up") {
-    return (
-      <div className="relative mb-6">
-        <NetworkNode user={sponsor} direction="up" isSponsorNode={true} />
-        {/* Connection line from sponsor to current user */}
-        <div className="absolute left-6 -bottom-2 w-px h-6 dark:bg-[#2C2F3C]" />
-        
-      </div>
-    )
-  }
-
   return (
     <div className="relative">
+      {/* Show sponsor above current user when sponsor exists */}
+      {sponsor && (
+        <div className="relative mb-6">
+          <NetworkNode user={sponsor} direction="up" isSponsorNode={true} />
+          {/* Connection line from sponsor to current user */}
+          <div className="absolute left-3 sm:left-6 -bottom-6 w-px h-8 bg-gray-300 dark:bg-[#2C2F3C]" />
+        </div>
+      )}
+
       {/* Connection Line */}
       {direction === "down" && <div className="absolute left-3 sm:left-6 -top-4 w-px h-4 dark:bg-[#2C2F3C]" />}
       {direction === "up" && <div className="absolute left-3 sm:left-6 -bottom-4 w-px h-4 dark:bg-[#2C2F3C]" />}

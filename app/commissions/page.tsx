@@ -206,15 +206,15 @@ export default function CommissionsPage() {
                  </div>
                  <div className="space-y-2">
                    <div className="flex items-center justify-between text-sm">
-                     <span className="text-[#A0AFC0] mobile-text-sm">C1 Direct Sales</span>
+                     <span className="text-[#A0AFC0] mobile-text-sm">C1</span>
                      <span className="text-white font-medium">{formatThousands(Number(c1Total).toFixed(0))} {currency}</span>
                    </div>
                    <div className="flex items-center justify-between text-sm">
-                     <span className="text-[#A0AFC0] mobile-text-sm">C2 Team Sales</span>
+                     <span className="text-[#A0AFC0] mobile-text-sm">C2</span>
                      <span className="text-white font-medium">{formatThousands(Number(c2Total).toFixed(0))} {currency}</span>
                    </div>
                    <div className="flex items-center justify-between text-sm">
-                     <span className="text-[#A0AFC0] mobile-text-sm">C3 Team Matching</span>
+                     <span className="text-[#A0AFC0] mobile-text-sm">C3</span>
                      <span className="text-white font-medium">{formatThousands(Number(c3Total).toFixed(0))} {currency}</span>
                   </div>
                 </div>

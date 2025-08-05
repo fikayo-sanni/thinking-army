@@ -10,15 +10,17 @@ export function useAuth() {
 }
 
 // New hook for fetching the user profile
+// Using the same interface as auth-service.ts
 type UserProfile = {
   id: string;
-  email: string;
+  youre_id: string;
   firstName: string;
   lastName: string;
-  totalEarnings: string;
-  rank: string;
+  username: string;
+  email: string;
   joinDate: string;
-  isActive: boolean;
+  rank: string;
+  totalEarnings: number;
   totalReferrals: number;
 };
 
