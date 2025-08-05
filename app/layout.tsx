@@ -51,7 +51,8 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   }, []);
 
   const publicRoutes = ["/admin", "/"];
-  const isPublicRoute = publicRoutes.includes(pathname);
+  const isInviteRoute = pathname.startsWith('/invite/');
+  const isPublicRoute = publicRoutes.includes(pathname) || isInviteRoute;
   const isAdminRoute = pathname.startsWith('/admin'); // Check if any admin route
   const authenticated = isMounted ? isAuthenticated() : false;
 
@@ -81,7 +82,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     return <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A]">{children}</div>;
   }
 
-  // ✅ PUBLIC ROUTES: Use clean layout  
+  // ✅ PUBLIC ROUTES & INVITE ROUTES: Use clean layout  
   if (isPublicRoute) {
     return <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A]">{children}</div>;
   }

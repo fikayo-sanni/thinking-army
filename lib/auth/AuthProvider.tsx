@@ -54,12 +54,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const idToken = u.id_token || '';
       parsed = parseJwt(idToken);
-      if (!parsed.nickslug || !parsed.sponsor) {
+      
+      // Debug JWT contents
+      console.log('JWT Debug:', { 
+        hasToken: !!idToken, 
+        parsed: { 
+          sub: parsed.sub, 
+          nickslug: parsed.nickslug, 
+          sponsor: parsed.sponsor,
+          email: parsed.email,
+          allFields: Object.keys(parsed)
+        } 
+      });
+      
+      // For root users or admin users, sponsor might not exist
+      // Only require nickslug for basic authorization
+      if (!parsed.nickslug) {
+        console.log('JWT validation failed: missing nickslug');
         window.localStorage.removeItem('jwt');
-        setStatus('Your account is not authorised');
+        setStatus('Your account is not authorised - missing username');
         setTimeout(() => oidcUserManager.signoutRedirect(), 5000);
         setYoureId(undefined);
         return null;
+      }
+      
+      // Warn if sponsor is missing but don't block (root users won't have sponsors)
+      if (!parsed.sponsor) {
+        console.log('JWT validation warning: no sponsor found (normal for root users)');
       }
 
       window.localStorage.setItem('jwt', idToken);
@@ -72,12 +93,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
 
           if (parsed.sub?.startsWith('auth0|')) {
-            parsed.sub = parsed.sub .replace(/^auth0\|/, '');
+            parsed.sub = parsed.sub.replace(/^auth0\|/, '');
           }
   
-          if (parsed.sub ?.startsWith('google-oauth2|')) {
-            parsed.sub  = parsed.sub .replace(/^google-oauth2\|/, '');
+          if (parsed.sub?.startsWith('google-oauth2|')) {
+            parsed.sub = parsed.sub.replace(/^google-oauth2\|/, '');
           }
+          
+          // Check if this user was registered through referral and update their status
+          try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/v1/referral/activate-user`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ 
+                youreId: parsed.sub,
+                username: parsed.nickslug,
+                email: parsed.email 
+              }),
+            });
+            
+            if (response.ok) {
+              console.log('User activated successfully after youre_id registration');
+            }
+          } catch (activationError) {
+            console.log('User activation check failed - user might already be active:', activationError);
+          }
+          
           await authService.loginWithYoureId(parsed.sub);
           // Ensure redirect happens after successful backend login
           if (router && localStorage.getItem('authToken')) {
