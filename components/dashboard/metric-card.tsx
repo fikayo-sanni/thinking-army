@@ -19,7 +19,7 @@ interface MetricCardProps {
 
 export function MetricCard({ title, value, icon: Icon, change, progress }: MetricCardProps) {
   return (
-    <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+    <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="p-2 rounded-lg bg-[#0846A6]/10">

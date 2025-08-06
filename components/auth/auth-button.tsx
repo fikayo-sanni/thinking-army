@@ -26,7 +26,7 @@ export function AuthButton({
   const baseClasses = "w-full h-12 uppercase tracking-wide font-bold"
   const variantClasses = {
     primary: "bg-[#0846A6] text-black hover:bg-[#0846A6]/90",
-    secondary: "bg-[#1A1E2D] text-white border border-[#2C2F3C] hover:bg-[#2C2F3C]",
+    secondary: "bg-[#1A1E2D] text-white border border-[#E5E7EB] hover:bg-[#2C2F3C]",
   }
 
   return (

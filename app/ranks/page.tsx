@@ -33,7 +33,7 @@ export default function RanksPage() {
             ))}
           </div>
           {/* Progress Tracker Skeleton */}
-          <div className="dark:bg-[#1A1E2D] border-[#E5E7EB] border dark:border-[#2C2F3C] rounded-lg p-6 w-full">
+          <div className="dark:bg-[#1A1E2D] border-[#E5E7EB] border dark:border-[#E5E7EB] rounded-lg p-6 w-full">
             <Skeleton className="h-6 w-48 mb-4 dark:bg-[#2C2F3C]" />
             <Skeleton className="h-8 w-1/2 mb-4 dark:bg-[#2C2F3C]" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -50,7 +50,7 @@ export default function RanksPage() {
             </div>
           </div>
           {/* Rank History Skeleton */}
-          <div className="dark:bg-[#1A1E2D] border dark:border-[#2C2F3C] border-[#E5E7EB] rounded-lg p-6 w-full space-y-4">
+          <div className="dark:bg-[#1A1E2D] border dark:border-[#E5E7EB] border-[#E5E7EB] rounded-lg p-6 w-full space-y-4">
             {[1, 2, 3].map(i => (
               <Skeleton key={i} className="h-14 w-full dark:bg-[#2C2F3C]" />
             ))}
@@ -92,7 +92,7 @@ export default function RanksPage() {
 
         <div className="p-6 space-y-6">
           {/* Current Rank Summary Block */}
-          <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
+          <Card className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Trophy className="h-6 w-6 text-[#0846A6]" />
@@ -134,11 +134,12 @@ export default function RanksPage() {
           </Card>
 
           {/* Progress Tracker Block - Now shows progress to maintain current rank */}
-          {currentRank && currentRankRequirements ? <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
+          {currentRank && currentRankRequirements ? <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Target className="h-6 w-6 text-[#0846A6]" />
-                <span>MAINTAINING {currentRank.name}</span>
+                <span>MAINTAINING</span>
+                <RankBadge rank={currentRank.name} size="sm" showIcon={false} />
               </CardTitle>
               <p className="text-[#A0AFC0] text-sm">Track your progress to maintain your current rank requirements</p>
             </CardHeader>
@@ -181,7 +182,7 @@ export default function RanksPage() {
           </Card> : null}
 
           {/* Rank History Block */}
-          {/*<Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+          {/*<Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <TrendingUp className="h-6 w-6 text-[#0846A6]" />
@@ -194,7 +195,7 @@ export default function RanksPage() {
                 {rankHistory.map((entry, index) => (
                   <div
                     key={entry.rank}
-                    className="flex items-center space-x-4 p-4 rounded-lg dark:bg-[#0D0F1A] border border-[#E5E7EB] dark:border-[#2C2F3C]"
+                    className="flex items-center space-x-4 p-4 rounded-lg dark:bg-[#0D0F1A] border border-[#E5E7EB] dark:border-[#E5E7EB]"
                   >
                     <div className="flex-shrink-0">
                       {entry.isCurrent ? (
@@ -228,7 +229,7 @@ export default function RanksPage() {
             </CardContent>
           </Card>
 
-          <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
+          <Card className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <Gift className="h-6 w-6 text-[#0846A6]" />
@@ -243,7 +244,7 @@ export default function RanksPage() {
                     key={rank.name}
                     className={`border-[#E5E7EB] transition-all duration-200 ${rank.name === currentRank?.name
                       ? "dark:bg-[#0846A6]/5 dark:border-[#0846A6]"
-                      : "dark:bg-[#0D0F1A] dark:border-[#2C2F3C] dark:hover:border-[#0846A6]/50"
+                      : "dark:bg-[#0D0F1A] dark:border-[#E5E7EB] dark:hover:border-[#0846A6]/50"
                       }`}
                   >
                     <CardContent className="p-4 space-y-4">

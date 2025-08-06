@@ -22,7 +22,7 @@ export default function CommissionPage() {
               ))}
             </div>
             {/* Table Skeleton */}
-            <div className="bg-[#1A1E2D] border border-[#2C2F3C] rounded-lg p-0 w-full">
+            <div className="bg-[#1A1E2D] border border-[#E5E7EB] rounded-lg p-0 w-full">
               <div className="px-6 pt-6 pb-2">
                 <Skeleton className="h-6 w-48 mb-4 dark:bg-[#2C2F3C]" />
               </div>

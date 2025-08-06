@@ -66,7 +66,7 @@ export function Sidebar({ children }: SidebarProps) {
   return (
     <div className="min-h-screen bg-[#0D0F1A] text-white">
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#2C2F3C] bg-[#0D0F1A]">
+      <div className="lg:hidden flex items-center justify-between p-4 border-b border-[#E5E7EB] bg-[#0D0F1A]">
         <div className="flex items-center space-x-3">
           <div className="h-8 w-8 rounded-lg bg-[#0846A6] flex items-center justify-center">
             <img src="/logo-dark-mode.svg" alt="GC Universe Logo" className="h-5 w-5" />
@@ -90,7 +90,7 @@ export function Sidebar({ children }: SidebarProps) {
         <aside
           className={`${
             isCollapsed ? "w-16" : "w-64"
-          } transition-all duration-200 border-r border-[#2C2F3C] bg-[#0D0F1A] min-h-screen sticky top-0 hidden lg:block`}
+          } transition-all duration-200 border-r border-[#E5E7EB] bg-[#0D0F1A] min-h-screen sticky top-0 hidden lg:block`}
         >
           <div className="p-4">
             {/* Logo Section */}
@@ -166,7 +166,7 @@ export function Sidebar({ children }: SidebarProps) {
         {/* Mobile Sidebar Overlay */}
         {isMobileOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-            <aside className="w-64 bg-[#0D0F1A] border-r border-[#2C2F3C] min-h-screen">
+            <aside className="w-64 bg-[#0D0F1A] border-r border-[#E5E7EB] min-h-screen">
               <div className="p-4">
                 {/* Logo Section */}
                 <div className="flex items-center space-x-3 mb-8">

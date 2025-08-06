@@ -70,7 +70,7 @@ export function MobileTable({
       {/* Mobile Card View */}
       <div className="md:hidden space-y-4">
         {data.map((row) => (
-          <Card key={row[keyField]} className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
+          <Card key={row[keyField]} className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB]">
             <CardContent className="p-4 space-y-3">
               {visibleColumns.map((column) => (
                 <div key={column.key} className="flex justify-between items-start">

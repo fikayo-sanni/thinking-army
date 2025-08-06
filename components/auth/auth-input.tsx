@@ -41,7 +41,7 @@ export function AuthInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="bg-[#0D0F1A] border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#0846A6] h-12 pr-12"
+          className="bg-[#0D0F1A] border-[#E5E7EB] text-white placeholder-[#A0AFC0] focus:border-[#0846A6] h-12 pr-12"
           required={required}
         />
         {showPasswordToggle && (

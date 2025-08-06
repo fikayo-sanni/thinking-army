@@ -4,6 +4,7 @@ import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
+import { RankBadge } from "@/components/ranks/rank-badge"
 import {
   Coins,
   LayoutDashboard,
@@ -89,7 +90,7 @@ export function AppSidebar() {
       label: "Current Rank",
       value: isCurrentRankLoading
         ? <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
-        : (currentRankData?.name?.split(" Member")[0] || "Member"),
+        : <RankBadge rank={currentRankData?.name || "STARTER"} size="sm" showIcon={false} />,
       icon: Trophy,
       color: "text-[#FFD700]",
     },
@@ -150,7 +151,7 @@ export function AppSidebar() {
   ];
 
   return (
-    <Sidebar className="border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 bg-white dark:bg-[#1A1E2D]">
+    <Sidebar className="border-r border-[#E5E7EB] dark:border-[#E5E7EB]/50 bg-white dark:bg-[#1A1E2D]">
       <SidebarHeader className="p-6">
         {/* Logo Section */}
         <div className="flex items-center space-x-4">
@@ -215,7 +216,7 @@ export function AppSidebar() {
                       isActive={isActive}
                       className={`group relative dark:text-[#A0AFC0] text-gray-700 flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
                         ? "bg-[#E9ECF0] dark:bg-gradient-to-r dark:from-[#0846A6]/20 dark:to-[#6F00FF]/20 border-none dark:border-[#0846A6]/30 shadow-lg shadow-[#0846A6]/10"
-                        : "hover:bg-[#E9ECF0] dark:hover:bg-[#1A1E2D]/60 dark:hover:border dark:hover:border-[#2C2F3C]/50"
+                        : "hover:bg-[#E9ECF0] dark:hover:bg-[#1A1E2D]/60 dark:hover:border dark:hover:border-[#E5E7EB]/50"
                         }`}
                     >
                       <Link href={item.href} onClick={handleNavClick}>

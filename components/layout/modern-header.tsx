@@ -78,11 +78,11 @@ export function ModernHeader() {
   }
 
   return (
-    <header className="flex items-center justify-between py-3 px-4 sm:py-4 sm:px-6 bg-[#F9FAFC] dark:bg-[#1A1E2D] border-b border-[#E5E7EB] dark:border-[#2C2F3C]">
+    <header className="flex items-center justify-between py-3 px-4 sm:py-4 sm:px-6 bg-[#F9FAFC] dark:bg-[#1A1E2D] border-b border-[#E5E7EB] dark:border-[#E5E7EB]">
       {/* Mobile Layout */}
       <div className="flex items-center justify-between w-full lg:hidden">
         {/* Left side - Menu button */}
-        <SidebarTrigger className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#2C2F3C]/50" />
+        <SidebarTrigger className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#E5E7EB]/50" />
 
         {/* Center - Logo/Title could go here if needed */}
         <div className="flex-1" />
@@ -94,7 +94,7 @@ export function ModernHeader() {
             variant="ghost"
             size="sm"
             onClick={() => setShowMobileSearch(!showMobileSearch)}
-            className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#2C2F3C]/50"
+            className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#E5E7EB]/50"
           >
             <Search className="h-5 w-5 text-[#A0AFC0]" />
           </Button>
@@ -105,7 +105,7 @@ export function ModernHeader() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="relative h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#2C2F3C]/50"
+                className="relative h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#E5E7EB]/50"
               >
                 <Bell className="h-5 w-5 text-[#A0AFC0]" />
                 {unreadCount > 0 && (
@@ -115,8 +115,8 @@ export function ModernHeader() {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] p-0" align="end">
-              <div className="p-4 dark:border-b border-[#2C2F3C]">
+            <PopoverContent className="w-80 dark:bg-[#1A1E2D] dark:border-[#E5E7EB] p-0" align="end">
+              <div className="p-4 dark:border-b border-[#E5E7EB]">
                 <h3 className="text-white font-semibold">Notifications</h3>
                 <p className="text-[#A0AFC0] text-sm">{unreadCount} unread notifications</p>
               </div>
@@ -124,7 +124,7 @@ export function ModernHeader() {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`p-4 border-b border-[#2C2F3C]/50 hover:bg-[#2C2F3C]/20 cursor-pointer ${
+                    className={`p-4 border-b border-[#E5E7EB]/50 hover:bg-[#2C2F3C]/20 cursor-pointer ${
                       notification.unread ? "bg-[#0846A6]/5" : ""
                     }`}
                   >
@@ -144,7 +144,7 @@ export function ModernHeader() {
                   </div>
                 ))}
               </div>
-              <div className="p-3 dark:border-[#2C2F3C]">
+              <div className="p-3 dark:border-[#E5E7EB]">
                 <Button variant="ghost" className="w-full text-[#0846A6] hover:bg-[#0846A6]/10 text-sm">
                   View All Notifications
                 </Button>
@@ -164,19 +164,19 @@ export function ModernHeader() {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]" align="end">
+            <DropdownMenuContent className="w-56 dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB]" align="end">
               <DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
                 <Link href="/profile-settings">
                   <User className="mr-2 h-4 w-4" />
                   Profile Settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
+              {/*<DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
                 <Link href="/wallet-settings">
                   <Wallet className="mr-2 h-4 w-4" />
                   Wallet Settings
                 </Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem>*/}
               <DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
                 <Link href="/preferences">
                   <Settings className="mr-2 h-4 w-4" />
@@ -198,7 +198,7 @@ export function ModernHeader() {
               placeholder="Search transactions, users, or NFTs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 dark:bg-[#1A1E2D]/50 dark:border-[#2C2F3C] text-white placeholder-[white] focus:border-[#0846A6] focus:ring-1 focus:ring-[#0846A6] h-10"
+              className="pl-10 dark:bg-[#1A1E2D]/50 dark:border-[#E5E7EB] text-white placeholder-[white] focus:border-[#0846A6] focus:ring-1 focus:ring-[#0846A6] h-10"
             />
           </div>
         </div>
@@ -211,7 +211,7 @@ export function ModernHeader() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="relative h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#2C2F3C]/50"
+                className="relative h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#E5E7EB]/50"
               >
                 <Bell className="h-5 w-5 text-[#A0AFC0]" />
                 {unreadCount > 0 && (
@@ -221,8 +221,8 @@ export function ModernHeader() {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] p-0" align="end">
-              <div className="p-4 dark:border-b border-[#2C2F3C]">
+            <PopoverContent className="w-80 dark:bg-[#1A1E2D] dark:border-[#E5E7EB] p-0" align="end">
+              <div className="p-4 dark:border-b border-[#E5E7EB]">
                 <h3 className="text-white font-semibold">Notifications</h3>
                 <p className="text-[#A0AFC0] text-sm">{unreadCount} unread notifications</p>
               </div>
@@ -230,7 +230,7 @@ export function ModernHeader() {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`p-4 border-b border-[#2C2F3C]/50 hover:bg-[#2C2F3C]/20 cursor-pointer ${
+                    className={`p-4 border-b border-[#E5E7EB]/50 hover:bg-[#2C2F3C]/20 cursor-pointer ${
                       notification.unread ? "bg-[#0846A6]/5" : ""
                     }`}
                   >
@@ -250,7 +250,7 @@ export function ModernHeader() {
                   </div>
                 ))}
               </div>
-              <div className="p-3 dark:border-[#2C2F3C]">
+              <div className="p-3 dark:border-[#E5E7EB]">
                 <Button variant="ghost" className="w-full text-[#0846A6] hover:bg-[#0846A6]/10">
                   View All Notifications
                 </Button>
@@ -263,7 +263,7 @@ export function ModernHeader() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 dark:hover:bg-[#2C2F3C]/50 border border-[#2C2F3C]/50"
+              className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 dark:hover:bg-[#2C2F3C]/50 border border-[#E5E7EB]/50"
             >
               <Settings className="h-5 w-5 text-[#A0AFC0]" />
             </Button>
@@ -281,19 +281,19 @@ export function ModernHeader() {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]" align="end">
+            <DropdownMenuContent className="w-56 dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB]" align="end">
               <DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
                 <Link href="/profile-settings">
                   <User className="mr-2 h-4 w-4" />
                   Profile Settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
+              {/*<DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
                 <Link href="/wallet-settings">
                   <Wallet className="mr-2 h-4 w-4" />
                   Wallet Settings
                 </Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem>*/}
               <DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
                 <Link href="/preferences">
                   <Settings className="mr-2 h-4 w-4" />
@@ -307,14 +307,14 @@ export function ModernHeader() {
 
       {/* Mobile Search Overlay */}
       {showMobileSearch && (
-        <div className="absolute top-full left-0 right-0 z-50 lg:hidden bg-[#F9FAFC] dark:bg-[#1A1E2D] border-b border-[#E5E7EB] dark:border-[#2C2F3C] p-4">
+        <div className="absolute top-full left-0 right-0 z-50 lg:hidden bg-[#F9FAFC] dark:bg-[#1A1E2D] border-b border-[#E5E7EB] dark:border-[#E5E7EB] p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#A0AFC0]" />
             <Input
               placeholder="Search transactions, users, or NFTs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 dark:bg-[#1A1E2D]/50 dark:border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#0846A6] focus:ring-1 focus:ring-[#0846A6] h-12"
+              className="pl-10 dark:bg-[#1A1E2D]/50 dark:border-[#E5E7EB] text-white placeholder-[#A0AFC0] focus:border-[#0846A6] focus:ring-1 focus:ring-[#0846A6] h-12"
               autoFocus
             />
           </div>

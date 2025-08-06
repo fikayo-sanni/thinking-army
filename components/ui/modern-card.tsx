@@ -24,7 +24,7 @@ export function ModernCard({
   children,
 }: ModernCardProps) {
   return (
-    <Card className="relative overflow-hidden bg-gradient-to-br from-[#1A1E2D]/80 to-[#2C2F3C]/40 backdrop-blur border border-[#2C2F3C]/50 hover:border-[#0846A6]/30 transition-all duration-300 group">
+    <Card className="relative overflow-hidden bg-gradient-to-br from-[#1A1E2D]/80 to-[#2C2F3C]/40 backdrop-blur border border-[#E5E7EB]/50 hover:border-[#0846A6]/30 transition-all duration-300 group">
       <div className="absolute inset-0 bg-gradient-to-br from-[#0846A6]/5 to-[#6F00FF]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <CardHeader className="relative pb-3">
         <div className="flex items-center justify-between">

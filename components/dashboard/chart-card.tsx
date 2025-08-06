@@ -9,7 +9,7 @@ interface ChartCardProps {
 
 export function ChartCard({ title, description, children }: ChartCardProps) {
   return (
-    <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+    <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
       <CardHeader>
         <CardTitle className="text-white uppercase tracking-wide">{title}</CardTitle>
         {description && <CardDescription className="text-[#A0AFC0]">{description}</CardDescription>}

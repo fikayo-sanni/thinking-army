@@ -101,7 +101,7 @@ export default function WalletSettingsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Wallet Overview */}
-            <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+            <Card className="bg-[#1A1E2D] border-[#E5E7EB]">
               <CardHeader>
                 <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                   <Wallet className="h-5 w-5 text-[#0846A6]" />
@@ -109,14 +109,14 @@ export default function WalletSettingsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-center p-4 rounded-lg bg-[#0D0F1A] border border-[#2C2F3C]">
+                <div className="text-center p-4 rounded-lg bg-[#0D0F1A] border border-[#E5E7EB]">
                   <div className="text-2xl font-bold text-[#0846A6] mb-1">
                     {wallets.filter((w) => w.status === "connected").length}
                   </div>
                   <div className="text-[#A0AFC0] text-sm uppercase tracking-wider">CONNECTED WALLETS</div>
                 </div>
 
-                <div className="text-center p-4 rounded-lg bg-[#0D0F1A] border border-[#2C2F3C]">
+                <div className="text-center p-4 rounded-lg bg-[#0D0F1A] border border-[#E5E7EB]">
                   <div className="text-2xl font-bold text-[#00B28C] mb-1">
                     {wallets
                       .filter((w) => w.status === "connected")
@@ -147,7 +147,7 @@ export default function WalletSettingsPage() {
 
             {/* Connected Wallets */}
             <div className="lg:col-span-2 space-y-6">
-              <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+              <Card className="bg-[#1A1E2D] border-[#E5E7EB]">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
@@ -171,7 +171,7 @@ export default function WalletSettingsPage() {
                       className={`p-4 rounded-lg border transition-all duration-200 ${
                         wallet.isPrimary
                           ? "bg-[#0846A6]/5 border-[#0846A6]/30"
-                          : "bg-[#0D0F1A] border-[#2C2F3C] hover:border-[#0846A6]/20"
+                          : "bg-[#0D0F1A] border-[#E5E7EB] hover:border-[#0846A6]/20"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-3">
@@ -256,7 +256,7 @@ export default function WalletSettingsPage() {
               </Card>
 
               {/* Wallet Preferences */}
-              <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+              <Card className="bg-[#1A1E2D] border-[#E5E7EB]">
                 <CardHeader>
                   <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                     <Shield className="h-5 w-5 text-[#0846A6]" />
@@ -283,10 +283,10 @@ export default function WalletSettingsPage() {
                   <div className="space-y-2">
                     <Label className="text-[#A0AFC0] uppercase text-xs tracking-wider">DEFAULT NETWORK</Label>
                     <Select value={defaultNetwork} onValueChange={setDefaultNetwork}>
-                      <SelectTrigger className="bg-[#0D0F1A] border-[#2C2F3C] text-white">
+                      <SelectTrigger className="bg-[#0D0F1A] border-[#E5E7EB] text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+                      <SelectContent className="bg-[#1A1E2D] border-[#E5E7EB]">
                         <SelectItem value="ethereum" className="text-white hover:bg-[#2C2F3C]">
                           Ethereum Mainnet
                         </SelectItem>
@@ -306,7 +306,7 @@ export default function WalletSettingsPage() {
               </Card>
 
               {/* Security Notice */}
-              <Card className="bg-[#1A1E2D] border-[#2C2F3C]">
+              <Card className="bg-[#1A1E2D] border-[#E5E7EB]">
                 <CardContent className="p-4">
                   <div className="flex items-start space-x-3">
                     <AlertTriangle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />

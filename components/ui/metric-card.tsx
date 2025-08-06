@@ -20,7 +20,7 @@ interface MetricCardProps {
 
 export function MetricCard({ title, value, icon, change, progress }: MetricCardProps) {
   return (
-    <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C]">
+    <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB]">
       <CardContent className="p-6">
         <MetricCardContent title={title} value={value} icon={icon} change={change}/>
         {progress && (

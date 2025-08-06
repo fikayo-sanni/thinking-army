@@ -14,7 +14,7 @@ interface DataTableCardProps {
 
 export function DataTableCard({ title, subtitle, children, showExport = false, onExport }: DataTableCardProps) {
   return (
-    <Card className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-[#E5E7EB]">
+    <Card className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB]">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

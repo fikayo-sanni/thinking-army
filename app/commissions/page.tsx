@@ -338,7 +338,7 @@ export default function CommissionsPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {pendingData.map((commission) => (
-                <div key={commission.id} className="flex items-center justify-between p-3 border border-[#2C2F3C] rounded-lg">
+                <div key={commission.id} className="flex items-center justify-between p-3 border border-[#E5E7EB] rounded-lg">
                   <div className="space-y-1">
                     <div className="text-white font-medium">{formatThousands(commission.amount)} {commission.currency}</div>
                     <div className="text-[#A0AFC0] text-sm">{commission.type} • From: {commission.source} • Expected: {commission.expectedDate}</div>
@@ -456,7 +456,7 @@ export default function CommissionsPage() {
                   {/* Pagination controls - Simplified for mobile */}
                   <div className="flex items-center space-x-2 w-full md:w-auto justify-center">
                     <button
-                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#2C2F3C] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
+                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#E5E7EB] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     >

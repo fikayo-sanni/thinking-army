@@ -57,7 +57,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
           REQUEST PAYOUT
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-[#1A1E2D] border-[#2C2F3C] text-white max-w-md">
+      <DialogContent className="bg-[#1A1E2D] border-[#E5E7EB] text-white max-w-md">
         <DialogHeader>
           <DialogTitle className="text-white uppercase tracking-wide">REQUEST PAYOUT</DialogTitle>
           <DialogDescription className="text-[#A0AFC0]">
@@ -67,7 +67,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Available Balance Info */}
-          <Card className="bg-[#0D0F1A] border-[#2C2F3C]">
+          <Card className="bg-[#0D0F1A] border-[#E5E7EB]">
             <CardContent className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-[#0846A6] mb-1">{availableBalance.toFixed(2)} ETH</div>
@@ -90,7 +90,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
-              className="bg-[#0D0F1A] border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#0846A6]"
+              className="bg-[#0D0F1A] border-[#E5E7EB] text-white placeholder-[#A0AFC0] focus:border-[#0846A6]"
               required
             />
             {amount && !isValidAmount && (
@@ -107,10 +107,10 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
               WITHDRAWAL METHOD
             </Label>
             <Select value={method} onValueChange={setMethod} required>
-              <SelectTrigger className="bg-[#0D0F1A] border-[#2C2F3C] text-white">
+              <SelectTrigger className="bg-[#0D0F1A] border-[#E5E7EB] text-white">
                 <SelectValue placeholder="Select withdrawal method" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1A1E2D] border-[#2C2F3C]">
+              <SelectContent className="bg-[#1A1E2D] border-[#E5E7EB]">
                 <SelectItem value="ethereum" className="text-white hover:bg-[#2C2F3C]">
                   <div className="flex items-center space-x-2">
                     <Wallet className="h-4 w-4" />
@@ -143,7 +143,7 @@ export function PayoutRequestModal({ availableBalance, onRequestPayout }: Payout
                     ? "Account number or IBAN"
                     : "Enter address or account details"
               }
-              className="bg-[#0D0F1A] border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#0846A6]"
+              className="bg-[#0D0F1A] border-[#E5E7EB] text-white placeholder-[#A0AFC0] focus:border-[#0846A6]"
               required
             />
           </div>

@@ -80,7 +80,7 @@ export function MobileInput({ error, className = "", ...props }: MobileInputProp
   return (
     <Input
       className={cn(
-        "h-12 text-base mobile-text-lg dark:bg-[#1A1E2D]/50 dark:border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#0846A6] focus:ring-1 focus:ring-[#0846A6]",
+        "h-12 text-base mobile-text-lg dark:bg-[#1A1E2D]/50 dark:border-[#E5E7EB] text-white placeholder-[#A0AFC0] focus:border-[#0846A6] focus:ring-1 focus:ring-[#0846A6]",
         error && "border-red-400 focus:border-red-400 focus:ring-red-400",
         className
       )}
@@ -97,7 +97,7 @@ export function MobileTextarea({ error, className = "", ...props }: MobileTextar
   return (
     <Textarea
       className={cn(
-        "min-h-[120px] text-base mobile-text-lg dark:bg-[#1A1E2D]/50 dark:border-[#2C2F3C] text-white placeholder-[#A0AFC0] focus:border-[#0846A6] focus:ring-1 focus:ring-[#0846A6] resize-none",
+        "min-h-[120px] text-base mobile-text-lg dark:bg-[#1A1E2D]/50 dark:border-[#E5E7EB] text-white placeholder-[#A0AFC0] focus:border-[#0846A6] focus:ring-1 focus:ring-[#0846A6] resize-none",
         error && "border-red-400 focus:border-red-400 focus:ring-red-400",
         className
       )}

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { RankBadge } from "@/components/ranks/rank-badge"
 import {
   Coins,
   LayoutDashboard,
@@ -79,13 +80,13 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   const quickStats = [
     {
       label: "AllTime VP",
-      value: isDashboardLoading ? <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(dashboardStats?.personalEarnings?.toFixed(0) ?? 0)} VP`,
+      value: isDashboardLoading ? <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands((dashboardStats as any)?.personalEarnings?.toFixed(0) ?? 0)} VP`,
       icon: TrendingUp,
       color: "text-[#0846A6]",
     },
     {
       label: "Active Downlines",
-      value: isNetworkLoading ? <Skeleton className="h-4 w-8 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands(networkStats?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands(networkStats?.totalDirectDownlines || 0)}`,
+      value: isNetworkLoading ? <Skeleton className="h-4 w-8 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands((networkStats as any)?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands((networkStats as any)?.totalDirectDownlines || 0)}`,
       icon: Users,
       color: "text-[#00B28C]",
     },
@@ -93,7 +94,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       label: "Current Rank",
       value: isCurrentRankLoading
         ? <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
-        : (currentRankData?.name.split(" Member")[0] || "Member"),
+        : <RankBadge rank={currentRankData?.name || "Starter"} size="sm" showIcon={true} />,
       icon: Trophy,
       color: "text-[#FFD700]",
     },
@@ -101,7 +102,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       label: "Own Turnover",
       value: isDashboardLoading
         ? <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
-        : formatThousands(dashboardStats?.ownTurnover?.toFixed(2) ?? 0),
+        : formatThousands((dashboardStats as any)?.ownTurnover?.toFixed(2) ?? 0),
       icon: DollarSign,
       color: "text-green-800",
     },
@@ -127,7 +128,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
       name: "My Network",
       href: "/network",
       icon: Users,
-      badge: isNetworkLoading ? null : networkStats?.totalDownlines?.toLocaleString() ?? null,
+      badge: isNetworkLoading ? null : (networkStats as any)?.totalDownlines?.toLocaleString() ?? null,
       gradient: "from-[#6F00FF] to-[#5500CC]",
     },
     {
@@ -203,7 +204,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         {/* Desktop Sidebar */}
         <aside
           className={`${isCollapsed ? "w-20" : "w-80"}
-            transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#2C2F3C]/50 h-screen sticky top-0 hidden lg:flex flex-col min-h-0 z-20`}
+            transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#E5E7EB]/50 h-screen sticky top-0 hidden lg:flex flex-col min-h-0 z-20`}
         >
           <div className="p-6 flex-1 min-h-0 overflow-y-auto">
             {/* Logo Section */}
@@ -269,7 +270,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                     <div
                       className={`group relative dark:text-[#A0AFC0] text-gray-700 flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
                         ? "bg-[#E9ECF0] dark:bg-gradient-to-r dark:from-[#0846A6]/20 dark:to-[#6F00FF]/20 border-none dark:border-[#0846A6]/30 shadow-lg shadow-[#0846A6]/10"
-                        : "hover:bg-[#E9ECF0] dark:hover:bg-[#1A1E2D]/60 dark:hover:border dark:hover:border-[#2C2F3C]/50"
+                        : "hover:bg-[#E9ECF0] dark:hover:bg-[#1A1E2D]/60 dark:hover:border dark:hover:border-[#E5E7EB]/50"
                         }`}
                     >
                       <div
@@ -319,7 +320,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
               variant="ghost"
               size="sm"
               onClick={handleToggleCollapse}
-              className="w-full justify-center dark:bg-[#1A1E2D]/50 dark:hover:bg-[#2C2F3C]/50 border dark:border-[#2C2F3C]/50 dark:text-[#A0AFC0] hover:text-white"
+              className="w-full justify-center dark:bg-[#1A1E2D]/50 dark:hover:bg-[#2C2F3C]/50 border dark:border-[#E5E7EB]/50 dark:text-[#A0AFC0] hover:text-white"
             >
               <ChevronRight
                 className={`h-4 w-4 transition-transform duration-200 ${isCollapsed ? "rotate-0" : "rotate-180"}`}
@@ -333,7 +334,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         {isMobileOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex" onClick={() => setIsMobileOpen(false)}>
             <aside
-              className="w-4/5 max-w-xs bg-[#0D0F1A]/95 backdrop-blur-xl border-r border-[#2C2F3C]/50 h-screen flex flex-col min-h-0"
+              className="w-4/5 max-w-xs bg-[#0D0F1A]/95 backdrop-blur-xl border-r border-[#E5E7EB]/50 h-screen flex flex-col min-h-0"
               onClick={e => e.stopPropagation()}
             >
               <div className="p-6 flex-1 min-h-0 overflow-y-auto">
@@ -398,7 +399,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                         <div
                           className={`group relative flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
                             ? "bg-gradient-to-r from-[#0846A6]/20 to-[#6F00FF]/20 border border-[#0846A6]/30 shadow-lg shadow-[#0846A6]/10"
-                            : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#2C2F3C]/50"
+                            : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#E5E7EB]/50"
                             }`}
                         >
                           <div

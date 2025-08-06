@@ -19,7 +19,7 @@ export function MobileFilterControls({ children, title = "Filters" }: MobileFilt
         <Button
           variant="outline"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full h-12 flex items-center justify-between dark:bg-[#1A1E2D] dark:border-[#2C2F3C] dark:text-white border-[#E5E7EB] text-gray-900 mb-4"
+          className="w-full h-12 flex items-center justify-between dark:bg-[#1A1E2D] dark:border-[#E5E7EB] dark:text-white border-[#E5E7EB] text-gray-900 mb-4"
         >
           <div className="flex items-center space-x-2">
             <Filter className="h-4 w-4" />
@@ -29,7 +29,7 @@ export function MobileFilterControls({ children, title = "Filters" }: MobileFilt
         </Button>
         
         {isExpanded && (
-          <div className="border border-[#E5E7EB] dark:border-[#2C2F3C] rounded-lg p-4 mb-4 bg-white dark:bg-[#1A1E2D] space-y-4">
+          <div className="border border-[#E5E7EB] dark:border-[#E5E7EB] rounded-lg p-4 mb-4 bg-white dark:bg-[#1A1E2D] space-y-4">
             {children}
           </div>
         )}

@@ -126,7 +126,7 @@ export function MobileNavigation({ items, className = "" }: MobileNavigationProp
 
         {/* Render children if expanded */}
         {hasChildren && isExpanded && (
-          <div className="bg-[#1A1E2D]/30 border-l-2 border-[#2C2F3C] ml-4">
+          <div className="bg-[#1A1E2D]/30 border-l-2 border-[#E5E7EB] ml-4">
             {item.children!.map(child => renderNavItem(child, level + 1))}
           </div>
         )}
@@ -135,7 +135,7 @@ export function MobileNavigation({ items, className = "" }: MobileNavigationProp
   }
 
   return (
-    <Card className={cn("dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#2C2F3C] mobile-card", className)}>
+    <Card className={cn("dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card", className)}>
       <CardContent className="p-0">
         <nav className="space-y-1">
           {items.map(item => renderNavItem(item))}

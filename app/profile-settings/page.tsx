@@ -94,7 +94,7 @@ export default function ProfileSettingsPage() {
           />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Profile Overview Card Skeleton */}
-            <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+            <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
               <CardHeader>
                 <Skeleton className="h-6 w-40 mb-2" />
               </CardHeader>
@@ -119,7 +119,7 @@ export default function ProfileSettingsPage() {
             </Card>
             {/* Personal Information Skeleton */}
             <div className="lg:col-span-2 space-y-6">
-              <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+              <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
                 <CardHeader>
                   <Skeleton className="h-6 w-56 mb-2" />
                 </CardHeader>
@@ -138,7 +138,7 @@ export default function ProfileSettingsPage() {
                 </CardContent>
               </Card>
               {/* Security Settings Skeleton */}
-              <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+              <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
                 <CardHeader>
                   <Skeleton className="h-6 w-56 mb-2" />
                 </CardHeader>
@@ -192,7 +192,7 @@ export default function ProfileSettingsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Overview Card */}
-          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
             <CardHeader>
               <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                 <User className="h-5 w-5 text-[#0846A6] dark:text-[#0846A6]" />
@@ -230,19 +230,19 @@ export default function ProfileSettingsPage() {
 
               {/* Stats */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#2C2F3C]">
+                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#E5E7EB]">
                   <span className="text-[#A0AFC0] text-sm">Current Rank</span>
                   <Badge className="bg-[#FFD700]/20 text-[#FFD700] border-[#FFD700]/30">
                     {profileData.rank.split(" ")[0]}
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#2C2F3C]">
+                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#E5E7EB]">
                   <span className="text-[#A0AFC0] text-sm">AllTime VP</span>
                   <span className="dark:text-[#0846A6] text-[#0846A6] font-bold">
                     {formatThousands(profileData.totalEarnings.toFixed(0))} VP
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#2C2F3C]">
+                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#E5E7EB]">
                   <span className="text-[#A0AFC0] text-sm">Member Since</span>
                   <span className="text-white font-bold">
                     {formatDate(profileData.joinDate)}
@@ -254,7 +254,7 @@ export default function ProfileSettingsPage() {
 
           {/* Personal Information */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C]">
+            <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
               <CardHeader>
                 <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
                   <User className="h-5 w-5 text-[#0846A6] dark:text-[#0846A6]" />
@@ -276,7 +276,7 @@ export default function ProfileSettingsPage() {
                       onChange={(e) =>
                         handleInputChange("firstName", e.target.value)
                       }
-                      className="dark:bg-[#0D0F1A] dark:border-[#2C2F3C] text-white focus:border-[#0846A6]"
+                      className="dark:bg-[#0D0F1A] dark:border-[#E5E7EB] text-white focus:border-[#0846A6]"
                     />
                   </div>
                   <div className="space-y-2">
@@ -292,7 +292,7 @@ export default function ProfileSettingsPage() {
                       onChange={(e) =>
                         handleInputChange("lastName", e.target.value)
                       }
-                      className="dark:bg-[#0D0F1A] dark:border-[#2C2F3C] text-white focus:border-[#0846A6]"
+                      className="dark:bg-[#0D0F1A] dark:border-[#E5E7EB] text-white focus:border-[#0846A6]"
                     />
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export default function ProfileSettingsPage() {
                       onChange={(e) =>
                         handleInputChange("email", e.target.value)
                       }
-                      className="pl-10 dark:bg-[#0D0F1A] dark:border-[#2C2F3C] text-white focus:border-[#0846A6]"
+                      className="pl-10 dark:bg-[#0D0F1A] dark:border-[#E5E7EB] text-white focus:border-[#0846A6]"
                     />
                   </div>
                 </div>
@@ -330,7 +330,7 @@ export default function ProfileSettingsPage() {
                     value={profileData.bio}
                     onChange={(e) => handleInputChange("bio", e.target.value)}
                     placeholder="Tell us about yourself..."
-                    className="dark:bg-[#0D0F1A] dark:border-[#2C2F3C] text-white focus:border-[#0846A6] min-h-[100px]"
+                    className="dark:bg-[#0D0F1A] dark:border-[#E5E7EB] text-white focus:border-[#0846A6] min-h-[100px]"
                   />
                 </div>
 

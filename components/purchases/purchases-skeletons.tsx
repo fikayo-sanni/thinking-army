@@ -46,7 +46,7 @@ export const PurchasesTableSkeleton = () => (
         {/* Mobile Card Layout */}
         <div className="block md:hidden space-y-3">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="border border-[#E5E7EB] dark:border-[#2C2F3C] rounded-lg p-4 space-y-3">
+            <div key={i} className="border border-[#E5E7EB] dark:border-[#E5E7EB] rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-20 bg-[#F9F8FC] dark:bg-[#2C2F3C]" />
                 <Skeleton className="h-6 w-12 rounded-full bg-[#F9F8FC] dark:bg-[#2C2F3C]" />

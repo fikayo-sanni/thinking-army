@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react"
 import { PageHeader } from "@/components/layout/page-header"
 import { MetricCard, MetricCardContent } from "@/components/ui/metric-card"
 import { ChartCard } from "@/components/dashboard/chart-card"
+import { RankBadge } from "@/components/ranks/rank-badge"
 import { TrendingUp, Users, Coins, Trophy, BarChart3, PieChart, Calendar, AlertTriangle } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { 
@@ -185,10 +186,10 @@ export default function DashboardPage() {
         <div className="flex items-center space-x-2">
           <Calendar className="h-4 w-4 text-[#A0AFC0]" />
           <Select value={timeFilter} onValueChange={setTimeFilter}>
-            <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#2C2F3C] text-white">
+            <SelectTrigger className="w-48 dark:bg-[#1A1E2D] dark:border-[#E5E7EB] text-white">
               <SelectValue placeholder="Select time period" />
             </SelectTrigger>
-            <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#2C2F3C] border-none">
+            <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-none">
               <SelectItem value="all-time" className="dark:text-white dark:hover:bg-[#2C2F3C]">
                 All Time
               </SelectItem>
@@ -222,7 +223,7 @@ export default function DashboardPage() {
         {isStatsLoading ? (
           <PerformanceCardSkeleton />
         ) : (
-          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
@@ -262,7 +263,7 @@ export default function DashboardPage() {
         {isBalancesLoading ? (
           <CommissionBalancesSkeleton />
         ) : (
-          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
@@ -326,7 +327,7 @@ export default function DashboardPage() {
         {isDownlinesLoading ? (
           <DownlinesSkeleton />
         ) : (
-          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#2C2F3C] col-span-1 md:col-span-1">
+          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB] col-span-1 md:col-span-1">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
@@ -351,9 +352,7 @@ export default function DashboardPage() {
                     <div className="flex items-center space-x-2">
                       <div className={`w-2 h-2 rounded-full ${downline.status === 'active' ? 'bg-green-400' : 'bg-gray-400'}`}></div>
                       <span className="text-white text-sm font-medium">{downline.nickname}</span>
-                      <Badge className="text-xs bg-[#2C2F3C] text-[#A0AFC0] border-[#2C2F3C]">
-                        {downline.rank?.split(" Member")[0] || 'Member'}
-                      </Badge>
+                      <RankBadge rank={downline.rank || "Starter"} size="sm" showIcon={false} />
                     </div>
                     <span className="text-[#0846A6] dark:text-[#0846A6] text-sm font-bold">
                       {formatThousands(Math.floor(Number(downline.revenue)))} VP

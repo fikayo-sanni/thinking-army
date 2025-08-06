@@ -314,7 +314,7 @@ export default function PayoutsPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {pendingData.map((payout) => (
-                <div key={payout.id} className="flex items-center justify-between p-3 border border-[#2C2F3C] rounded-lg">
+                <div key={payout.id} className="flex items-center justify-between p-3 border border-[#E5E7EB] rounded-lg">
                   <div className="space-y-1">
                     <div className="text-white font-medium">{formatThousands(payout.amount)} {payout.currency}</div>
                     <div className="text-[#A0AFC0] text-sm">{payout.method} • Expected: {payout.expectedDate}</div>
@@ -433,7 +433,7 @@ export default function PayoutsPage() {
                   {/* Pagination controls - Simplified for mobile */}
                   <div className="flex items-center space-x-2 w-full md:w-auto justify-center">
                     <button
-                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#2C2F3C] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
+                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#E5E7EB] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     >
@@ -470,7 +470,7 @@ export default function PayoutsPage() {
                           className={`px-3 py-2 rounded-lg border text-sm font-medium transition min-h-[44px] md:min-h-0 ${
                             currentPage === totalPages
                               ? "dark:bg-[#0846A6] text-black border-[#E5E7EB] dark:border-[#0846A6]"
-                              : "dark:bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] dark:border-[#2C2F3C] dark:hover:text-white dark:hover:border-[#0846A6]"
+                              : "dark:bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] dark:border-[#E5E7EB] dark:hover:text-white dark:hover:border-[#0846A6]"
                           }`}
                           onClick={() => setCurrentPage(totalPages)}
                           disabled={currentPage === totalPages}
@@ -481,7 +481,7 @@ export default function PayoutsPage() {
                     </div>
 
                     <button
-                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] border dark:border-[#2C2F3C] text-[#A0AFC0] dark:hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
+                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] border dark:border-[#E5E7EB] text-[#A0AFC0] dark:hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
                       disabled={currentPage === totalPages}
                       onClick={() =>
                         setCurrentPage((p) => Math.min(totalPages, p + 1))
