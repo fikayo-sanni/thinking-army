@@ -188,12 +188,7 @@ export const defaultMobileNavItems: MobileNavItem[] = [
         href: "/wallet-settings",
         icon: CreditCard
       },
-      {
-        id: "preferences",
-        label: "Preferences",
-        href: "/preferences",
-        icon: Settings
-      }
+
     ]
   }
 ] 

@@ -89,6 +89,20 @@ export function ModernHeader() {
 
         {/* Right side - Actions */}
         <div className="flex items-center space-x-2">
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleTheme}
+            className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#E5E7EB]/50"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5 text-[#A0AFC0]" />
+            ) : (
+              <Moon className="h-5 w-5 text-[#A0AFC0]" />
+            )}
+          </Button>
+
           {/* Mobile Search Toggle */}
           <Button
             variant="ghost"
@@ -177,12 +191,6 @@ export function ModernHeader() {
                   Wallet Settings
                 </Link>
               </DropdownMenuItem>*/}
-              <DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
-                <Link href="/preferences">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Preferences
-                </Link>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -205,6 +213,20 @@ export function ModernHeader() {
 
         {/* Actions Section */}
         <div className="flex items-center space-x-4 ml-6">
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleTheme}
+            className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 hover:bg-[#2C2F3C]/50 border border-[#E5E7EB]/50"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5 text-[#A0AFC0]" />
+            ) : (
+              <Moon className="h-5 w-5 text-[#A0AFC0]" />
+            )}
+          </Button>
+
           {/* Notifications */}
           <Popover>
             <PopoverTrigger asChild>
@@ -258,16 +280,7 @@ export function ModernHeader() {
             </PopoverContent>
           </Popover>
 
-          {/* Settings */}
-          <Link href="/preferences">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-10 w-10 rounded-full dark:bg-[#1A1E2D]/50 dark:hover:bg-[#2C2F3C]/50 border border-[#E5E7EB]/50"
-            >
-              <Settings className="h-5 w-5 text-[#A0AFC0]" />
-            </Button>
-          </Link>
+
 
           {/* Profile Dropdown */}
           <DropdownMenu>
@@ -294,12 +307,6 @@ export function ModernHeader() {
                   Wallet Settings
                 </Link>
               </DropdownMenuItem>*/}
-              <DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
-                <Link href="/preferences">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Preferences
-                </Link>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
