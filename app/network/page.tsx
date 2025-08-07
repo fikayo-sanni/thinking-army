@@ -216,9 +216,9 @@ export default function NetworkPage() {
                   <p className="text-[#A0AFC0] text-sm">Your referral network going downward</p>
                 </CardHeader>
                 <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-                  {/* Current User Node (map) - only show if data exists */}
+                  {/* Current User Node (map) - show if currentUser exists */}
                   <div className="flex justify-center">
-                    {networkStructure?.currentUser && (networkStructure?.downlines?.length > 0 || rootDownlines?.length > 0) ? (
+                    {networkStructure?.currentUser ? (
                       <div className="w-full max-w-4xl">
                         <NetworkNode 
                           user={{
