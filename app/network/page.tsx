@@ -72,10 +72,9 @@ export default function NetworkPage() {
 
         // Use the profile data from the backend
 
-        alert(JSON.stringify(userProfile))
         const nickname = userProfile?.username
         if (!nickname) {
-          alert('Username not available')
+          throw new Error('Username not available')
         }
         
         const fullLink = `https://gcuniverse.io/start/${nickname}`
