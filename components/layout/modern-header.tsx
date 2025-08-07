@@ -114,7 +114,7 @@ export function ModernHeader() {
           </Button>
 
           {/* Notifications */}
-          <Popover>
+          {/*<Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
@@ -164,7 +164,7 @@ export function ModernHeader() {
                 </Button>
               </div>
             </PopoverContent>
-          </Popover>
+          </Popover>*/}
 
           {/* Profile Dropdown */}
           <DropdownMenu>
@@ -228,7 +228,7 @@ export function ModernHeader() {
           </Button>
 
           {/* Notifications */}
-          <Popover>
+          {/*<Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
@@ -278,7 +278,7 @@ export function ModernHeader() {
                 </Button>
               </div>
             </PopoverContent>
-          </Popover>
+          </Popover>*/}
 
 
 
