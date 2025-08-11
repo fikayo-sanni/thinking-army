@@ -185,6 +185,14 @@ export function ModernHeader() {
                   Profile Settings
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator className="dark:bg-[#E5E7EB]" />
+              <DropdownMenuItem 
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer" 
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </DropdownMenuItem>
               {/*<DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
                 <Link href="/wallet-settings">
                   <Wallet className="mr-2 h-4 w-4" />
@@ -300,6 +308,14 @@ export function ModernHeader() {
                   <User className="mr-2 h-4 w-4" />
                   Profile Settings
                 </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="dark:bg-[#E5E7EB]" />
+              <DropdownMenuItem 
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer" 
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
               </DropdownMenuItem>
               {/*<DropdownMenuItem className="dark:text-[#A0AFC0] hover:text-white hover:bg-[#2C2F3C]" asChild>
                 <Link href="/wallet-settings">

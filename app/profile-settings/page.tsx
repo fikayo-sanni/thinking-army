@@ -26,9 +26,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { formatDate, formatThousands } from "@/lib/utils";
-import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/hooks/use-auth";
-import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfileSettingsPage() {
@@ -39,8 +37,6 @@ export default function ProfileSettingsPage() {
     error,
     refetch,
   } = useProfile();
-  const { logout } = useAuth();
-  const router = useRouter();
 
   // Map API profile fields to UI fields
   const profileData = profile
@@ -77,11 +73,6 @@ export default function ProfileSettingsPage() {
     setIsLoading(false);
     // Show success message
     console.log("Profile updated:", profileData);
-  };
-
-  const handleLogout = () => {
-    logout();
-    router.replace("/");
   };
 
   if (profileLoading) {
@@ -336,18 +327,27 @@ export default function ProfileSettingsPage() {
 
                 <div className="flex justify-end mt-8">
                   <Button
-                    variant="outline"
-                    onClick={handleLogout}
-                    className="text-red-500 border-red-500 hover:bg-red-500/10"
+                    onClick={handleSave}
+                    disabled={isLoading}
+                    className="bg-[#0846A6] text-white hover:bg-[#06377a] disabled:opacity-50"
                   >
-                    Logout
+                    {isLoading ? (
+                      <>
+                        <Save className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Changes
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
-        {/* Add logout button at the bottom */}
       </div>
     </div>
   );
