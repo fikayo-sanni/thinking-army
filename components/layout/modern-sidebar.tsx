@@ -185,7 +185,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
             />
           </div>
           <div>
-            <h1 className="text-lg font-bold">
+            <h1 className="text-lg  dark:text-white font-bold">
               GC UNIVERSE
             </h1>
           </div>
@@ -226,7 +226,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
               </div>
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-2xl font-bold">
+                  <h1 className="text-2xl dark:text-white font-bold">
                     GC UNIVERSE
                   </h1>
                 </div>
@@ -356,7 +356,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
                     </div>
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold">
+                    <h1 className="text-2xl dark:text-white font-bold">
                       GC UNIVERSE
                     </h1>
                   </div>

@@ -171,7 +171,7 @@ export function AppSidebar() {
           </div>
           {!isCollapsed && (
             <div>
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-2xl dark:text-white font-bold">
                 GC UNIVERSE
               </h1>
             </div>

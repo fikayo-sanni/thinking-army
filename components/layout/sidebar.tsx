@@ -72,7 +72,7 @@ export function Sidebar({ children }: SidebarProps) {
             <img src="/logo-dark-mode.svg" alt="GC Universe Logo" className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold tracking-wide">GC Universe</h1>
+            <h1 className="text-lg dark:text-white font-bold tracking-wide">GC Universe</h1>
           </div>
         </div>
         <Button
@@ -100,7 +100,7 @@ export function Sidebar({ children }: SidebarProps) {
               </div>
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-xl font-bold tracking-wide">GC UNIVERSE</h1>
+                  <h1 className="text-xl font-bold dark:text-white tracking-wide">GC UNIVERSE</h1>
                 </div>
               )}
             </div>
@@ -174,7 +174,7 @@ export function Sidebar({ children }: SidebarProps) {
                     <img src="/logo-dark-mode.svg" alt="Gamescoin Logo" className="h-6 w-6" />
                   </div>
                   <div>
-                    <h1 className="text-xl font-bold tracking-wide">GC UNIVERSE</h1>
+                    <h1 className="text-xl font-bold dark:text-white tracking-wide">GC UNIVERSE</h1>
                   </div>
                 </div>
 

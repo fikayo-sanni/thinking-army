@@ -182,7 +182,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [handleUser, processingCallback]);
 
 
-  const login = () => oidcUserManager.signinRedirect();
+  const login = async () => {
+    try {
+      console.log('🧹 Aggressive OIDC cleanup...');
+      
+      // 1. Remove OIDC user
+      await oidcUserManager.removeUser();
+      
+      // 2. Clear all OIDC-related storage
+      const oidcKeys = Object.keys(localStorage).filter(key => 
+        key.startsWith('oidc.') || 
+        key.startsWith('oidc_') ||
+        key === 'jwt' ||
+        key === 'authToken' ||
+        key === 'refreshToken'
+      );
+      oidcKeys.forEach(key => {
+        localStorage.removeItem(key);
+        console.log(`🗑️ Removed: ${key}`);
+      });
+      
+      // 3. Clear sessionStorage too (OIDC sometimes uses this)
+      const sessionKeys = Object.keys(sessionStorage).filter(key => 
+        key.startsWith('oidc.') || 
+        key.startsWith('oidc_')
+      );
+      sessionKeys.forEach(key => {
+        sessionStorage.removeItem(key);
+        console.log(`🗑️ Removed session: ${key}`);
+      });
+      
+      // 4. Reset local state
+      setUser(null);
+      setYoureId(undefined);
+      setStatus('');
+      
+      console.log('✅ Complete OIDC cleanup done, starting fresh login...');
+      
+      // 5. Start fresh OIDC flow
+      oidcUserManager.signinRedirect();
+      
+    } catch (error) {
+      console.error('Failed to clear OIDC state:', error);
+      // Fallback to normal login
+      oidcUserManager.signinRedirect();
+    }
+  };
   const logout = () => {
     const wasOidcUser = !!user;
     const wasAdminUser = !user && typeof window !== 'undefined' && !!localStorage.getItem('authToken');
