@@ -20,7 +20,7 @@ const PaginationContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ul
     ref={ref}
-    className={cn("flex flex-row items-center gap-1", className)}
+    className={cn("flex flex-row items-center gap-2", className)}
     {...props}
   />
 ))
@@ -52,6 +52,10 @@ const PaginationLink = ({
         variant: isActive ? "outline" : "ghost",
         size,
       }),
+      {
+        "bg-[#EAF3FF] text-[#297EFF] border-[#297EFF] hover:bg-[#EAF3FF] hover:text-[#297EFF] dark:bg-[#1A2B45] dark:text-[#4D8DFF] dark:border-[#4D8DFF] dark:hover:bg-[#1A2B45] dark:hover:text-[#4D8DFF]": isActive,
+        "text-[#202124] hover:text-[#297EFF] hover:bg-[#F8F9FB] dark:text-[#E6E6E6] dark:hover:text-[#4D8DFF] dark:hover:bg-[#1E1E1E]": !isActive,
+      },
       className
     )}
     {...props}
@@ -69,7 +73,7 @@ const PaginationPrevious = ({
     className={cn("gap-1 pl-2.5", className)}
     {...props}
   >
-    <ChevronLeft className="h-4 w-4" />
+    <ChevronLeft className="h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0]" />
     <span>Previous</span>
   </PaginationLink>
 )
@@ -86,7 +90,7 @@ const PaginationNext = ({
     {...props}
   >
     <span>Next</span>
-    <ChevronRight className="h-4 w-4" />
+    <ChevronRight className="h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0]" />
   </PaginationLink>
 )
 PaginationNext.displayName = "PaginationNext"
@@ -100,7 +104,7 @@ const PaginationEllipsis = ({
     className={cn("flex h-9 w-9 items-center justify-center", className)}
     {...props}
   >
-    <MoreHorizontal className="h-4 w-4" />
+    <MoreHorizontal className="h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0]" />
     <span className="sr-only">More pages</span>
   </span>
 )

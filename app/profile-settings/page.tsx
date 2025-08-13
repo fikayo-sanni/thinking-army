@@ -29,6 +29,23 @@ import { formatDate, formatThousands } from "@/lib/utils";
 import { useProfile } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Add card styles
+const cardStyles = {
+  base: "bg-white dark:bg-[#1E1E1E] border border-[#E4E6EB] dark:border-[#2A2A2A] rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-all duration-150 hover:border-[#DADCE0] dark:hover:border-[#3A3A3A] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.3)]",
+  header: "flex items-center justify-between p-4 border-b border-[#E4E6EB] dark:border-[#2A2A2A]",
+  headerLeft: "flex items-center space-x-3",
+  iconContainer: "flex items-center justify-center w-8 h-8 rounded-lg bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10",
+  icon: "w-5 h-5 text-[#297EFF] dark:text-[#4D8DFF]",
+  title: "text-[15px] font-medium text-[#202124] dark:text-[#E6E6E6]",
+  subtitle: "text-[12px] text-[#5F6368] dark:text-[#A0A0A0] mt-0.5",
+  content: "p-4",
+  metric: {
+    container: "flex items-center justify-between p-3 rounded-md bg-[#F8F9FB] dark:bg-[#1A2B45] transition-colors duration-150",
+    label: "text-[14px] text-[#5F6368] dark:text-[#A0A0A0]",
+    value: "text-[20px] font-semibold text-[#202124] dark:text-[#E6E6E6]",
+  },
+};
+
 export default function ProfileSettingsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -173,179 +190,168 @@ export default function ProfileSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="p-6 space-y-6">
-        {/* Page Title Block */}
-        <PageHeader
-          title="PROFILE SETTINGS"
-          description="Manage your personal information and account details"
-        />
+    <div className="container mx-auto p-6">
+      {/* Page Header */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-[22px] font-semibold text-[#202124] dark:text-[#E6E6E6]">
+            Profile Settings
+          </h1>
+        </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Overview Card */}
-          <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
-            <CardHeader>
-              <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                <User className="h-5 w-5 text-[#0846A6] dark:text-[#0846A6]" />
-                <span>PROFILE OVERVIEW</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Avatar Section */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative">
-                  <Avatar className="h-24 w-24 ring-4 ring-[#0846A6]/20">
-                    <AvatarImage
-                      src="/placeholder.svg?height=96&width=96"
-                      alt="Profile"
-                    />
-                    <AvatarFallback className="bg-gradient-to-br from-[#0846A6] dark:from-[#0846A6] to-[#6F00FF] text-white text-2xl font-bold">
-                      {profileData.firstName[0]}
-                      {profileData.lastName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button
-                    size="sm"
-                    className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-[#0846A6] text-[#FFFFFF] dark:bg-[#0846A6] dark:hover:bg-[#0846A6]/90 dark:text-black p-0"
-                  >
-                    <Camera className="h-4 w-4" />
-                  </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Profile Overview Card */}
+        <div className={cardStyles.base}>
+          <div className={cardStyles.header}>
+            <div className={cardStyles.headerLeft}>
+              <div className={cardStyles.iconContainer}>
+                <User className={cardStyles.icon} />
+              </div>
+              <div>
+                <h3 className={cardStyles.title}>Profile Overview</h3>
+                <p className={cardStyles.subtitle}>Your account information</p>
+              </div>
+            </div>
+          </div>
+          <div className={cardStyles.content}>
+            {/* Avatar Section */}
+            <div className="flex flex-col items-center space-y-4 mb-6">
+              <div className="relative">
+                <Avatar className="h-24 w-24 ring-4 ring-[#297EFF]/10 dark:ring-[#4D8DFF]/10">
+                  <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Profile" />
+                  <AvatarFallback className="bg-[#F8F9FB] dark:bg-[#1A2B45] text-[#297EFF] text-2xl font-medium">
+                    {profileData.firstName[0]}
+                    {profileData.lastName[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <button className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-[#297EFF] hover:bg-[#1D6FFF] text-white flex items-center justify-center transition-colors">
+                  <Camera className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="text-center">
+                <h3 className="text-[#202124] dark:text-[#E6E6E6] font-medium text-lg">
+                  {profileData.firstName} {profileData.lastName}
+                </h3>
+                <p className="text-[#5F6368] dark:text-[#A0A0A0] text-sm">{profileData.email}</p>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="space-y-3">
+              <div className={cardStyles.metric.container}>
+                <span className={cardStyles.metric.label}>Current Rank</span>
+                <Badge className="bg-[#297EFF]/10 text-[#297EFF] border-[#297EFF]/30">
+                  {profileData.rank.split(" ")[0]}
+                </Badge>
+              </div>
+              <div className={cardStyles.metric.container}>
+                <span className={cardStyles.metric.label}>AllTime VP</span>
+                <span className={cardStyles.metric.value}>
+                  {formatThousands(typeof profileData.totalEarnings === 'number' ? profileData.totalEarnings.toFixed(0) : '0')} VP
+                </span>
+              </div>
+              <div className={cardStyles.metric.container}>
+                <span className={cardStyles.metric.label}>Member Since</span>
+                <span className={cardStyles.metric.value}>
+                  {formatDate(profileData.joinDate)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Personal Information */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className={cardStyles.base}>
+            <div className={cardStyles.header}>
+              <div className={cardStyles.headerLeft}>
+                <div className={cardStyles.iconContainer}>
+                  <User className={cardStyles.icon} />
                 </div>
-                <div className="text-center">
-                  <h3 className="text-white font-bold text-lg">
-                    {profileData.firstName} {profileData.lastName}
-                  </h3>
-                  <p className="text-[#A0AFC0] text-sm">{profileData.email}</p>
+                <div>
+                  <h3 className={cardStyles.title}>Personal Information</h3>
+                  <p className={cardStyles.subtitle}>Manage your personal details</p>
                 </div>
               </div>
-
-              {/* Stats */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#E5E7EB]">
-                  <span className="text-[#A0AFC0] text-sm">Current Rank</span>
-                  <Badge className="bg-[#FFD700]/20 text-[#FFD700] border-[#FFD700]/30">
-                    {profileData.rank.split(" ")[0]}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#E5E7EB]">
-                  <span className="text-[#A0AFC0] text-sm">AllTime VP</span>
-                  <span className="dark:text-[#0846A6] text-[#0846A6] font-bold">
-                    {formatThousands(profileData.totalEarnings.toFixed(0))} VP
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg dark:bg-[#0D0F1A] border-[#E5E7EB] dark:border-[#E5E7EB]">
-                  <span className="text-[#A0AFC0] text-sm">Member Since</span>
-                  <span className="text-white font-bold">
-                    {formatDate(profileData.joinDate)}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Personal Information */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
-              <CardHeader>
-                <CardTitle className="text-white uppercase tracking-wide flex items-center space-x-2">
-                  <User className="h-5 w-5 text-[#0846A6] dark:text-[#0846A6]" />
-                  <span>PERSONAL INFORMATION</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            </div>
+            <div className={cardStyles.content}>
+              <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="firstName"
-                      className="text-[#A0AFC0] uppercase text-xs tracking-wider"
-                    >
-                      FIRST NAME
+                    <Label htmlFor="firstName" className="text-[#5F6368] dark:text-[#A0A0A0] text-sm">
+                      First Name
                     </Label>
                     <Input
                       id="firstName"
                       value={profileData.firstName}
-                      onChange={(e) =>
-                        handleInputChange("firstName", e.target.value)
-                      }
-                      className="dark:bg-[#0D0F1A] dark:border-[#E5E7EB] text-white focus:border-[#0846A6]"
+                      onChange={(e) => handleInputChange("firstName", e.target.value)}
+                      className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="lastName"
-                      className="text-[#A0AFC0] uppercase text-xs tracking-wider"
-                    >
-                      LAST NAME
+                    <Label htmlFor="lastName" className="text-[#5F6368] dark:text-[#A0A0A0] text-sm">
+                      Last Name
                     </Label>
                     <Input
                       id="lastName"
                       value={profileData.lastName}
-                      onChange={(e) =>
-                        handleInputChange("lastName", e.target.value)
-                      }
-                      className="dark:bg-[#0D0F1A] dark:border-[#E5E7EB] text-white focus:border-[#0846A6]"
+                      onChange={(e) => handleInputChange("lastName", e.target.value)}
+                      className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="email"
-                    className="text-[#A0AFC0] uppercase text-xs tracking-wider"
-                  >
-                    EMAIL ADDRESS
+                  <Label htmlFor="email" className="text-[#5F6368] dark:text-[#A0A0A0] text-sm">
+                    Email Address
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#A0AFC0]" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#5F6368] dark:text-[#A0A0A0]" />
                     <Input
                       id="email"
                       type="email"
                       value={profileData.email}
-                      onChange={(e) =>
-                        handleInputChange("email", e.target.value)
-                      }
-                      className="pl-10 dark:bg-[#0D0F1A] dark:border-[#E5E7EB] text-white focus:border-[#0846A6]"
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      className="h-9 pl-10 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="bio"
-                    className="text-[#A0AFC0] uppercase text-xs tracking-wider"
-                  >
-                    BIO
+                  <Label htmlFor="bio" className="text-[#5F6368] dark:text-[#A0A0A0] text-sm">
+                    Bio
                   </Label>
                   <Textarea
                     id="bio"
                     value={profileData.bio}
                     onChange={(e) => handleInputChange("bio", e.target.value)}
                     placeholder="Tell us about yourself..."
-                    className="dark:bg-[#0D0F1A] dark:border-[#E5E7EB] text-white focus:border-[#0846A6] min-h-[100px]"
+                    className="min-h-[100px] bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
                   />
                 </div>
 
-                <div className="flex justify-end mt-8">
+                <div className="flex justify-end">
                   <Button
                     onClick={handleSave}
                     disabled={isLoading}
-                    className="bg-[#0846A6] text-white hover:bg-[#06377a] disabled:opacity-50"
+                    className="h-9 bg-[#297EFF] hover:bg-[#1D6FFF] text-white disabled:opacity-50 flex items-center gap-2"
                   >
                     {isLoading ? (
                       <>
-                        <Save className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
+                        <Save className="h-4 w-4 animate-spin" />
+                        <span>Saving...</span>
                       </>
                     ) : (
                       <>
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Changes
+                        <Save className="h-4 w-4" />
+                        <span>Save Changes</span>
                       </>
                     )}
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>

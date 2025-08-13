@@ -20,6 +20,7 @@ import {
   Menu,
   X,
   DollarSign,
+  Search,
 } from "lucide-react"
 import { useState } from "react"
 import { useDashboardStats } from "@/hooks/use-dashboard"
@@ -29,10 +30,61 @@ import { formatThousands } from "@/lib/utils"
 import { useQuery } from '@tanstack/react-query'
 import { ranksService } from '@/lib/services/ranks-service'
 import { useTimeRange } from "@/hooks/use-time-range"
+import { cn } from "@/lib/utils"
 
 interface ModernSidebarProps {
   children: React.ReactNode
 }
+
+// Update the sidebar styles
+const sidebarStyles = {
+  base: "bg-[#F8F9FB] dark:bg-[#1E1E1E] border-r border-[#E4E6EB] dark:border-[#2A2A2A]",
+  desktop: "w-60 transition-all duration-150 ease-in-out fixed left-0 top-0 h-screen",
+  collapsed: "w-14",
+  mobile: "w-60",
+};
+
+const workspaceHeaderStyles = {
+  container: "flex items-center space-x-2 px-3 py-2 mb-4 rounded-md hover:bg-[#F1F3F4] dark:hover:bg-[#1E1E1E] cursor-pointer transition-colors duration-150",
+  logo: "h-8 w-8 rounded-md flex items-center justify-center",
+  text: "text-[14px] font-semibold text-[#202124] dark:text-[#E6E6E6]",
+};
+
+const quickActionsStyles = {
+  container: "mb-4 px-3",
+  searchBar: "h-9 w-full bg-[#F1F3F4] dark:bg-[#1E1E1E] rounded-md flex items-center px-3 hover:shadow-sm transition-shadow duration-150 cursor-pointer group",
+  icon: "h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0] group-hover:text-[#202124] dark:group-hover:text-[#E6E6E6] transition-colors duration-150",
+  text: "ml-2 text-[#9AA0A6] dark:text-[#A0A0A0] text-sm italic flex-1",
+  shortcut: "text-xs text-[#9AA0A6] dark:text-[#A0A0A0] bg-white/50 dark:bg-[#2A2A2A] px-1.5 py-0.5 rounded",
+};
+
+const navigationStyles = {
+  container: "px-3 space-y-6",
+  section: "space-y-1",
+  header: "text-xs font-medium text-[#9AA0A6] dark:text-[#A0A0A0] uppercase tracking-wide mb-2 px-2",
+  item: {
+    base: "group flex items-center w-full rounded-md px-2 py-1.5 text-sm transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#297EFF] dark:focus-visible:ring-[#4D8DFF]",
+    active: "bg-white dark:bg-[#1A2B45] text-[#297EFF] dark:text-[#4D8DFF] shadow-sm",
+    inactive: "text-[#202124] dark:text-[#E6E6E6] hover:bg-[#F1F3F4] dark:hover:bg-[#1E1E1E]",
+  },
+  icon: {
+    container: "mr-2 flex-shrink-0",
+    active: "text-[#297EFF] dark:text-[#4D8DFF]",
+    inactive: "text-[#9AA0A6] dark:text-[#A0A0A0] group-hover:text-[#202124] dark:group-hover:text-[#E6E6E6]",
+  },
+  text: {
+    active: "font-medium text-[#297EFF] dark:text-[#4D8DFF]",
+    inactive: "text-[#202124] dark:text-[#E6E6E6]",
+  },
+  badge: {
+    wrapper: "ml-auto",
+    default: "bg-[#F1F3F4] text-[#9AA0A6] dark:bg-[#1E1E1E] dark:text-[#A0A0A0]",
+    new: "bg-[#297EFF]/10 text-[#297EFF] dark:bg-[#4D8DFF]/10 dark:text-[#4D8DFF]",
+  },
+  indicator: "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#297EFF] dark:bg-[#4D8DFF] rounded-r",
+};
+
+const collapseButtonStyles = "w-full justify-center bg-[#F8F9FB] hover:bg-[#EAF3FF] hover:text-[#297EFF] dark:bg-[#1E1E1E] dark:hover:bg-[#1A2B45] dark:hover:text-[#4D8DFF] border border-[#E4E6EB] dark:border-[#2A2A2A] text-[#9AA0A6] dark:text-[#A0A0A0]";
 
 export function ModernSidebar({ children }: ModernSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -75,38 +127,6 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
     staleTime: 15 * 60 * 1000, // Cache for 15 minutes (ranks don't change often)
     gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
   });
-
-  // Prepare live quick stats
-  const quickStats = [
-    {
-      label: "AllTime VP",
-      value: isDashboardLoading ? <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands((dashboardStats as any)?.personalEarnings?.toFixed(0) ?? 0)} VP`,
-      icon: TrendingUp,
-      color: "text-[#0846A6]",
-    },
-    {
-      label: "Active Downlines",
-      value: isNetworkLoading ? <Skeleton className="h-4 w-8 dark:bg-[#2C2F3C] rounded" /> : `${formatThousands((networkStats as any)?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands((networkStats as any)?.totalDirectDownlines || 0)}`,
-      icon: Users,
-      color: "text-[#00B28C]",
-    },
-    {
-      label: "Current Rank",
-      value: isCurrentRankLoading
-        ? <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
-        : <RankBadge rank={currentRankData?.name || "Starter"} size="sm" showIcon={true} />,
-      icon: Trophy,
-      color: "text-[#FFD700]",
-    },
-    {
-      label: "Own Turnover",
-      value: isDashboardLoading
-        ? <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
-        : formatThousands((dashboardStats as any)?.ownTurnover?.toFixed(2) ?? 0),
-      icon: DollarSign,
-      color: "text-green-800",
-    },
-  ];
 
   // Optionally update navigationItems badges with live data
   const navigationItemsLive = [
@@ -167,286 +187,234 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
   }, [isMobileOpen])
 
   return (
-    <div className="h-screen min-h-0 bg-[#F9FAFC] dark:bg-gradient-to-br dark:from-[#0D0F1A] dark:via-[#1A1E2D] dark:to-[#0D0F1A] text-black dark:text-white flex">
-      {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-[#1A1E2D] w-full shrink-0">
-        <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 flex items-center justify-center">
+    <div className="flex min-h-screen">
+      {/* Desktop Sidebar - Fixed */}
+      <aside
+        className={cn(
+          sidebarStyles.base,
+          sidebarStyles.desktop,
+          isCollapsed && sidebarStyles.collapsed,
+          "z-30" // Ensure sidebar is above content
+        )}
+      >
+        {/* Workspace Header */}
+        <div className={workspaceHeaderStyles.container}>
+          <div className={workspaceHeaderStyles.logo}>
             <img
               src="/logo-dark-mode.svg"
               alt="GC Universe Logo"
-              className="h-20 w-20 hidden dark:block"
+              className="h-full w-full hidden dark:block"
             />
-            {/* Light Mode Logo */}
             <img
               src="/logo-light-mode.svg"
               alt="GC Universe Logo"
-              className="h-20 w-20 dark:hidden"
+              className="h-full w-full dark:hidden"
             />
           </div>
-          <div>
-            <h1 className="text-lg  dark:text-white font-bold">
-              GC UNIVERSE
-            </h1>
-          </div>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="text-[#A0AFC0] hover:text-white hover:bg-[#1A1E2D]"
-        >
-          {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
-      </div>
-
-      <div className="flex flex-1 min-h-0">
-        {/* Desktop Sidebar */}
-        <aside
-          className={`${isCollapsed ? "w-20" : "w-80"}
-            transition-all duration-300 ease-in-out bg-[#F9FAFC] dark:bg-[#0D0F1A]/90 backdrop-blur-xl border-r border-[#E5E7EB] dark:border-[#E5E7EB]/50 h-screen sticky top-0 hidden lg:flex flex-col min-h-0 z-20`}
-        >
-          <div className="p-6 flex-1 min-h-0 overflow-y-auto">
-            {/* Logo Section */}
-            <div className="flex items-center space-x-4 mb-8">
-              <div className="relative">
-                <div className="h-12 w-12 rounded-2xl flex items-center justify-center">
-                  <img
-                    src="/logo-dark-mode.svg"
-                    alt="GC Universe Logo"
-                    className="h-20 w-20 hidden dark:block"
-                  />
-                  {/* Light Mode Logo */}
-                  <img
-                    src="/logo-light-mode.svg"
-                    alt="GC Universe Logo"
-                    className="h-20 w-20 dark:hidden"
-                  />
-                </div>
-              </div>
-              {!isCollapsed && (
-                <div>
-                  <h1 className="text-2xl dark:text-white font-bold">
-                    GC UNIVERSE
-                  </h1>
-                </div>
-              )}
+          {!isCollapsed && (
+            <div className="flex items-center flex-1">
+              <span className={workspaceHeaderStyles.text}>GC UNIVERSE</span>
+              <ChevronRight className="h-4 w-4 ml-auto text-[#9AA0A6] dark:text-[#A0A0A0]" />
             </div>
+          )}
+        </div>
 
-            {/* Quick Stats */}
-            {!isCollapsed && (
-              <div className="mb-8 p-4 rounded-2xl backdrop-blur
-              bg-white
-              border-[#E5E7EB]
-              dark:border-none
-              dark:bg-[#1A1E2D]">
-                <h3 className="text-white font-semibold mb-4 flex items-center">
-                  <BarChart3 className="h-4 w-4 mr-2 text-[#0846A6]" />
-                  Quick Stats
-                </h3>
-                <div className="space-y-3">
-                  {quickStats.map((stat) => (
-                    <div key={stat.label} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                        <span className="dark:text-[#A0AFC0] text-gray-700 text-sm">{stat.label}</span>
-                      </div>
-                      <span className="text-white font-semibold text-sm">{stat.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+        {/* Quick Actions Search */}
+        {!isCollapsed && (
+          <div className={quickActionsStyles.container}>
+            <div className={quickActionsStyles.searchBar}>
+              <Search className={quickActionsStyles.icon} />
+              <span className={quickActionsStyles.text}>Quick actions</span>
+              <span className={quickActionsStyles.shortcut}>⌘K</span>
+            </div>
+          </div>
+        )}
 
-            {/* Navigation */}
-            <nav className="space-y-2">
-              <div className="dark:text-[#A0AFC0] text-gray-700 text-xs uppercase tracking-wider font-semibold mb-4 px-3">
+        <div className="flex-1 overflow-y-auto px-3 py-2">
+          {/* Navigation */}
+          <nav className={navigationStyles.container}>
+            <div className={navigationStyles.section}>
+              <div className={navigationStyles.header}>
                 {isCollapsed ? "•••" : "Navigation"}
               </div>
               {navigationItemsLive.map((item) => {
-                const isActive = pathname === item.href
+                const isActive = pathname === item.href;
                 return (
                   <Link key={item.name} href={item.href}>
                     <div
-                      className={`group relative dark:text-[#A0AFC0] text-gray-700 flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
-                        ? "bg-[#E9ECF0] dark:bg-gradient-to-r dark:from-[#0846A6]/20 dark:to-[#6F00FF]/20 border-none dark:border-[#0846A6]/30 shadow-lg shadow-[#0846A6]/10"
-                        : "hover:bg-[#E9ECF0] dark:hover:bg-[#1A1E2D]/60 dark:hover:border dark:hover:border-[#E5E7EB]/50"
-                        }`}
+                      className={cn(
+                        navigationStyles.item.base,
+                        isActive ? navigationStyles.item.active : navigationStyles.item.inactive,
+                        "relative"
+                      )}
                     >
-                      <div
-                        className={`relative p-2 rounded-lg ${isActive ? `bg-gradient-to-br ${item.gradient}` : "bg-[#D9D9D9] dark:bg-[#2C2F3C]/50 dark:group-hover:bg-[#2C2F3C]"} transition-all duration-200`}
-                      >
+                      <div className={navigationStyles.icon.container}>
                         <item.icon
-                          className={`h-5 w-5 ${isActive ? "text-white" : "text-gray-700 dark:text-[#A0AFC0] group-hover:text-white"}`}
+                          className={cn(
+                            "h-4 w-4",
+                            isActive ? navigationStyles.icon.active : navigationStyles.icon.inactive
+                          )}
                         />
                       </div>
                       {!isCollapsed && (
                         <>
-                          <div className="flex-1">
-                            <span
-                              className={`font-medium dark:text-[#A0AFC0] text-gray-700 text-sm ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
-                            >
-                              {item.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            {item.badge && (
+                          <span
+                            className={cn(
+                              isActive ? navigationStyles.text.active : navigationStyles.text.inactive
+                            )}
+                          >
+                            {item.name}
+                          </span>
+                          {item.badge && (
+                            <div className={navigationStyles.badge.wrapper}>
                               <Badge
-                                className={`text-xs px-2 py-0.5 ${item.badge === "New"
-                                  ? "bg-[#00B28C]/20 text-[#00B28C] border-[#00B28C]/30"
-                                  : "bg-[#2C2F3C] text-[#A0AFC0]"
-                                  }`}
+                                variant="outline"
+                                className={cn(
+                                  "text-xs px-1.5 py-0.5 rounded",
+                                  item.badge === "New"
+                                    ? navigationStyles.badge.new
+                                    : navigationStyles.badge.default
+                                )}
                               >
                                 {item.badge}
                               </Badge>
-                            )}
-                            {isActive && <ChevronRight className="h-4 w-4 text-gray-700  dark:text-[#0846A6]" />}
-                          </div>
+                            </div>
+                          )}
                         </>
                       )}
-                      {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#0846A6] to-[#6F00FF] rounded-r-full" />
-                      )}
+                      {isActive && <div className={navigationStyles.indicator} />}
                     </div>
                   </Link>
-                )
+                );
               })}
-            </nav>
-          </div>
+            </div>
+          </nav>
+        </div>
 
-          {/* Bottom Section */}
-          <div className="absolute bottom-6 left-6 right-6">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleToggleCollapse}
-              className="w-full justify-center dark:bg-[#1A1E2D]/50 dark:hover:bg-[#2C2F3C]/50 border dark:border-[#E5E7EB]/50 dark:text-[#A0AFC0] hover:text-white"
-            >
-              <ChevronRight
-                className={`h-4 w-4 transition-transform duration-200 ${isCollapsed ? "rotate-0" : "rotate-180"}`}
-              />
-              {!isCollapsed && <span className="ml-2">Collapse</span>}
-            </Button>
-          </div>
-        </aside>
+        {/* Collapse Button */}
+        {/*<div className="p-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleToggleCollapse}
+            className="w-full justify-center bg-white hover:bg-[#F1F3F4] dark:bg-[#1E1E1E] dark:hover:bg-[#1A2B45] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#9AA0A6] dark:text-[#A0A0A0] h-8"
+          >
+            <ChevronRight
+              className={cn(
+                "h-4 w-4 transition-transform duration-150",
+                isCollapsed ? "rotate-0" : "rotate-180"
+              )}
+            />
+            {!isCollapsed && <span className="ml-2 text-sm">Collapse</span>}
+          </Button>
+        </div>*/}
+      </aside>
 
-        {/* Mobile Sidebar Overlay */}
-        {isMobileOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex" onClick={() => setIsMobileOpen(false)}>
-            <aside
-              className="w-4/5 max-w-xs bg-[#0D0F1A]/95 backdrop-blur-xl border-r border-[#E5E7EB]/50 h-screen flex flex-col min-h-0"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="p-6 flex-1 min-h-0 overflow-y-auto">
-                {/* Logo Section */}
-                <div className="flex items-center space-x-4 mb-8">
-                  <div className="relative">
-                    <div className="h-12 w-12 rounded-2xl flex items-center justify-center">
-                      <img
-                        src="/logo-dark-mode.svg"
-                        alt="GC Universe Logo"
-                        className="h-20 w-20 hidden dark:block"
-                      />
-                      {/* Light Mode Logo */}
-                      <img
-                        src="/logo-light-mode.svg"
-                        alt="GC Universe Logo"
-                        className="h-20 w-20 dark:hidden"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <h1 className="text-2xl dark:text-white font-bold">
-                      GC UNIVERSE
-                    </h1>
-                  </div>
-                </div>
+      {/* Main Content Area - With padding for sidebar */}
+      <main className={cn(
+        "flex-1 min-h-screen transition-all duration-150 ease-in-out",
+        isCollapsed ? "pl-14" : "pl-60" // Match sidebar width
+      )}>
+        {children}
+      </main>
 
-                {/* Quick Stats */}
-                <div className="mb-8 p-4 rounded-2xl border-[#E5E7EB] backdrop-blur
-  bg-white 
-  dark:bg-[#1A1E2D]">
-
-                  <h3 className="text-gray-900 dark:text-white font-semibold mb-4 flex items-center">
-                    <BarChart3 className="h-4 w-4 mr-2 text-[#0846A6]" />
-                    Quick Stats
-                  </h3>
-
-                  <div className="space-y-3">
-                    {quickStats.map((stat) => (
-                      <div key={stat.label} className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                          <span className="text-gray-600 dark:text-[#A0AFC0] text-sm">{stat.label}</span>
-                        </div>
-                        <span className="text-gray-900 dark:text-white font-semibold text-sm">
-                          {stat.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Navigation */}
-                <nav className="space-y-2">
-                  <div className="dark:text-[#A0AFC0] text-gray-700 text-xs uppercase tracking-wider font-semibold mb-4 px-3">
-                    Navigation
-                  </div>
-                  {navigationItemsLive.map((item) => {
-                    const isActive = pathname === item.href
-                    return (
-                      <Link key={item.name} href={item.href} onClick={() => setIsMobileOpen(false)}>
-                        <div
-                          className={`group relative flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 ${isActive
-                            ? "bg-gradient-to-r from-[#0846A6]/20 to-[#6F00FF]/20 border border-[#0846A6]/30 shadow-lg shadow-[#0846A6]/10"
-                            : "hover:bg-[#1A1E2D]/60 hover:border hover:border-[#E5E7EB]/50"
-                            }`}
-                        >
-                          <div
-                            className={`relative p-2 rounded-lg ${isActive ? `bg-gradient-to-br ${item.gradient}` : "bg-[#2C2F3C]/50 group-hover:bg-[#2C2F3C]"} transition-all duration-200`}
-                          >
-                            <item.icon
-                              className={`h-5 w-5 ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <span
-                              className={`font-medium text-sm ${isActive ? "text-white" : "text-[#A0AFC0] group-hover:text-white"}`}
-                            >
-                              {item.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            {item.badge && (
-                              <Badge
-                                className={`text-xs px-2 py-0.5 ${item.badge === "New"
-                                  ? "bg-[#00B28C]/20 text-[#00B28C] border-[#00B28C]/30"
-                                  : "bg-[#2C2F3C] text-[#A0AFC0]"
-                                  }`}
-                              >
-                                {item.badge}
-                              </Badge>
-                            )}
-                            {isActive && <ChevronRight className="h-4 w-4 text-[#0846A6]" />}
-                          </div>
-                          {isActive && (
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#0846A6] to-[#6F00FF] rounded-r-full" />
-                          )}
-                        </div>
-                      </Link>
-                    )
-                  })}
-                </nav>
+      {/* Mobile Sidebar Overlay */}
+      {isMobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-[#202124]/40 dark:bg-black/40 backdrop-blur-sm flex" onClick={() => setIsMobileOpen(false)}>
+          <aside
+            className={cn(
+              sidebarStyles.base,
+              sidebarStyles.mobile,
+              "h-screen flex flex-col min-h-0"
+            )}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Logo Section */}
+            <div className={workspaceHeaderStyles.container}>
+              <div className={workspaceHeaderStyles.logo}>
+                <img
+                  src="/logo-dark-mode.svg"
+                  alt="GC Universe Logo"
+                  className="h-full w-full hidden dark:block"
+                />
+                <img
+                  src="/logo-light-mode.svg"
+                  alt="GC Universe Logo"
+                  className="h-full w-full dark:hidden"
+                />
               </div>
-            </aside>
-          </div>
-        )}
+              <div className="flex items-center flex-1">
+                <span className={workspaceHeaderStyles.text}>GC UNIVERSE</span>
+                <ChevronRight className="h-4 w-4 ml-auto text-[#9AA0A6] dark:text-[#A0A0A0]" />
+              </div>
+            </div>
 
-        {/* Main Content */}
-        <main className="flex-1 min-h-0 h-screen overflow-y-auto bg-inherit">
-          {children}
-        </main>
-      </div>
+            {/* Quick Actions Search */}
+            <div className={quickActionsStyles.container}>
+              <div className={quickActionsStyles.searchBar}>
+                <Search className={quickActionsStyles.icon} />
+                <span className={quickActionsStyles.text}>Quick actions</span>
+                <span className={quickActionsStyles.shortcut}>⌘K</span>
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <nav className={navigationStyles.container}>
+              <div className={navigationStyles.section}>
+                <div className={navigationStyles.header}>
+                  Navigation
+                </div>
+                {navigationItemsLive.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link key={item.name} href={item.href} onClick={() => setIsMobileOpen(false)}>
+                      <div
+                        className={cn(
+                          navigationStyles.item.base,
+                          isActive ? navigationStyles.item.active : navigationStyles.item.inactive,
+                          "relative"
+                        )}
+                      >
+                        <div className={navigationStyles.icon.container}>
+                          <item.icon
+                            className={cn(
+                              "h-4 w-4",
+                              isActive ? navigationStyles.icon.active : navigationStyles.icon.inactive
+                            )}
+                          />
+                        </div>
+                        <span
+                          className={cn(
+                            isActive ? navigationStyles.text.active : navigationStyles.text.inactive
+                          )}
+                        >
+                          {item.name}
+                        </span>
+                        {item.badge && (
+                          <div className={navigationStyles.badge.wrapper}>
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "text-xs px-1.5 py-0.5 rounded",
+                                item.badge === "New"
+                                  ? navigationStyles.badge.new
+                                  : navigationStyles.badge.default
+                              )}
+                            >
+                              {item.badge}
+                            </Badge>
+                          </div>
+                        )}
+                        {isActive && <div className={navigationStyles.indicator} />}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </nav>
+          </aside>
+        </div>
+      )}
     </div>
   )
 }

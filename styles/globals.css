@@ -2,8 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
 }
 
 @layer utilities {
@@ -14,73 +16,85 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    /* New Attio-inspired color system - Light Mode */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 220 10% 8%; /* #202124 */
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 220 10% 8%; /* #202124 */
+    --popover: 0 0% 100%; /* #FFFFFF */
+    --popover-foreground: 220 10% 8%; /* #202124 */
+    --primary: 217 100% 58%; /* #297EFF */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --secondary: 220 20% 97%; /* #F8F9FB */
+    --secondary-foreground: 220 10% 8%; /* #202124 */
+    --muted: 220 10% 64%; /* #9AA0A6 */
+    --muted-foreground: 220 10% 64%; /* #9AA0A6 */
+    --accent: 217 100% 95%; /* #EAF3FF */
+    --accent-foreground: 220 10% 8%; /* #202124 */
+    --destructive: 0 84% 60%; /* Keeping existing */
+    --destructive-foreground: 0 0% 98%; /* Keeping existing */
+    --border: 220 10% 92%; /* #E4E6EB */
+    --input: 220 10% 92%; /* #E4E6EB */
+    --ring: 217 100% 58%; /* #297EFF */
+    
+    /* Chart colors - keeping existing for now */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    --radius: 0.375rem; /* 6px */
+    
+    /* Sidebar specific colors */
+    --sidebar-background: 220 20% 97%; /* #F8F9FB */
+    --sidebar-foreground: 220 10% 8%; /* #202124 */
+    --sidebar-primary: 217 100% 58%; /* #297EFF */
+    --sidebar-primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --sidebar-accent: 217 100% 95%; /* #EAF3FF */
+    --sidebar-accent-foreground: 220 10% 8%; /* #202124 */
+    --sidebar-border: 220 10% 92%; /* #E4E6EB */
+    --sidebar-ring: 217 100% 58%; /* #297EFF */
   }
+
   .dark {
-    --background: 240 5.9% 10%;
-    --foreground: 240 4.8% 95.9%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    /* New Attio-inspired color system - Dark Mode */
+    --background: 240 5% 7%; /* #121212 */
+    --foreground: 0 0% 90%; /* #E6E6E6 */
+    --card: 240 5% 12%; /* #1E1E1E */
+    --card-foreground: 0 0% 90%; /* #E6E6E6 */
+    --popover: 240 5% 12%; /* #1E1E1E */
+    --popover-foreground: 0 0% 90%; /* #E6E6E6 */
+    --primary: 217 100% 65%; /* #4D8DFF */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --secondary: 240 5% 12%; /* #1E1E1E */
+    --secondary-foreground: 0 0% 90%; /* #E6E6E6 */
+    --muted: 0 0% 63%; /* #A0A0A0 */
+    --muted-foreground: 0 0% 63%; /* #A0A0A0 */
+    --accent: 217 45% 18%; /* #1A2B45 */
+    --accent-foreground: 0 0% 90%; /* #E6E6E6 */
+    --destructive: 0 63% 31%; /* Keeping existing */
+    --destructive-foreground: 0 0% 98%; /* Keeping existing */
+    --border: 240 5% 16%; /* #2A2A2A */
+    --input: 240 5% 16%; /* #2A2A2A */
+    --ring: 217 100% 65%; /* #4D8DFF */
+    
+    /* Chart colors - dark mode variants */
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Sidebar specific colors - dark mode */
+    --sidebar-background: 240 5% 12%; /* #1E1E1E */
+    --sidebar-foreground: 0 0% 90%; /* #E6E6E6 */
+    --sidebar-primary: 217 100% 65%; /* #4D8DFF */
+    --sidebar-primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --sidebar-accent: 217 45% 18%; /* #1A2B45 */
+    --sidebar-accent-foreground: 0 0% 90%; /* #E6E6E6 */
+    --sidebar-border: 240 5% 16%; /* #2A2A2A */
+    --sidebar-ring: 217 100% 65%; /* #4D8DFF */
   }
 }
 
@@ -90,43 +104,56 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
 /* Explicit body background colors for theme classes */
 body.light {
-  background-color: #F9FAFC !important;
-  color: #000;
+  background-color: #FFFFFF !important;
+  color: #202124;
 }
 
 body.dark {
-  background-color: #0D0F1A !important;
-  color: #fff;
+  background-color: #121212 !important;
+  color: #E6E6E6;
 }
 
 /* Fallback for any undefined background */
 html {
-  background-color: #F9FAFC;
+  background-color: #FFFFFF;
 }
 
 html.dark {
-  background-color: #0D0F1A;
+  background-color: #121212;
 }
 
 .subtext {
-  color: #78797A;
+  color: #9AA0A6;
 }
 
-/* Card backgrounds for light mode */
+.dark .subtext {
+  color: #A0A0A0;
+}
+
+/* Card backgrounds */
 .light .card-bg {
-  background-color: #F7F8F8;
+  background-color: #F8F9FB;
 }
 
 .light .card-white {
-  background-color: #fff;
+  background-color: #FFFFFF;
 }
 
-/* Mobile Typography Optimizations */
+.dark .card-bg {
+  background-color: #1E1E1E;
+}
+
+.dark .card-white {
+  background-color: #1E1E1E;
+}
+
+/* Keep existing mobile optimizations */
 @media (max-width: 768px) {
   /* Ensure minimum touch target sizes */
   button, 
@@ -219,14 +246,14 @@ html.dark {
   /* Mobile-first loading states */
   .mobile-skeleton {
     border-radius: 8px;
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #F8F9FB 25%, #E4E6EB 50%, #F8F9FB 75%);
     background-size: 200% 100%;
     animation: loading 1.5s infinite;
   }
 
   /* Dark mode mobile optimizations */
   .dark .mobile-skeleton {
-    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background: linear-gradient(90deg, #1E1E1E 25%, #2A2A2A 50%, #1E1E1E 75%);
     background-size: 200% 100%;
   }
 }

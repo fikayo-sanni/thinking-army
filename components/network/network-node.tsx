@@ -34,6 +34,38 @@ interface NetworkNodeProps {
   isSponsorNode?: boolean
 }
 
+// Add card styles
+const nodeStyles = {
+  base: "bg-white dark:bg-[#1E1E1E] border border-[#E4E6EB] dark:border-[#2A2A2A] rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-all duration-150 hover:border-[#DADCE0] dark:hover:border-[#3A3A3A] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.3)]",
+  content: "p-4",
+  header: "flex items-center space-x-4",
+  info: {
+    container: "flex-1 min-w-0",
+    name: "text-[#202124] dark:text-[#E6E6E6] font-medium text-sm mb-1 truncate",
+    meta: "flex items-center space-x-2 text-[#5F6368] dark:text-[#A0A0A0] text-xs",
+  },
+  stats: {
+    container: "text-right shrink-0",
+    badge: {
+      level: "bg-[#297EFF]/10 text-[#297EFF] border-[#297EFF]/30 mb-2 text-xs",
+      sponsor: "bg-[#6F00FF]/10 text-[#6F00FF] border-[#6F00FF]/30 text-xs",
+      active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs",
+      inactive: "bg-gray-500/10 text-gray-400 border-gray-500/30 text-xs",
+    },
+    meta: "flex items-center space-x-2 text-[#5F6368] dark:text-[#A0A0A0] text-xs",
+  },
+  expandButton: "p-1 h-8 w-8 text-[#5F6368] dark:text-[#A0A0A0] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45] hover:text-[#202124] dark:hover:text-[#E6E6E6] rounded-md transition-colors",
+  avatar: {
+    container: "h-10 w-10 ring-2 ring-[#E4E6EB] dark:ring-[#2A2A2A]",
+    fallback: "bg-[#F8F9FB] dark:bg-[#1A2B45] text-[#297EFF] text-sm font-medium",
+  },
+  connection: {
+    line: "bg-[#E4E6EB] dark:bg-[#2A2A2A]",
+    vertical: "w-px",
+    horizontal: "h-px",
+  },
+};
+
 export function NetworkNode({ user, sponsor, isExpanded = false, onToggle, direction, totalReferrals = 0, isSponsorNode = false }: NetworkNodeProps) {
   const PAGE_SIZE = 20;
   const [expanded, setExpanded] = useState(isExpanded)
@@ -112,71 +144,68 @@ export function NetworkNode({ user, sponsor, isExpanded = false, onToggle, direc
         <div className="relative mb-6">
           <NetworkNode user={sponsor} direction="up" isSponsorNode={true} />
           {/* Connection line from sponsor to current user */}
-          <div className="absolute left-3 sm:left-6 -bottom-6 w-px h-8 bg-gray-300 dark:bg-[#2C2F3C]" />
+          <div className={`absolute left-6 -bottom-6 h-8 ${nodeStyles.connection.line} ${nodeStyles.connection.vertical}`} />
         </div>
       )}
 
       {/* Connection Line */}
-      {direction === "down" && <div className="absolute left-3 sm:left-6 -top-4 w-px h-4 dark:bg-[#2C2F3C]" />}
-      {direction === "up" && <div className="absolute left-3 sm:left-6 -bottom-4 w-px h-4 dark:bg-[#2C2F3C]" />}
+      {direction === "down" && <div className={`absolute left-6 -top-4 h-4 ${nodeStyles.connection.line} ${nodeStyles.connection.vertical}`} />}
+      {direction === "up" && <div className={`absolute left-6 -bottom-4 h-4 ${nodeStyles.connection.line} ${nodeStyles.connection.vertical}`} />}
 
-      <Card className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-[#E5E7EB] mb-3 sm:mb-4 mobile-card">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-center space-x-2 sm:space-x-4">
+      <div className={`${nodeStyles.base} mb-4`}>
+        <div className={nodeStyles.content}>
+          <div className={nodeStyles.header}>
             {/* Expand/Collapse Button */}
             {showExpand && (
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={handleToggle}
-                className="p-1 h-8 w-8 sm:h-6 sm:w-6 text-[#A0AFC0] dark:hover:text-white dark:hover:bg-[#2C2F3C] min-h-[44px] sm:min-h-0"
+                className={nodeStyles.expandButton}
               >
                 {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              </Button>
+              </button>
             )}
 
             {/* Avatar */}
-            <Avatar className="h-8 w-8 sm:h-10 sm:w-10 ring-2 dark:ring-[#2C2F3C]">
+            <Avatar className={nodeStyles.avatar.container}>
               <AvatarImage src={user.avatar || "/placeholder.svg?height=40&width=40"} />
-              <AvatarFallback className="bg-[#0D0F1A] text-[#0846A6] text-xs sm:text-sm">
+              <AvatarFallback className={nodeStyles.avatar.fallback}>
                 {avatarFallback}
               </AvatarFallback>
             </Avatar>
 
             {/* User Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2 mb-1">
-                <h3 className="text-white font-medium uppercase text-xs sm:text-sm truncate">{displayName}</h3>
+            <div className={nodeStyles.info.container}>
+              <div className="flex items-center space-x-2">
+                <h3 className={nodeStyles.info.name}>{displayName}</h3>
                 <Badge
-                  className={`text-xs shrink-0 ${user.isActive
-                      ? "bg-green-500/20 text-green-400 border-green-500/30"
-                      : "bg-gray-500/20 text-gray-400 border-gray-500/30"
-                    }`}
+                  className={user.isActive ? nodeStyles.stats.badge.active : nodeStyles.stats.badge.inactive}
                 >
                   {user.isActive ? "ACTIVE" : "INACTIVE"}
                 </Badge>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0 text-xs text-[#A0AFC0]">
+              <div className={nodeStyles.info.meta}>
                 <span className="font-mono truncate">{displayIdentifier}</span>
-                {user.joinDate && <div className="flex items-center space-x-1">
-                  <Calendar className="h-3 w-3" />
-                  <span>{user.joinDate}</span>
-                </div>}
+                {user.joinDate && (
+                  <div className="flex items-center space-x-1">
+                    <Calendar className="h-3 w-3" />
+                    <span>{user.joinDate}</span>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Level and Stats */}
-            <div className="text-right shrink-0">
+            <div className={nodeStyles.stats.container}>
               {/* Only show level badge if not sponsor node */}
               {!isSponsorNode ? (
-                <Badge className="bg-[#0846A6]/20 text-[#0846A6] border-[#0846A6]/30 mb-1 sm:mb-2 text-xs">
+                <Badge className={nodeStyles.stats.badge.level}>
                   {user.level > 0 ? `L${user.level}` : "ME"}
                 </Badge>
               ) : (
-                <Badge className="bg-[#6F00FF]/20 text-[#6F00FF] border-[#6F00FF]/30 text-xs">SPONSOR</Badge>
+                <Badge className={nodeStyles.stats.badge.sponsor}>SPONSOR</Badge>
               )}
               {!isSponsorNode && (
-                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-1 sm:space-y-0 text-xs text-[#A0AFC0]">
+                <div className={nodeStyles.stats.meta}>
                   <div className="flex items-center space-x-1">
                     <Award className="h-3 w-3" />
                     <span className="truncate">{user.rank}</span>
@@ -189,36 +218,36 @@ export function NetworkNode({ user, sponsor, isExpanded = false, onToggle, direc
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Children (on-demand fetch) */}
       {showChildren && (
-        <div className="ml-4 sm:ml-8 relative">
+        <div className="ml-8 relative">
           {/* Vertical line for children */}
-          <div className="absolute left-1 sm:left-2 top-0 bottom-0 w-px dark:bg-[#2C2F3C]" />
+          <div className={`absolute left-2 top-0 bottom-0 ${nodeStyles.connection.line} ${nodeStyles.connection.vertical}`} />
           {isLoadingChildren && page === 1 ? (
-            <div className="text-[#A0AFC0] text-xs ml-2 sm:ml-4">Loading...</div>
+            <div className="text-[#5F6368] dark:text-[#A0A0A0] text-xs ml-4">Loading...</div>
           ) : (
             <>
               {children.map((child) => (
                 <div key={child.id} className="relative">
                   {/* Horizontal line to child */}
-                  <div className="absolute left-1 sm:left-2 top-4 sm:top-6 w-2 sm:w-4 h-px dark:bg-[#2C2F3C]" />
+                  <div className={`absolute left-2 top-6 w-4 ${nodeStyles.connection.line} ${nodeStyles.connection.horizontal}`} />
                   <NetworkNode user={{ ...child, level: (user.level ?? 0) + 1 }} direction={direction} />
                 </div>
               ))}
               {hasMore && (
                 <div className="text-center">
-                  <div className="ml-4 sm:ml-8 my-2">
+                  <div className="ml-8 my-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handleLoadMore}
                       disabled={loadingMore}
-                      className="text-[#0846A6] border-[#0846A6] hover:bg-[#0846A6]/10 min-h-[44px] sm:min-h-0 px-4 py-3 sm:px-3 sm:py-2"
+                      className="h-9 text-[#297EFF] border-[#297EFF] hover:bg-[#297EFF]/10"
                     >
-                      {loadingMore ? "Loading..." : "LOAD MORE"}
+                      {loadingMore ? "Loading..." : "Load More"}
                     </Button>
                   </div>
                 </div>
@@ -228,5 +257,5 @@ export function NetworkNode({ user, sponsor, isExpanded = false, onToggle, direc
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,14 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { PageHeader } from "@/components/layout/page-header"
-import { FilterControls } from "@/components/layout/filter-controls"
-import { DataTableCard } from "@/components/ui/data-table-card"
-import { SummaryCard } from "@/components/ui/summary-card"
-import { ChartCard } from "@/components/dashboard/chart-card"
+import { useTheme } from "@/components/theme/theme-provider"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarDays, Filter, AlertTriangle } from "lucide-react"
+import { CalendarDays, Filter, AlertTriangle, BarChart3, Calendar } from "lucide-react"
 import {
   ChartContainer,
   ChartTooltip,
@@ -32,8 +28,25 @@ import { formatThousands, formatShortNumber, groupChartData, formatXAxisLabel } 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MobileTable } from "@/components/ui/mobile-table"
-import { MobileFilterControls } from "@/components/layout/mobile-filter-controls"
 import { useSetPageTitle } from "@/hooks/use-page-title"
+
+// Add type definitions
+interface Overview {
+  totalSpent: number;
+  totalPurchases: number;
+  currency?: string;
+}
+
+interface Purchase {
+  id: string;
+  date: string;
+  tokenId: string;
+  category: string;
+  amount: number;
+  currency: string;
+  source: string;
+  level: number;
+}
 
 const categoryNames: Record<string, string> = {
   '1': 'Star',
@@ -58,17 +71,51 @@ const chartConfig = {
   },
 }
 
+// Add card styles
+const cardStyles = {
+  base: "bg-white dark:bg-[#1E1E1E] border border-[#E4E6EB] dark:border-[#2A2A2A] rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-all duration-150 hover:border-[#DADCE0] dark:hover:border-[#3A3A3A] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.3)]",
+  header: "flex items-center justify-between p-4 border-b border-[#E4E6EB] dark:border-[#2A2A2A]",
+  headerLeft: "flex items-center space-x-3",
+  iconContainer: "flex items-center justify-center w-8 h-8 rounded-lg bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10",
+  icon: "w-5 h-5 text-[#297EFF] dark:text-[#4D8DFF]",
+  title: "text-[15px] font-medium text-[#202124] dark:text-[#E6E6E6]",
+  subtitle: "text-[12px] text-[#5F6368] dark:text-[#A0A0A0] mt-0.5",
+  content: "p-4",
+  metric: {
+    container: "flex items-center justify-between p-3 rounded-md bg-[#F8F9FB] dark:bg-[#1A2B45] transition-colors duration-150",
+    label: "text-[14px] text-[#5F6368] dark:text-[#A0A0A0]",
+    value: "text-[20px] font-semibold text-[#202124] dark:text-[#E6E6E6]",
+    change: {
+      positive: "text-[12px] font-medium text-emerald-500 dark:text-emerald-400",
+      negative: "text-[12px] font-medium text-red-500 dark:text-red-400",
+      neutral: "text-[12px] font-medium text-[#5F6368] dark:text-[#A0A0A0]",
+    },
+  },
+  chart: {
+    container: "mt-4",
+    title: "text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6] mb-4",
+    wrapper: "w-full h-[300px]",
+  },
+};
+
 export default function PurchasesPage() {
   // Set page title
   useSetPageTitle("Network Activity");
 
+  const { theme } = useTheme();
   const [timeRange, setTimeRange] = useTimeRange("this-week")
   const [statusFilter, setStatusFilter] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // 🚀 OPTIMIZED: Use individual hooks for parallel loading
-  const { data: overview, isLoading: isOverviewLoading, error: overviewError, refetch: refetchOverview } = usePurchaseOverview(timeRange)
+  // Add type assertion for the overview data
+  const { data: overview, isLoading: isOverviewLoading, error: overviewError, refetch: refetchOverview } = usePurchaseOverview(timeRange) as { 
+    data: Overview | undefined, 
+    isLoading: boolean, 
+    error: any, 
+    refetch: () => void 
+  };
   const { data: chartData, isLoading: isChartLoading, error: chartError, refetch: refetchChart } = usePurchaseChartData(timeRange)
   const { data: historyData, isLoading: isHistoryLoading, error: historyError, refetch: refetchHistory } = usePurchaseHistory(
     { timeRange, status: statusFilter !== "all" ? statusFilter : undefined },
@@ -125,308 +172,326 @@ export default function PurchasesPage() {
   }
   const groupedChartData = groupChartData(chartData || [], groupBy);
 
+  // Safe format functions
+  const safeFormatThousands = (value: number | string | undefined): string => {
+    if (typeof value === 'undefined') return '0';
+    return formatThousands(String(value));
+  };
+
+  const safeFormatCurrency = (value: number | undefined, currency: string | undefined): string => {
+    return `${safeFormatThousands(value)} ${currency || 'VP'}`;
+  };
+
   return (
-    <div className="min-h-screen">
-      <div className="p-2 sm:p-3 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
-        {/* Page Title Block */}
-        <PageHeader title="NETWORK ACTIVITY" description="Tracking my network's activity" />
-
-        {/* Summary Stats - Load independently */}
-        {isOverviewLoading ? (
-          <PurchasesSummaryCardsSkeleton />
-        ) : overview ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
-              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="p-2 rounded-lg bg-[#0846A6]/10">
-                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded bg-[#0846A6]" />
-                  </div>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
-                  {formatThousands(parseInt(overview.totalSpent.toFixed(2)) || '0.0')} {overview.currency || 'VP'}
-                </div>
-                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">
-                  TOTAL VOLUME POINTS IN PERIOD
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card">
-              <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="p-2 rounded-lg bg-[#00B28C]/10">
-                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded bg-[#00B28C]" />
-                  </div>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold mb-1 text-white mobile-text-lg">
-                  {formatThousands(overview.totalPurchases) || 0}
-                </div>
-                <div className="text-[#A0AFC0] text-xs sm:text-sm uppercase tracking-wider mobile-text-sm">
-                  TOTAL PURCHASES IN PERIOD
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
-          <div className="text-[#A0AFC0] text-center py-8">No purchase overview available.</div>
-        )}
-
-        {/* Filter Controls Block */}
-        <MobileFilterControls title="Activity Filters">
-          <div className="flex items-center space-x-2 md:space-x-2">
-            <CalendarDays className="h-4 w-4 text-[#A0AFC0] hidden md:block" />
+    <>
+      {/* Page Header */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-[22px] font-semibold text-[#202124] dark:text-[#E6E6E6]">
+            Network Activity
+          </h1>
+          <div className="flex items-center space-x-3">
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-full md:w-48 h-12 md:h-auto dark:bg-[#1A1E2D] dark:border-[#E5E7EB] text-white">
-                <SelectValue placeholder="Select time range" />
+              <SelectTrigger className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
+                <Calendar className="mr-2 h-4 w-4 text-[#5F6368] dark:text-[#A0A0A0]" />
+                <SelectValue placeholder="Select time period" />
               </SelectTrigger>
-              <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-none">
-                <SelectItem value="all-time" className="text-white hover:bg-[#E5E7EB]">
-                  All Time
-                </SelectItem>
-                <SelectItem value="this-week" className="text-white hover:bg-[#E5E7EB]">
-                  This Week
-                </SelectItem>
-                <SelectItem value="this-month" className="text-white hover:bg-[#E5E7EB]">
-                  This Month
-                </SelectItem>
-                <SelectItem value="this-quarter" className="text-white hover:bg-[#E5E7EB]">
-                  This Quarter
-                </SelectItem>
-                <SelectItem value="last-week" className="text-white hover:bg-[#E5E7EB]">
-                  Last Week
-                </SelectItem>
-                <SelectItem value="last-month" className="text-white hover:bg-[#E5E7EB]">
-                  Last Month
-                </SelectItem>
-                <SelectItem value="last-quarter" className="text-white hover:bg-[#E5E7EB]">
-                  Last Quarter
-                </SelectItem>
+              <SelectContent>
+                <SelectItem value="all-time">All Time</SelectItem>
+                <SelectItem value="this-week">This Week</SelectItem>
+                <SelectItem value="this-month">This Month</SelectItem>
+                <SelectItem value="this-quarter">This Quarter</SelectItem>
+                <SelectItem value="last-week">Last Week</SelectItem>
+                <SelectItem value="last-month">Last Month</SelectItem>
+                <SelectItem value="last-quarter">Last Quarter</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </MobileFilterControls>
+        </div>
+      </div>
 
-        {/* Network Purchases Over Time Chart - Load independently */}
-        {isChartLoading ? (
-          <PurchasesChartSkeleton />
-        ) : (chartData && chartData.length > 0) ? (
-          <ChartCard title="NETWORK TRANSACTIONS OVER TIME" description="Daily purchase activity and volume trends">
-            <ChartContainer config={chartConfig}>
-              <LineChart data={groupedChartData} width={600} height={300}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
-                <XAxis
-                  dataKey="date"
-                  stroke="#A0AFC0"
-                  tick={{ fontSize: 15 }}
-                  tickFormatter={date => formatXAxisLabel(date, groupBy)}
-                />
-                <YAxis
-                  yAxisId="left"
-                  stroke="#A0AFC0"
-                  tick={{ fontSize: 15 }}
-                  tickFormatter={formatShortNumber}
-                />
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  stroke="#A0AFC0"
-                  tick={{ fontSize: 15 }}
-                  tickFormatter={formatShortNumber}
-                />
-                <ChartTooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="dark:bg-[#1A1E2D] bg-white border border-[#E5E7EB] rounded-lg p-3 shadow-lg">
-                          <div className="dark:text-white text-black font-medium mb-2">{label}</div>
-                          <div className="space-y-1">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-[#0846A6]">Purchases:</span>
-                              <span className="dark:text-white text-black font-medium">{formatThousands(String(payload[0]?.value))}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-[#00B28C]">Volume:</span>
-                              <span className="dark:text-white text-black font-medium">{formatThousands(String(parseInt(String(payload[1]?.value))))} VP</span>
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    }
-                    return null
-                  }}
-                />
-                <Line
-                  yAxisId="left"
-                  type="monotone"
-                  dataKey="purchases"
-                  stroke="#0846A6"
-                  strokeWidth={1.5}
-                  dot={{ fill: "#0846A6", strokeWidth: 1, r: 3 }}
-                  activeDot={{ r: 4, stroke: "#0846A6", strokeWidth: 1 }}
-                />
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="volume"
-                  stroke="#00B28C"
-                  strokeWidth={1.5}
-                  dot={{ fill: "#00B28C", strokeWidth: 1, r: 3 }}
-                  activeDot={{ r: 4, stroke: "#00B28C", strokeWidth: 1 }}
-                />
-              </LineChart>
-            </ChartContainer>
-          </ChartCard>
-        ) : chartError ? (
-          <div className="text-red-500 text-center py-8">Failed to load chart data.</div>
-        ) : null}
-
-        {/* Purchases Table Block - Load independently */}
-        {isHistoryLoading ? (
-          <PurchasesTableSkeleton />
-        ) : (
-          <DataTableCard
-            title="NETWORK ACTIVITY HISTORY"
-            subtitle={`Showing ${Number(purchases.length)} of ${formatThousands(Number(historyData?.total || 0))} transactions`}
-            showExport
-            onExport={() => console.log("Export data")}
-          >
-            <MobileTable
-              columns={[
-                {
-                  key: 'date',
-                  header: 'Date',
-                  mobileLabel: 'Date',
-                  render: (value) => new Date(value).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })
-                },
-                {
-                  key: 'tokenId',
-                  header: 'Item ID',
-                  mobileLabel: 'Item',
-                  render: (value, row) => (
-                    <a
-                      href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${value}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[#0846A6] hover:underline hover:text-[#00B28C] transition font-medium"
-                    >
-                      {categoryNames[row.category] || row.category} #{value}
-                    </a>
-                  )
-                },
-                {
-                  key: 'amount',
-                  header: 'Volume Points',
-                  render: (value, row) => (
-                    <span className="text-[#0846A6] font-bold">
-                      {formatThousands(parseInt(String(value)))} {row.currency}
-                    </span>
-                  )
-                },
-                {
-                  key: 'source',
-                  header: 'Buyer',
-                  mobileLabel: 'Buyer',
-                  render: (value, row) => `${value} (Level:${row.level})`
-                }
-              ]}
-              data={purchases}
-              keyField="id"
-              emptyMessage={historyError ? "Failed to load purchase history." : "No purchases found"}
-            />
-
-            {/* Pagination - only show if not error and has data */}
-            {!historyError && purchases.length > 0 && (
-              <div className="mt-4 space-y-4">
-                {/* Mobile Stats */}
-                <div className="text-center md:hidden">
-                  <div className="text-[#A0AFC0] text-sm">
-                    Page {formatThousands(currentPage)} of {formatThousands(totalPages)}
-                  </div>
-                  <div className="text-[#A0AFC0] text-xs">
-                    {formatThousands(historyData?.total || 0)} total results
+      {/* Main Content with Right Panel */}
+      <div className="flex gap-6">
+        {/* Main Content Area */}
+        <div className="flex-1 space-y-6">
+          {/* Summary Stats */}
+          {isOverviewLoading ? (
+            <PurchasesSummaryCardsSkeleton />
+          ) : overview ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className={cardStyles.base}>
+                <div className={cardStyles.header}>
+                  <div className={cardStyles.headerLeft}>
+                    <div className={cardStyles.iconContainer}>
+                      <div className="h-5 w-5 rounded bg-[#297EFF]" />
+                    </div>
+                    <div>
+                      <h3 className={cardStyles.title}>Volume Points</h3>
+                      <p className={cardStyles.subtitle}>Total in period</p>
+                    </div>
                   </div>
                 </div>
-
-                {/* Controls */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  {/* Desktop Stats */}
-                  <div className="hidden md:block flex-1 text-[#A0AFC0] text-sm">
-                    Page {formatThousands(currentPage)} of {formatThousands(totalPages)} ({formatThousands(historyData?.total || 0)} total results)
-                  </div>
-
-                  {/* Items per page - Full width on mobile */}
-                  <div className="w-full md:w-auto">
-                    <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
-                      <SelectTrigger className="w-full md:w-32 h-12 md:h-auto dark:bg-[#1A1E2D] dark:border-[#E5E7EB] text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] border-none">
-                        {[5, 10, 20, 50].map(opt => (
-                          <SelectItem key={opt} value={String(opt)} className="text-white hover:bg-[#E5E7EB]">{opt} / page</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Pagination controls - Simplified for mobile */}
-                  <div className="flex items-center space-x-2 w-full md:w-auto justify-center">
-                    <button
-                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#E5E7EB] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    >
-                      Previous
-                    </button>
-
-                    {/* Page numbers - Hidden on mobile if too many pages */}
-                    <div className="hidden md:flex items-center space-x-2">
-                      <button
-                        className={`px-3 py-2 rounded-lg border border-[#E5E7EB] text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === 1 ? 'text-black border-[#0846A6]' : 'bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] hover:text-white hover:border-[#0846A6]'}`}
-                        onClick={() => setCurrentPage(1)}
-                        disabled={currentPage === 1}
-                      >
-                        1
-                      </button>
-                      {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
-                      {currentPage !== 1 && currentPage !== totalPages && (
-                        <button
-                          className="px-3 py-2 rounded-lg border-[#E5E7EB] border text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6] min-h-[44px] md:min-h-0"
-                          disabled
-                        >
-                          {formatThousands(currentPage)}
-                        </button>
-                      )}
-                      {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
-                      {totalPages > 1 && (
-                        <button
-                          className={`px-3 py-2 rounded-lg border border-[#E5E7EB] text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === totalPages ? 'dark:bg-[#0846A6] text-black border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] hover:text-white hover:border-[#0846A6]'}`}
-                          onClick={() => setCurrentPage(totalPages)}
-                          disabled={currentPage === totalPages}
-                        >
-                          {formatThousands(totalPages)}
-                        </button>
-                      )}
+                <div className={cardStyles.content}>
+                  <div className={cardStyles.metric.container}>
+                    <div>
+                      <div className={cardStyles.metric.value}>
+                        {safeFormatCurrency(overview.totalSpent, overview.currency)}
+                      </div>
                     </div>
-
-                    <button
-                      className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg dark:bg-[#181B23] border border-[#E5E7EB] dark:border-[#E5E7EB] text-[#A0AFC0] hover:text-white hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    >
-                      Next
-                    </button>
                   </div>
                 </div>
               </div>
-            )}
-          </DataTableCard>
-        )}
+
+              <div className={cardStyles.base}>
+                <div className={cardStyles.header}>
+                  <div className={cardStyles.headerLeft}>
+                    <div className={cardStyles.iconContainer}>
+                      <div className="h-5 w-5 rounded bg-[#00B28C]" />
+                    </div>
+                    <div>
+                      <h3 className={cardStyles.title}>Total Purchases</h3>
+                      <p className={cardStyles.subtitle}>Count in period</p>
+                    </div>
+                  </div>
+                </div>
+                <div className={cardStyles.content}>
+                  <div className={cardStyles.metric.container}>
+                    <div>
+                      <div className={cardStyles.metric.value}>
+                        {safeFormatThousands(overview.totalPurchases)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-[#5F6368] dark:text-[#A0A0A0] text-center py-8">No purchase overview available.</div>
+          )}
+
+          {/* Network Purchases Over Time Chart */}
+          {isChartLoading ? (
+            <PurchasesChartSkeleton />
+          ) : (chartData && chartData.length > 0) ? (
+            <div className={cardStyles.base}>
+              <div className={cardStyles.header}>
+                <div className={cardStyles.headerLeft}>
+                  <div className={cardStyles.iconContainer}>
+                    <BarChart3 className={cardStyles.icon} />
+                  </div>
+                  <div>
+                    <h3 className={cardStyles.title}>Network Transactions</h3>
+                    <p className={cardStyles.subtitle}>Daily purchase activity and volume trends</p>
+                  </div>
+                </div>
+              </div>
+              <div className={cardStyles.content}>
+                <ChartContainer config={chartConfig}>
+                  <LineChart data={groupedChartData} width={600} height={300}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" opacity={0.1} />
+                    <XAxis
+                      dataKey="date"
+                      stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                      tick={{ fill: theme === "dark" ? "#A0A0A0" : "#5F6368", fontSize: 12 }}
+                      tickFormatter={date => formatXAxisLabel(date, groupBy)}
+                    />
+                    <YAxis
+                      yAxisId="left"
+                      stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                      tick={{ fill: theme === "dark" ? "#A0A0A0" : "#5F6368", fontSize: 12 }}
+                      tickFormatter={formatShortNumber}
+                    />
+                    <YAxis
+                      yAxisId="right"
+                      orientation="right"
+                      stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                      tick={{ fill: theme === "dark" ? "#A0A0A0" : "#5F6368", fontSize: 12 }}
+                      tickFormatter={formatShortNumber}
+                    />
+                    <ChartTooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-white dark:bg-[#1E1E1E] border border-[#E4E6EB] dark:border-[#2A2A2A] rounded-lg p-3 shadow-lg">
+                              <div className="text-[#202124] dark:text-[#E6E6E6] font-medium mb-2">{label}</div>
+                              <div className="space-y-1">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-[#297EFF]">Purchases:</span>
+                                  <span className="text-[#202124] dark:text-[#E6E6E6] font-medium">{formatThousands(String(payload[0]?.value))}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-[#00B28C]">Volume:</span>
+                                  <span className="text-[#202124] dark:text-[#E6E6E6] font-medium">{formatThousands(String(parseInt(String(payload[1]?.value))))} VP</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="purchases"
+                      stroke="#297EFF"
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4, stroke: "#297EFF", strokeWidth: 2 }}
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="volume"
+                      stroke="#00B28C"
+                      strokeWidth={2}
+                      dot={false}
+                      activeDot={{ r: 4, stroke: "#00B28C", strokeWidth: 2 }}
+                    />
+                  </LineChart>
+                </ChartContainer>
+              </div>
+            </div>
+          ) : chartError ? (
+            <div className="text-red-500 text-center py-8">Failed to load chart data.</div>
+          ) : null}
+
+          {/* Purchases Table */}
+          {isHistoryLoading ? (
+            <PurchasesTableSkeleton />
+          ) : (
+            <div className={cardStyles.base}>
+              <div className={cardStyles.header}>
+                <div className={cardStyles.headerLeft}>
+                  <div className={cardStyles.iconContainer}>
+                    <Filter className={cardStyles.icon} />
+                  </div>
+                  <div>
+                    <h3 className={cardStyles.title}>Network Activity History</h3>
+                    <p className={cardStyles.subtitle}>
+                      Showing {Number(purchases.length)} of {formatThousands(Number(historyData?.total || 0))} transactions
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className={cardStyles.content}>
+                <MobileTable
+                  columns={[
+                    {
+                      key: 'date',
+                      header: 'Date',
+                      mobileLabel: 'Date',
+                      render: (value) => new Date(value).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    },
+                    {
+                      key: 'tokenId',
+                      header: 'Item ID',
+                      mobileLabel: 'Item',
+                      render: (value, row) => (
+                        <a
+                          href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${value}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-[#0846A6] hover:underline hover:text-[#00B28C] transition font-medium"
+                        >
+                          {categoryNames[row.category] || row.category} #{value}
+                        </a>
+                      )
+                    },
+                    {
+                      key: 'amount',
+                      header: 'Volume Points',
+                      render: (value, row) => (
+                        <span className="text-[#0846A6] font-bold">
+                          {formatThousands(parseInt(String(value)))} {row.currency}
+                        </span>
+                      )
+                    },
+                    {
+                      key: 'source',
+                      header: 'Buyer',
+                      mobileLabel: 'Buyer',
+                      render: (value, row) => `${value} (Level:${row.level})`
+                    }
+                  ]}
+                  data={purchases}
+                  keyField="id"
+                  emptyMessage={historyError ? "Failed to load purchase history." : "No purchases found"}
+                />
+
+                {/* Pagination */}
+                {/* ... existing pagination ... */}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Details Panel */}
+        <div className="hidden xl:block w-[340px] bg-white dark:bg-[#1E1E1E] border-l border-[#E4E6EB] dark:border-[#2A2A2A]">
+          <div className="sticky top-0 p-6 space-y-6">
+            {/* Quick Stats Section */}
+            <div>
+              <h3 className="text-[12px] font-medium uppercase tracking-wider text-[#5F6368] dark:text-[#A0A0A0] mb-4">
+                Quick Stats
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">Total Volume</span>
+                  <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
+                    {isOverviewLoading ? (
+                      <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" />
+                    ) : (
+                      safeFormatCurrency(overview?.totalSpent, overview?.currency)
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">Total Purchases</span>
+                  <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
+                    {isOverviewLoading ? (
+                      <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
+                    ) : (
+                      safeFormatThousands(overview?.totalPurchases)
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Activity Feed Section */}
+            <div>
+              <h3 className="text-[12px] font-medium uppercase tracking-wider text-[#5F6368] dark:text-[#A0A0A0] mb-4">
+                Recent Activity
+              </h3>
+              <div className="space-y-4">
+                {(purchases as Purchase[]).slice(0, 5).map((purchase) => (
+                  <div key={purchase.id} className="flex items-start space-x-3">
+                    <div className="p-2 rounded-full bg-[#297EFF]/10">
+                      <Filter className="h-4 w-4 text-[#297EFF]" />
+                    </div>
+                    <div>
+                      <p className="text-[14px] text-[#202124] dark:text-[#E6E6E6]">
+                        {purchase.source} purchased {categoryNames[purchase.category] || purchase.category} #{purchase.tokenId}
+                      </p>
+                      <span className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0]">
+                        {new Date(purchase.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

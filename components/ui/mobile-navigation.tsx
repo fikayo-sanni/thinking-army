@@ -60,33 +60,33 @@ export function MobileNavigation({ items, className = "" }: MobileNavigationProp
           <Link href={item.href} className="block w-full">
             <div
               className={cn(
-                "flex items-center justify-between w-full mobile-nav-item touch-target transition-colors",
-                "hover:bg-[#2C2F3C]/50 dark:hover:bg-[#2C2F3C]/50",
-                active && "bg-[#0846A6]/10 border-r-4 border-[#0846A6]",
+                "flex items-center justify-between w-full px-4 py-3 transition-colors",
+                "hover:bg-[#F8F9FB] dark:hover:bg-[#1E1E1E]",
+                active && "bg-[#EAF3FF] border-r-2 border-[#297EFF] dark:bg-[#1A2B45] dark:border-[#4D8DFF]",
                 level > 0 && "pl-12"
               )}
             >
               <div className="flex items-center space-x-3">
                 <item.icon className={cn(
                   "h-5 w-5",
-                  active ? "text-[#0846A6]" : "text-[#A0AFC0]"
+                  active ? "text-[#297EFF] dark:text-[#4D8DFF]" : "text-[#9AA0A6] dark:text-[#A0A0A0]"
                 )} />
                 <span className={cn(
-                  "font-medium mobile-text-sm",
-                  active ? "text-[#0846A6]" : "text-white"
+                  "font-medium text-sm",
+                  active ? "text-[#297EFF] dark:text-[#4D8DFF]" : "text-[#202124] dark:text-[#E6E6E6]"
                 )}>
                   {item.label}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 {item.badge && (
-                  <Badge className="bg-[#0846A6] text-white text-xs">
+                  <Badge variant="outline" className="bg-[#EAF3FF] text-[#297EFF] border-[#297EFF] text-xs dark:bg-[#1A2B45] dark:text-[#4D8DFF] dark:border-[#4D8DFF]">
                     {item.badge}
                   </Badge>
                 )}
                 {hasChildren && (
                   <ChevronRight className={cn(
-                    "h-4 w-4 text-[#A0AFC0] transition-transform",
+                    "h-4 w-4 text-[#9AA0A6] transition-transform dark:text-[#A0A0A0]",
                     isExpanded && "rotate-90"
                   )} />
                 )}
@@ -98,25 +98,25 @@ export function MobileNavigation({ items, className = "" }: MobileNavigationProp
             variant="ghost"
             onClick={() => hasChildren && toggleExpanded(item.id)}
             className={cn(
-              "flex items-center justify-between w-full mobile-nav-item touch-target hover:bg-[#2C2F3C]/50",
+              "flex items-center justify-between w-full px-4 py-3 h-auto font-normal hover:bg-[#F8F9FB] dark:hover:bg-[#1E1E1E]",
               level > 0 && "pl-12"
             )}
           >
             <div className="flex items-center space-x-3">
-              <item.icon className="h-5 w-5 text-[#A0AFC0]" />
-              <span className="font-medium text-white mobile-text-sm">
+              <item.icon className="h-5 w-5 text-[#9AA0A6] dark:text-[#A0A0A0]" />
+              <span className="text-sm text-[#202124] dark:text-[#E6E6E6]">
                 {item.label}
               </span>
             </div>
             <div className="flex items-center space-x-2">
               {item.badge && (
-                <Badge className="bg-[#0846A6] text-white text-xs">
+                <Badge variant="outline" className="bg-[#EAF3FF] text-[#297EFF] border-[#297EFF] text-xs dark:bg-[#1A2B45] dark:text-[#4D8DFF] dark:border-[#4D8DFF]">
                   {item.badge}
                 </Badge>
               )}
               {hasChildren && (
                 <ChevronDown className={cn(
-                  "h-4 w-4 text-[#A0AFC0] transition-transform",
+                  "h-4 w-4 text-[#9AA0A6] transition-transform dark:text-[#A0A0A0]",
                   isExpanded && "rotate-180"
                 )} />
               )}
@@ -126,7 +126,7 @@ export function MobileNavigation({ items, className = "" }: MobileNavigationProp
 
         {/* Render children if expanded */}
         {hasChildren && isExpanded && (
-          <div className="bg-[#1A1E2D]/30 border-l-2 border-[#E5E7EB] ml-4">
+          <div className="bg-[#F8F9FB] border-l border-[#E4E6EB] ml-4 dark:bg-[#1E1E1E] dark:border-[#2A2A2A]">
             {item.children!.map(child => renderNavItem(child, level + 1))}
           </div>
         )}
@@ -135,9 +135,9 @@ export function MobileNavigation({ items, className = "" }: MobileNavigationProp
   }
 
   return (
-    <Card className={cn("dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card", className)}>
+    <Card className={cn("bg-white border-[#E4E6EB] dark:bg-[#1E1E1E] dark:border-[#2A2A2A]", className)}>
       <CardContent className="p-0">
-        <nav className="space-y-1">
+        <nav className="space-y-0.5">
           {items.map(item => renderNavItem(item))}
         </nav>
       </CardContent>
@@ -188,7 +188,6 @@ export const defaultMobileNavItems: MobileNavItem[] = [
         href: "/wallet-settings",
         icon: CreditCard
       },
-
     ]
   }
 ] 

@@ -18,13 +18,18 @@ export function MobileChartCard({
   height = 200
 }: MobileChartCardProps) {
   return (
-    <Card className={cn("dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border-[#E5E7EB] mobile-card", className)}>
+    <Card className={cn(
+      "bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] mobile-card",
+      className
+    )}>
       <CardHeader className="pb-3">
-        <CardTitle className="text-white text-base mobile-text-lg tracking-wide">
+        <CardTitle className="text-[#202124] dark:text-[#E6E6E6] text-base mobile-text-lg font-medium">
           {title}
         </CardTitle>
         {description && (
-          <p className="text-[#A0AFC0] text-sm mobile-text-sm">{description}</p>
+          <p className="text-[#9AA0A6] dark:text-[#A0A0A0] text-sm mobile-text-sm">
+            {description}
+          </p>
         )}
       </CardHeader>
       <CardContent className="pt-0">

@@ -5,5 +5,9 @@ interface FilterControlsProps {
 }
 
 export function FilterControls({ children }: FilterControlsProps) {
-  return <div className="flex flex-col sm:flex-row gap-4">{children}</div>
+  return (
+    <div className="flex flex-col sm:flex-row gap-3">
+      {children}
+    </div>
+  )
 }

@@ -1,20 +1,33 @@
 import type React from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
 
 interface ChartCardProps {
-  title: string
-  description?: string
-  children: React.ReactNode
+  title: string;
+  description: string;
+  children: React.ReactNode;
+  className?: string; // Make className optional
 }
 
-export function ChartCard({ title, description, children }: ChartCardProps) {
+export function ChartCard({ title, description, children, className }: ChartCardProps) {
   return (
-    <Card className="border-[#E5E7EB] dark:bg-[#1A1E2D] dark:border-[#E5E7EB]">
-      <CardHeader>
-        <CardTitle className="text-white uppercase tracking-wide">{title}</CardTitle>
-        {description && <CardDescription className="text-[#A0AFC0]">{description}</CardDescription>}
-      </CardHeader>
-      <CardContent>{children}</CardContent>
+    <Card className={cn(
+      "bg-white dark:bg-[#1E1E1E] border border-[#E4E6EB] dark:border-[#2A2A2A] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)]",
+      className
+    )}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-[15px] font-medium text-[#202124] dark:text-[#E6E6E6]">
+              {title}
+            </h3>
+            <p className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">
+              {description}
+            </p>
+          </div>
+        </div>
+        {children}
+      </CardContent>
     </Card>
-  )
+  );
 }
