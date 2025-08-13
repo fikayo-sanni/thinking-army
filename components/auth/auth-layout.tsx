@@ -7,9 +7,10 @@ interface AuthLayoutProps {
   title: string
   description?: string
   maxWidth?: "sm" | "md" | "lg"
+  footer?: React.ReactNode
 }
 
-export function AuthLayout({ children, title, description, maxWidth = "md" }: AuthLayoutProps) {
+export function AuthLayout({ children, title, description, maxWidth = "md", footer }: AuthLayoutProps) {
   const widthClasses = {
     sm: "max-w-sm",
     md: "max-w-md",
@@ -17,17 +18,38 @@ export function AuthLayout({ children, title, description, maxWidth = "md" }: Au
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFC] dark:bg-[#0D0F1A] flex items-center justify-center p-4">
-      <Card className={`w-full ${widthClasses[maxWidth]} dark:bg-[#1A1E2D] border-[#E5E7EB] dark:border dark:border-[#E5E7EB] shadow-lg`}>
-        <CardHeader className="text-center space-y-4">
-          <AuthLogo />
-          <div>
-            <h2 className="text-xl text-white uppercase tracking-wide">{title}</h2>
-            {description && <p className="text-[#A0AFC0] mt-2 text-sm">{description}</p>}
+    <div className="min-h-screen bg-white dark:bg-[#1E1E1E] flex flex-col">
+      {/* Header with Logo */}
+      <header className="w-full py-6 px-8 border-b border-[#E4E6EB] dark:border-[#2A2A2A]">
+        <AuthLogo />
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+        <div className={`w-full ${widthClasses[maxWidth]} space-y-8`}>
+          {/* Title Section */}
+          <div className="text-center space-y-2">
+            <h1 className="text-[28px] font-semibold text-[#202124] dark:text-[#E6E6E6]">
+              {title}
+            </h1>
+            {description && (
+              <p className="text-[#5F6368] dark:text-[#A0A0A0] text-base">
+                {description}
+              </p>
+            )}
           </div>
-        </CardHeader>
-        <CardContent>{children}</CardContent>
-      </Card>
+
+          {/* Form Content */}
+          {children}
+        </div>
+      </main>
+
+      {/* Footer */}
+      {footer && (
+        <footer className="w-full py-6 px-8 border-t border-[#E4E6EB] dark:border-[#2A2A2A] text-center text-[#5F6368] dark:text-[#A0A0A0] text-sm">
+          {footer}
+        </footer>
+      )}
     </div>
   )
 }
