@@ -561,20 +561,36 @@ export default function DashboardPage() {
                   ) : (
                     <ResponsiveContainer width="100%" height={256}>
                       <LineChart data={charts?.purchasesOverTime || []}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
+                        <CartesianGrid 
+                          strokeDasharray="3 3" 
+                          stroke={theme === "dark" ? "#2A2A2A" : "#E4E6EB"} 
+                          opacity={0.5}
+                        />
                         <XAxis
                           dataKey="date"
-                          stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                          stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                          tick={{ 
+                            fill: theme === "dark" ? "#A0A0A0" : "#5F6368", 
+                            fontSize: 10 
+                          }}
+                          interval="preserveStartEnd"
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                          tickMargin={20}
                         />
                         <YAxis
                           yAxisId="left"
                           scale={useLogScalePurchases ? "log" : "linear"}
                           domain={useLogScalePurchases ? [1, 'auto'] : ['auto', 'auto']}
                           allowDataOverflow={useLogScalePurchases}
-                          stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                          stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                          tick={{ 
+                            fill: theme === "dark" ? "#A0A0A0" : "#5F6368", 
+                            fontSize: 10 
+                          }}
                           tickFormatter={formatShortNumber}
+                          width={45}
                         />
                         <YAxis
                           yAxisId="right"
@@ -582,51 +598,49 @@ export default function DashboardPage() {
                           scale={useLogScaleVolume ? "log" : "linear"}
                           domain={useLogScaleVolume ? [1, 'auto'] : ['auto', 'auto']}
                           allowDataOverflow={useLogScaleVolume}
-                          stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                          stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                          tick={{ 
+                            fill: theme === "dark" ? "#A0A0A0" : "#5F6368", 
+                            fontSize: 10 
+                          }}
                           tickFormatter={formatShortNumber}
+                          width={45}
                         />
                         <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (active && payload && payload.length) {
-                              const purchasesRaw = payload.find(p => p.dataKey === 'purchases')?.value ?? 0;
-                              const volumeRaw = payload.find(p => p.dataKey === 'volume')?.value ?? 0;
-                              const purchases = Math.floor(safeNumber(purchasesRaw));
-                              const volume = Math.floor(safeNumber(volumeRaw));
-                              return (
-                                <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
-                                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                                    <span>Purchases:</span>
-                                    <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(purchases))}</span>
-                                  </div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                                    <span className="px-2">Volume:</span>
-                                    <span style={{ color: '#00B28C', fontWeight: 600 }}> {formatThousands(Number(volume))} VP</span>
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return null;
+                          contentStyle={{
+                            backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+                            border: `1px solid ${theme === "dark" ? "#2A2A2A" : "#E4E6EB"}`,
+                            borderRadius: "8px",
+                            padding: "12px",
+                            fontSize: "12px"
+                          }}
+                        />
+                        <Legend
+                          wrapperStyle={{
+                            color: theme === "dark" ? "#A0A0A0" : "#5F6368",
+                            fontSize: "10px",
+                            paddingTop: "8px"
                           }}
                         />
                         <Line
                           yAxisId="left"
                           type="monotone"
                           dataKey="purchases"
-                          stroke={chartColors.primary}
+                          stroke="#297EFF"
                           strokeWidth={2}
-                          dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }}
-                          activeDot={{ r: 6, stroke: chartColors.primary, strokeWidth: 2 }}
+                          dot={false}
+                          activeDot={{ r: 4, stroke: "#297EFF", strokeWidth: 2 }}
+                          name="Purchases"
                         />
                         <Line
                           yAxisId="right"
                           type="monotone"
                           dataKey="volume"
-                          stroke={chartColors.secondary}
+                          stroke="#00B28C"
                           strokeWidth={2}
-                          dot={{ fill: chartColors.secondary, strokeWidth: 2, r: 4 }}
-                          activeDot={{ r: 6, stroke: chartColors.secondary, strokeWidth: 2 }}
+                          dot={false}
+                          activeDot={{ r: 4, stroke: "#00B28C", strokeWidth: 2 }}
+                          name="Volume"
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -686,7 +700,7 @@ export default function DashboardPage() {
                           verticalAlign="bottom"
                           height={36}
                           wrapperStyle={{
-                            color: theme === "dark" ? tickColors.gray : tickColors.purple,
+                            color: theme === "dark" ? "#A0A0A0" : "#5F6368",
                             fontSize: "10px",
                             paddingTop: "8px"
                           }}
@@ -726,11 +740,18 @@ export default function DashboardPage() {
                   ) : (
                     <ResponsiveContainer width="100%" height={256}>
                       <BarChart data={(charts as any)?.commissionBreakdown || []}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
+                        <CartesianGrid 
+                          strokeDasharray="3 3" 
+                          stroke={theme === "dark" ? "#2A2A2A" : "#E4E6EB"} 
+                          opacity={0.5}
+                        />
                         <XAxis
                           dataKey="month"
-                          stroke={theme === "dark" ? tickColors.gray : tickColors.green}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 10 }}
+                          stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                          tick={{ 
+                            fill: theme === "dark" ? "#A0A0A0" : "#5F6368", 
+                            fontSize: 10 
+                          }}
                           interval="preserveStartEnd"
                           angle={-45}
                           textAnchor="end"
@@ -738,8 +759,11 @@ export default function DashboardPage() {
                           tickMargin={20}
                         />
                         <YAxis
-                          stroke={theme === "dark" ? tickColors.gray : tickColors.green}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 10 }}
+                          stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                          tick={{ 
+                            fill: theme === "dark" ? "#A0A0A0" : "#5F6368", 
+                            fontSize: 10 
+                          }}
                           tickFormatter={formatShortNumber}
                           width={45}
                         />
@@ -754,14 +778,29 @@ export default function DashboardPage() {
                         />
                         <Legend
                           wrapperStyle={{
-                            color: theme === "dark" ? tickColors.gray : tickColors.green,
+                            color: theme === "dark" ? "#A0A0A0" : "#5F6368",
                             fontSize: "10px",
                             paddingTop: "8px"
                           }}
                         />
-                        <Bar dataKey="c1" fill={chartColors.primary} name="C1" maxBarSize={40} />
-                        <Bar dataKey="c2" fill={chartColors.secondary} name="C2" maxBarSize={40} />
-                        <Bar dataKey="c3" fill={chartColors.tertiary} name="C3" maxBarSize={40} />
+                        <Bar 
+                          dataKey="c1" 
+                          fill="#297EFF" 
+                          name="Direct Commission" 
+                          maxBarSize={40}
+                        />
+                        <Bar 
+                          dataKey="c2" 
+                          fill="#00B28C" 
+                          name="Team Commission" 
+                          maxBarSize={40}
+                        />
+                        <Bar 
+                          dataKey="c3" 
+                          fill="#6F00FF" 
+                          name="Leadership Commission" 
+                          maxBarSize={40}
+                        />
                       </BarChart>
                     </ResponsiveContainer>
                   )}
@@ -794,11 +833,18 @@ export default function DashboardPage() {
                   ) : (
                     <ResponsiveContainer width="100%" height={256}>
                       <LineChart data={processedGrowthData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" />
+                        <CartesianGrid 
+                          strokeDasharray="3 3" 
+                          stroke={theme === "dark" ? "#2A2A2A" : "#E4E6EB"} 
+                          opacity={0.5}
+                        />
                         <XAxis
                           dataKey="date"
-                          stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 10 }}
+                          stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                          tick={{ 
+                            fill: theme === "dark" ? "#A0A0A0" : "#5F6368", 
+                            fontSize: 10 
+                          }}
                           interval="preserveStartEnd"
                           angle={-45}
                           textAnchor="end"
@@ -809,8 +855,11 @@ export default function DashboardPage() {
                           scale={useLogScaleGrowth ? "log" : "linear"}
                           domain={useLogScaleGrowth ? [1, 'auto'] : [0, 'auto']}
                           allowDataOverflow={useLogScaleGrowth}
-                          stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 10 }}
+                          stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
+                          tick={{ 
+                            fill: theme === "dark" ? "#A0A0A0" : "#5F6368", 
+                            fontSize: 10 
+                          }}
                           tickFormatter={formatShortNumber}
                           width={45}
                         />
@@ -825,7 +874,7 @@ export default function DashboardPage() {
                         />
                         <Legend
                           wrapperStyle={{
-                            color: theme === "dark" ? tickColors.gray : tickColors.blue,
+                            color: theme === "dark" ? "#A0A0A0" : "#5F6368",
                             fontSize: "10px",
                             paddingTop: "8px"
                           }}
@@ -833,10 +882,10 @@ export default function DashboardPage() {
                         <Line
                           type="monotone"
                           dataKey="totalMembers"
-                          stroke={chartColors.primary}
+                          stroke="#297EFF"
                           strokeWidth={2}
                           dot={false}
-                          activeDot={{ r: 4, stroke: chartColors.primary, strokeWidth: 2 }}
+                          activeDot={{ r: 4, stroke: "#297EFF", strokeWidth: 2 }}
                           name="Total Members"
                         />
                       </LineChart>

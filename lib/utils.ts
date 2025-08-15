@@ -93,6 +93,23 @@ export function formatXAxisLabel(
   return format(parseISO(dateKey), "MMM d");
 }
 
+export function safeFormatDate(dateString: string | number | undefined | null): string {
+  if (!dateString) return '-';
+  try {
+    // Handle timestamp (seconds or milliseconds)
+    const timestamp = typeof dateString === 'number' 
+      ? dateString > 9999999999 ? dateString : dateString * 1000 // Convert seconds to milliseconds if needed
+      : new Date(dateString).getTime();
+    
+    const date = new Date(timestamp);
+    if (isNaN(date.getTime())) return '-';
+    return format(date, 'MMM dd, yyyy');
+  } catch (error) {
+    console.error('Date formatting error:', error);
+    return '-';
+  }
+}
+
 
 // Clear all authentication data to fix infinite loop issue
 export function clearAllAuthData() {

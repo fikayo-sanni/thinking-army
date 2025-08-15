@@ -43,10 +43,19 @@ import {
   PayoutsTableSkeleton,
   PayoutsPendingSkeleton,
 } from "@/components/payouts/payouts-skeletons";
-import { formatThousands } from "@/lib/utils";
+import { formatThousands, safeFormatDate } from "@/lib/utils";
 import { MobileTable } from "@/components/ui/mobile-table";
 import { MobileFilterControls } from "@/components/layout/mobile-filter-controls";
 import { useSetPageTitle } from "@/hooks/use-page-title";
+import { format } from "date-fns";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Add card styles
 const cardStyles = {
@@ -108,6 +117,7 @@ export default function PayoutsPage() {
 
   const payouts = historyData?.payouts || [];
   const totalPages = historyData?.totalPages || 1;
+  const totalItems = historyData?.total || 0;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -161,6 +171,23 @@ export default function PayoutsPage() {
   ) => {
     console.log("Payout request:", { amount, method, address });
     // Handle payout request logic here
+  };
+
+  const formatDate = (dateString: string | number) => {
+    if (!dateString) return '-';
+    try {
+      // Handle timestamp (seconds or milliseconds)
+      const timestamp = typeof dateString === 'number' 
+        ? dateString > 9999999999 ? dateString : dateString * 1000 // Convert seconds to milliseconds if needed
+        : new Date(dateString).getTime();
+      
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return '-';
+      return format(date, 'MMM dd, yyyy');
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return '-';
+    }
   };
 
   // Check if any critical data failed to load
@@ -362,83 +389,118 @@ export default function PayoutsPage() {
                     </p>
                   </div>
                 </div>
-                <Button 
-                  size="sm" 
-                  className="h-9 bg-[#297EFF] hover:bg-[#1D6FFF] text-white"
-                  onClick={() => console.log("Export data")}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Export
-                </Button>
               </div>
               <div className={`${cardStyles.content} overflow-x-auto`}> {/* Added overflow-x-auto */}
                 <div className="min-w-[640px]"> {/* Added minimum width for mobile */}
-                  <MobileTable
-                    columns={[
-                      {
-                        key: 'date',
-                        header: 'Date',
-                        mobileLabel: 'Date'
-                      },
-                      {
-                        key: 'amount',
-                        header: 'Amount',
-                        render: (value, row) => (
-                          <span className="text-[#0846A6] font-bold">
-                            {formatThousands(value.toFixed(2))} {row.currency}
-                          </span>
-                        )
-                      },
-                      {
-                        key: 'status',
-                        header: 'Status',
-                        render: (value) => getStatusBadge(value)
-                      },
-                      {
-                        key: 'transactionHash',
-                        header: 'Transaction',
-                        mobileLabel: 'Tx',
-                        render: (value) => value ? (
-                          <a
-                            href={`#`}
-                            rel="noopener noreferrer"
-                            className="text-[#0846A6] underline hover:text-[#00B28C] transition"
-                          >
-                            {value}
-                          </a>
-                        ) : "-"
-                      },
-                      {
-                        key: 'notes',
-                        header: 'Notes',
-                        mobileLabel: 'Notes',
-                        render: (value) => value || "-"
-                      }
-                    ]}
-                    data={payouts}
-                    keyField="id"
-                    emptyMessage={isHistoryError ? "Failed to load payout history." : "No payouts found"}
-                  />
-
-                  {/* Pagination */}
-                  {!isHistoryError && payouts.length > 0 && (
-                    <div className="mt-4 space-y-4">
-                      {/* Mobile Stats */}
-                      <div className="text-center md:hidden">
-                        <div className="text-[#5F6368] dark:text-[#A0A0A0] text-sm">
-                          Page {formatThousands(currentPage)} of {formatThousands(totalPages)}
-                        </div>
-                        <div className="text-[#5F6368] dark:text-[#A0A0A0] text-xs">
-                          {formatThousands(historyData?.total || 0)} total results
-                        </div>
-                      </div>
-
-                      {/* Controls */}
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        {/* ... existing pagination controls ... */}
-                      </div>
-                    </div>
-                  )}
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-[#F8F9FB] dark:bg-[#1A2B45] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]">
+                        <TableHead className="w-[120px] font-medium">Date</TableHead>
+                        <TableHead className="font-medium">Amount</TableHead>
+                        <TableHead className="font-medium">Currency</TableHead>
+                        <TableHead className="font-medium">Status</TableHead>
+                        <TableHead className="font-medium">Description</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {isHistoryLoading ? (
+                        Array(5).fill(0).map((_, i) => (
+                          <TableRow key={i}>
+                            <TableCell>
+                              <Skeleton className="h-4 w-24 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-20 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-16 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-20 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-32 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-40 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : payouts.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="h-32 text-center">
+                            <div className="flex flex-col items-center justify-center text-[#5F6368] dark:text-[#A0A0A0]">
+                              <Wallet className="h-8 w-8 mb-2 opacity-50" />
+                              <p className="text-sm">No payouts found</p>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        payouts.map((payout) => (
+                          <TableRow key={payout.id}>
+                            <TableCell className="font-medium">
+                              {safeFormatDate(payout.date)}
+                            </TableCell>
+                            <TableCell>{formatThousands(payout.amount)}</TableCell>
+                            <TableCell>{payout.currency}</TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant={
+                                  payout.status === 'completed' ? 'success' :
+                                  payout.status === 'pending' ? 'warning' :
+                                  payout.status === 'failed' ? 'destructive' : 'secondary'
+                                }
+                                className="capitalize"
+                              >
+                                {payout.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-mono text-xs">
+                              {payout.transactionHash ? (
+                                <a 
+                                  href={`https://etherscan.io/tx/${payout.transactionHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[#297EFF] dark:text-[#4D8DFF] hover:underline"
+                                >
+                                  {payout.transactionHash.slice(0, 25)}...{payout.transactionHash.slice(-8)}
+                                </a>
+                              ) : (
+                                '-'
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+              
+              {/* Pagination */}
+              <div className="m-4 flex flex-col sm:flex-row items-center justify-between gap-6 px-4">
+                <p className="text-sm text-[#5F6368] dark:text-[#A0A0A0]">
+                  Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} entries
+                </p>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="h-10 px-6 text-[#5F6368] dark:text-[#A0A0A0] border-[#E4E6EB] dark:border-[#2A2A2A] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]"
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="h-10 px-6 text-[#5F6368] dark:text-[#A0A0A0] border-[#E4E6EB] dark:border-[#2A2A2A] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]"
+                  >
+                    Next
+                  </Button>
                 </div>
               </div>
             </div>

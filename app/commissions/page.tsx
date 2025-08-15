@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight, Coins, AlertTriangle, Plus } from "lucide-react"
+import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight, Coins, AlertTriangle, Plus, Users, Trophy } from "lucide-react"
 import {
   useCommissionHistory,
   useCommissionEarnings,
@@ -28,7 +28,7 @@ import {
   CommissionsChartSkeleton
 } from "@/components/commissions/commissions-skeletons"
 import type { CommissionHistory } from "@/lib/services/commission-service"
-import { formatThousands } from "@/lib/utils"
+import { formatThousands, safeFormatDate } from "@/lib/utils"
 import { useSetPageTitle } from "@/hooks/use-page-title"
 import { MobileTable } from "@/components/ui/mobile-table"
 import { MobileFilterControls } from "@/components/layout/mobile-filter-controls"
@@ -41,6 +41,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { format } from "date-fns";
 
 // Add card styles
 const cardStyles = {
@@ -81,25 +82,25 @@ export default function CommissionsPage() {
   }, [typeFilter, currencyFilter, statusFilter, timeRange])
 
   // 🚀 OPTIMIZED: Individual hooks for parallel loading
-  const { 
-    data: earningsData, 
-    isLoading: isEarningsLoading, 
-    isError: isEarningsError, 
-    refetch: refetchEarnings 
+  const {
+    data: earningsData,
+    isLoading: isEarningsLoading,
+    isError: isEarningsError,
+    refetch: refetchEarnings
   } = useCommissionEarnings(timeRange)
-  
-  const { 
-    data: statsData, 
-    isLoading: isStatsLoading, 
-    isError: isStatsError, 
-    refetch: refetchStats 
+
+  const {
+    data: statsData,
+    isLoading: isStatsLoading,
+    isError: isStatsError,
+    refetch: refetchStats
   } = useCommissionStats(timeRange)
-  
-  const { 
-    data: historyData, 
-    isLoading: isHistoryLoading, 
-    isError: isHistoryError, 
-    refetch: refetchHistory 
+
+  const {
+    data: historyData,
+    isLoading: isHistoryLoading,
+    isError: isHistoryError,
+    refetch: refetchHistory
   } = useCommissionHistory(timeRange, typeFilter !== "all" ? typeFilter : undefined, statusFilter !== "all" ? statusFilter : undefined, currentPage, itemsPerPage, currencyFilter !== "all" ? currencyFilter : undefined)
 
   // ✨ NEW: Add pending commissions and chart data
@@ -169,6 +170,30 @@ export default function CommissionsPage() {
     }
     return <Badge className={colors[currency as keyof typeof colors] || "bg-[#E5E7EB] text-[#A0AFC0]"}>{currency}</Badge>
   }
+
+  const formatDate = (dateString: string | number) => {
+    if (!dateString) return '-';
+    try {
+      // Handle timestamp (seconds or milliseconds)
+      const timestamp = typeof dateString === 'number'
+        ? dateString > 9999999999 ? dateString : dateString * 1000 // Convert seconds to milliseconds if needed
+        : new Date(dateString).getTime();
+
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return '-';
+      return format(date, 'MMM dd, yyyy');
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return '-';
+    }
+  };
+
+  // Commission type labels
+  const commissionTypeLabels = {
+    c1: 'Direct Commission',
+    c2: 'Team Commission',
+    c3: 'Leadership Commission'
+  };
 
   // Check if any critical data failed to load
   const hasCriticalError = isEarningsError || isStatsError || isHistoryError;
@@ -260,34 +285,45 @@ export default function CommissionsPage() {
                 <div className={cardStyles.header}>
                   <div className={cardStyles.headerLeft}>
                     <div className={cardStyles.iconContainer}>
-                      <Coins className={cardStyles.icon} />
+                      <TrendingUp className={cardStyles.icon} />
                     </div>
                     <div>
                       <h3 className={cardStyles.title}>Commission Types</h3>
-                      <p className={cardStyles.subtitle}>Breakdown by type</p>
+                      <p className={cardStyles.subtitle}>Distribution by type</p>
                     </div>
                   </div>
                 </div>
                 <div className={cardStyles.content}>
-                  <div className="space-y-3">
-                    <div className={cardStyles.metric.container}>
-                      <div className="flex items-center justify-between">
-                        <span className={cardStyles.metric.label}>C1</span>
-                        <span className={cardStyles.metric.value}>{formatThousands(Number(c1Total).toFixed(0))} {currency}</span>
+                  <div className="space-y-4">
+                    {[
+                      { type: 'c1', color: '#297EFF', value: c1Total },
+                      { type: 'c2', color: '#00B28C', value: c2Total },
+                      { type: 'c3', color: '#6F00FF', value: c3Total }
+                    ].map(({ type, color, value }) => (
+                      <div 
+                        key={type}
+                        className="p-4 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-[#F8F9FB] dark:bg-[#1A2B45]"
+                        style={{ borderLeft: `3px solid ${color}` }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Badge 
+                              variant="outline"
+                              className="border-transparent text-[14px] font-medium"
+                              style={{ 
+                                backgroundColor: `${color}10`,
+                                color: color
+                              }}
+                            >
+                              {type.toUpperCase()}
+                            </Badge>
+                          </div>
+                          <div className="text-[24px] font-semibold" style={{ color }}>
+                            {formatThousands(Number(value).toFixed(0))} {currency}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className={cardStyles.metric.container}>
-                      <div className="flex items-center justify-between">
-                        <span className={cardStyles.metric.label}>C2</span>
-                        <span className={cardStyles.metric.value}>{formatThousands(Number(c2Total).toFixed(0))} {currency}</span>
-                      </div>
-                    </div>
-                    <div className={cardStyles.metric.container}>
-                      <div className="flex items-center justify-between">
-                        <span className={cardStyles.metric.label}>C3</span>
-                        <span className={cardStyles.metric.value}>{formatThousands(Number(c3Total).toFixed(0))} {currency}</span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -373,157 +409,130 @@ export default function CommissionsPage() {
               <div className={cardStyles.header}>
                 <div className={cardStyles.headerLeft}>
                   <div className={cardStyles.iconContainer}>
-                    <TrendingUp className={cardStyles.icon} />
+                    <Clock className={cardStyles.icon} />
                   </div>
                   <div>
                     <h3 className={cardStyles.title}>Commission History</h3>
-                    <p className={cardStyles.subtitle}>
-                      Showing {formatThousands(filteredCommissions.length)} of {formatThousands(totalResults)} commissions
-                    </p>
+                    <p className={cardStyles.subtitle}>Recent transactions</p>
                   </div>
                 </div>
               </div>
               <div className={cardStyles.content}>
-                <MobileTable
-                  columns={[
-                    {
-                      key: 'date',
-                      header: 'Date',
-                      mobileLabel: 'Date'
-                    },
-                    {
-                      key: 'source',
-                      header: 'Source User',
-                      mobileLabel: 'From',
-                      render: (value) => <div className="font-bold dark:text-white text-gray-900">{value}</div>
-                    },
-                    {
-                      key: 'type',
-                      header: 'Type',
-                      render: (value) => {
-                        const { label, color } = getTypeLabelAndColor(value);
-                        return <span className={`px-3 py-1 rounded-full text-xs font-bold border ${color}`}>{label}</span>;
-                      }
-                    },
-                    {
-                      key: 'amount',
-                      header: 'Amount',
-                      render: (value, row) => (
-                        <span className="dark:text-[#0846A6] text-[#0846A6] font-bold">
-                          {formatThousands(value.toFixed(2))} {row.currency}
-                        </span>
-                      )
-                    },
-                    {
-                      key: 'description',
-                      header: 'Description',
-                      mobileLabel: 'Details',
-                      hiddenOnMobile: false,
-                      render: (_, row) => (
-                        <div className="dark:text-[#A0AFC0] text-gray-600 text-sm">
-                          {row.commission_percentage * 100}% on {formatThousands(row.volume_amount.toFixed(0))} VP for star{' '}
-                          <a
-                            href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${row.token_id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#0846A6] underline hover:text-[#00B28C] transition"
-                          >
-                            #{row.token_id}
-                          </a>
-                        </div>
-                      )
-                    }
-                  ]}
-                  data={filteredCommissions}
-                  keyField="id"
-                  emptyMessage="No commissions found"
-                />
+                <div className="rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-[#F8F9FB] dark:bg-[#1A2B45] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]">
+                        <TableHead className="w-[120px] font-medium">Date</TableHead>
+                        <TableHead className="font-medium">Type</TableHead>
+                        <TableHead className="font-medium">Amount</TableHead>
+                        <TableHead className="font-medium">Currency</TableHead>
+                        <TableHead className="font-medium">Status</TableHead>
+                        <TableHead className="font-medium">Source</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {isHistoryLoading ? (
+                        Array(5).fill(0).map((_, i) => (
+                          <TableRow key={i}>
+                            <TableCell>
+                              <Skeleton className="h-4 w-24 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-16 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-20 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-16 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-20 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                            <TableCell>
+                              <Skeleton className="h-4 w-32 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : filteredCommissions.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="h-32 text-center">
+                            <div className="flex flex-col items-center justify-center text-[#5F6368] dark:text-[#A0A0A0]">
+                              <Coins className="h-8 w-8 mb-2 opacity-50" />
+                              <p className="text-sm">No commissions found</p>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredCommissions.map((commission) => (
+                          <TableRow key={commission.id}>
+                            <TableCell className="font-medium">
+                              {safeFormatDate(commission.date)}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className="capitalize bg-[#F8F9FB] dark:bg-[#1A2B45] border-[#E4E6EB] dark:border-[#2A2A2A]"
+                              >
+                                {commissionTypeLabels[commission.type as keyof typeof commissionTypeLabels] || commission.type}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-medium text-[#297EFF] dark:text-[#4D8DFF]">
+                              {formatThousands(commission.amount)}
+                            </TableCell>
+                            <TableCell>{commission.currency}</TableCell>
+                            <TableCell>
+                              {<span>{(commission.commission_percentage * 100).toFixed(2)}% on {formatThousands(commission.volume_amount.toFixed(0))} VP for star{' '}
+                                <a
+                                  href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${commission.token_id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[#297EFF] font-semibold underline hover:text-[#00B28C] transition"
+                                >
+                                  #{commission.token_id}
+                                </a></span>}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center space-x-2">
+                                <div className="w-6 h-6 rounded-full bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10 flex items-center justify-center">
+                                  <Users className="w-4 h-4 text-[#297EFF] dark:text-[#4D8DFF]" />
+                                </div>
+                                <span className="text-sm">{commission.source}</span>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
 
                 {/* Pagination */}
-                {!isHistoryError && filteredCommissions.length > 0 && (
-                  <div className="mt-4 space-y-4">
-                    {/* Mobile Stats */}
-                    <div className="text-center md:hidden">
-                      <div className="text-[#A0AFC0] text-sm">
-                        Page {formatThousands(currentPage)} of {formatThousands(totalPages)}
-                      </div>
-                      <div className="text-[#A0AFC0] text-xs">
-                        {formatThousands(totalResults)} total results
-                      </div>
-                    </div>
-
-                    {/* Controls */}
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                      {/* Desktop Stats */}
-                      <div className="hidden md:block flex-1 text-[#A0AFC0] text-sm">
-                        Page {formatThousands(currentPage)} of {formatThousands(totalPages)} ({formatThousands(totalResults)} total results)
-                      </div>
-
-                      {/* Items per page - Full width on mobile */}
-                      <div className="w-full md:w-auto">
-                        <Select value={String(itemsPerPage)} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}>
-                          <SelectTrigger className="w-full md:w-32 h-12 md:h-auto dark:bg-[#1A1E2D] dark:border-[#E5E7EB] text-white">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="dark:bg-[#1A1E2D] dark:border-[#E5E7EB] dark:border border-none">
-                            {[5, 10, 20, 50].map(opt => (
-                              <SelectItem key={opt} value={String(opt)} className="text-white dark:hover:bg-[#E5E7EB]">{opt} / page</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Pagination controls - Simplified for mobile */}
-                      <div className="flex items-center space-x-2 w-full md:w-auto justify-center">
-                        <button
-                          className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg border-[#E5E7EB] dark:bg-[#181B23] border dark:border-[#E5E7EB] dark:text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
-                          disabled={currentPage === 1}
-                          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                        >
-                          Previous
-                        </button>
-
-                        {/* Page numbers - Hidden on mobile if too many pages */}
-                        <div className="hidden md:flex items-center space-x-2">
-                          <button
-                            className={`px-3 py-2 rounded-lg border-[#E5E7EB] text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === 1 ? 'dark:bg-[#0846A6] text-black border-[#E5E7EB] dark:border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] border-[#E5E7EB] hover:text-white dark:hover:border-[#0846A6]'}`}
-                            onClick={() => setCurrentPage(1)}
-                            disabled={currentPage === 1}
-                          >
-                            1
-                          </button>
-                          {currentPage > 3 && <span className="text-[#A0AFC0]">...</span>}
-                          {currentPage !== 1 && currentPage !== totalPages && (
-                            <button
-                              className="px-3 py-2 rounded-lg border-[#E5E7EB] text-sm font-medium dark:bg-[#0846A6] text-black dark:border-[#0846A6] min-h-[44px] md:min-h-0"
-                              disabled
-                            >
-                              {currentPage}
-                            </button>
-                          )}
-                          {currentPage < totalPages - 2 && <span className="text-[#A0AFC0]">...</span>}
-                          {totalPages > 1 && (
-                            <button
-                              className={`px-3 py-2 rounded-lg border-[#E5E7EB] text-sm font-medium transition min-h-[44px] md:min-h-0 ${currentPage === totalPages ? 'dark:bg-[#0846A6] text-black border-[#E5E7EB] dark:border-[#0846A6]' : 'dark:bg-[#181B23] text-[#A0AFC0] dark:border-[#E5E7EB] border-[#E5E7EB] hover:text-white dark:hover:border-[#0846A6]'}`}
-                              onClick={() => setCurrentPage(totalPages)}
-                              disabled={currentPage === totalPages}
-                            >
-                              {totalPages}
-                            </button>
-                          )}
-                        </div>
-
-                        <button
-                          className="flex-1 md:flex-none px-4 py-3 md:py-2 rounded-lg dark:bg-[#181B23] border-[#E5E7EB] dark:border-[#E5E7EB] text-[#A0AFC0] hover:text-white dark:hover:border-[#0846A6] transition disabled:opacity-50 min-h-[44px] md:min-h-0"
-                          disabled={currentPage === totalPages}
-                          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                        >
-                          Next
-                        </button>
-                      </div>
-                    </div>
+                <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-6 px-4">
+                  <p className="text-sm text-[#5F6368] dark:text-[#A0A0A0]">
+                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalResults)} of {totalResults} entries
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="h-10 px-6 text-[#5F6368] dark:text-[#A0A0A0] border-[#E4E6EB] dark:border-[#2A2A2A] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]"
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="h-10 px-6 text-[#5F6368] dark:text-[#A0A0A0] border-[#E4E6EB] dark:border-[#2A2A2A] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]"
+                    >
+                      Next
+                    </Button>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           )}
