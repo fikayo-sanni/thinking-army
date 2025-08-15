@@ -248,24 +248,24 @@ export default function DashboardPage() {
     <>
       {/* Page Header */}
       <div className="mb-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h1 className="text-[22px] font-semibold text-[#202124] dark:text-[#E6E6E6]">
             Dashboard Overview
           </h1>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center w-full sm:w-auto">
             <Select value={timeFilter} onValueChange={setTimeFilter}>
-              <SelectTrigger className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
-                <Calendar className="mr-2 h-4 w-4 text-[#5F6368] dark:text-[#A0A0A0]" />
+              <SelectTrigger className="h-11 sm:h-9 w-full sm:w-48 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6]">
+                <Calendar className="mr-2 h-5 w-5 sm:h-4 sm:w-4 text-[#5F6368] dark:text-[#A0A0A0]" />
                 <SelectValue placeholder="Select time period" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all-time">All Time</SelectItem>
-                <SelectItem value="this-week">This Week</SelectItem>
-                <SelectItem value="this-month">This Month</SelectItem>
-                <SelectItem value="this-quarter">This Quarter</SelectItem>
-                <SelectItem value="last-week">Last Week</SelectItem>
-                <SelectItem value="last-month">Last Month</SelectItem>
-                <SelectItem value="last-quarter">Last Quarter</SelectItem>
+                <SelectItem value="all-time" className="h-11 sm:h-9">All Time</SelectItem>
+                <SelectItem value="this-week" className="h-11 sm:h-9">This Week</SelectItem>
+                <SelectItem value="this-month" className="h-11 sm:h-9">This Month</SelectItem>
+                <SelectItem value="this-quarter" className="h-11 sm:h-9">This Quarter</SelectItem>
+                <SelectItem value="last-week" className="h-11 sm:h-9">Last Week</SelectItem>
+                <SelectItem value="last-month" className="h-11 sm:h-9">Last Month</SelectItem>
+                <SelectItem value="last-quarter" className="h-11 sm:h-9">Last Quarter</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -273,11 +273,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content with Right Panel */}
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Content Area */}
         <div className="flex-1 space-y-6">
           {/* Top Metrics Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Performance Card */}
             {isStatsLoading ? (
               <PerformanceCardSkeleton />
@@ -295,11 +295,11 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className={cardStyles.content}>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className={cardStyles.metric.container}>
                       <div>
                         <div className={cardStyles.metric.label}>Total Purchases</div>
-                        <div className={cardStyles.metric.value}>
+                        <div className={`${cardStyles.metric.value} text-[16px] sm:text-[20px]`}>
                           {formatThousands(Number((stats as any)?.purchases || 0))}
                         </div>
                         <div className={
@@ -314,7 +314,7 @@ export default function DashboardPage() {
                     <div className={cardStyles.metric.container}>
                       <div>
                         <div className={cardStyles.metric.label}>Total VP</div>
-                        <div className={cardStyles.metric.value}>
+                        <div className={`${cardStyles.metric.value} text-[16px] sm:text-[20px]`}>
                           {formatThousands(Math.floor(Number((stats as any)?.monthlyEarnings || 0)))}
                         </div>
                         <div className={
@@ -327,21 +327,27 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </div>
-                  <div className={cardStyles.chart.container}>
+                  <div className={`${cardStyles.chart.container} min-h-[200px] sm:min-h-[300px]`}>
                     <div className={cardStyles.chart.title}>Performance Trend</div>
-                    <div className={cardStyles.chart.wrapper}>
+                    <div className={`${cardStyles.chart.wrapper} h-[200px] sm:h-[300px]`}>
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={charts?.purchasesOverTime || []}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#2C2F3C" opacity={0.1} />
                           <XAxis 
                             dataKey="date" 
                             stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
-                            tick={{ fill: theme === "dark" ? "#A0A0A0" : "#5F6368", fontSize: 12 }}
+                            tick={{ fill: theme === "dark" ? "#A0A0A0" : "#5F6368", fontSize: 10 }}
+                            interval="preserveStartEnd"
+                            angle={-45}
+                            textAnchor="end"
+                            height={60}
+                            tickMargin={20}
                           />
                           <YAxis 
                             stroke={theme === "dark" ? "#A0A0A0" : "#5F6368"}
-                            tick={{ fill: theme === "dark" ? "#A0A0A0" : "#5F6368", fontSize: 12 }}
+                            tick={{ fill: theme === "dark" ? "#A0A0A0" : "#5F6368", fontSize: 10 }}
                             tickFormatter={formatShortNumber}
+                            width={45}
                           />
                           <Tooltip
                             contentStyle={{
@@ -349,6 +355,7 @@ export default function DashboardPage() {
                               border: `1px solid ${theme === "dark" ? "#2A2A2A" : "#E4E6EB"}`,
                               borderRadius: "8px",
                               padding: "12px",
+                              fontSize: "12px"
                             }}
                           />
                           <Line
@@ -371,7 +378,7 @@ export default function DashboardPage() {
             {isBalancesLoading ? (
               <CommissionBalancesSkeleton />
             ) : (
-              <div className={cardStyles.base}>
+              <div className={`${cardStyles.base} col-span-1 sm:col-span-2 lg:col-span-1`}>
                 <div className={cardStyles.header}>
                   <div className={cardStyles.headerLeft}>
                     <div className={cardStyles.iconContainer}>
@@ -384,7 +391,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className={cardStyles.content}>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     {[
                       { label: 'GC-He' as const, value: balances?.['HE'] || 0 },
                       { label: 'GC-H' as const, value: balances?.['H'] || 0 },
@@ -393,19 +400,19 @@ export default function DashboardPage() {
                     ].map((item) => (
                       <div 
                         key={item.label} 
-                        className="p-4 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-[#F8F9FB] dark:bg-[#1A2B45]"
+                        className="p-3 sm:p-4 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-[#F8F9FB] dark:bg-[#1A2B45]"
                         style={{ borderLeft: `3px solid ${balanceColors[item.label]}` }}
                       >
                         <div className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0]">{item.label}</div>
-                        <div className="text-[18px] font-semibold text-[#202124] dark:text-[#E6E6E6] mt-1">
+                        <div className="text-[14px] sm:text-[18px] font-semibold text-[#202124] dark:text-[#E6E6E6] mt-1">
                           {formatThousands(Math.floor(Number(item.value)))}
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div className={cardStyles.chart.container}>
+                  <div className={`${cardStyles.chart.container} min-h-[200px] sm:min-h-[300px]`}>
                     <div className={cardStyles.chart.title}>Balance Distribution</div>
-                    <div className={cardStyles.chart.wrapper}>
+                    <div className={`${cardStyles.chart.wrapper} h-[200px] sm:h-[300px]`}>
                       <ResponsiveContainer width="100%" height="100%">
                         <RechartsPieChart>
                           <Pie
@@ -461,7 +468,7 @@ export default function DashboardPage() {
             {isDownlinesLoading ? (
               <DownlinesSkeleton />
             ) : (
-              <div className={cardStyles.base}>
+              <div className={`${cardStyles.base} col-span-1 sm:col-span-2 lg:col-span-1`}>
                 <div className={cardStyles.header}>
                   <div className={cardStyles.headerLeft}>
                     <div className={cardStyles.iconContainer}>
@@ -482,38 +489,41 @@ export default function DashboardPage() {
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {topDownlines.map((downline: any, index: number) => (
                         <div 
                           key={downline.id} 
-                          className="p-4 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-[#F8F9FB] dark:bg-[#1A2B45] flex items-center justify-between"
+                          className="p-4 sm:p-3 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-[#F8F9FB] dark:bg-[#1A2B45] flex items-center justify-between"
                         >
-                          <div className="flex items-center space-x-3">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10 text-[#297EFF] dark:text-[#4D8DFF] font-medium">
+                          <div className="flex items-center space-x-3 sm:space-x-2">
+                            <div className="flex items-center justify-center w-8 h-8 sm:w-6 sm:h-6 rounded-full bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10 text-[#297EFF] dark:text-[#4D8DFF] font-medium text-[14px] sm:text-[12px]">
                               #{index + 1}
                             </div>
                             <div>
-                              <div className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6] flex items-center space-x-2">
+                              <div className="text-[12px] sm:text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6] flex items-center space-x-2">
                                 <span>{downline.nickname}</span>
                                 <div className={`w-2 h-2 rounded-full ${downline.status === 'active' ? 'bg-[#00B28C]' : 'bg-[#5F6368]'}`} />
                               </div>
-                              <div className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0] flex items-center space-x-2">
+                              <div className="text-[10px] sm:text-[12px] text-[#5F6368] dark:text-[#A0A0A0] flex items-center space-x-2">
                                 <RankBadge rank={downline.rank || "Starter"} size="sm" showIcon={false} />
                               </div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-[16px] font-semibold text-[#297EFF] dark:text-[#4D8DFF]">
+                            <div className="text-[14px] sm:text-[16px] font-semibold text-[#297EFF] dark:text-[#4D8DFF]">
                               {formatThousands(Math.floor(Number(downline.revenue)))} VP
                             </div>
-                            <div className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0]">
+                            <div className="text-[10px] sm:text-[12px] text-[#5F6368] dark:text-[#A0A0A0]">
                               Total Volume
                             </div>
                           </div>
                         </div>
                       ))}
                       {immediateDownlines && immediateDownlines.length > 4 && (
-                        <a href="/network" className="block text-[14px] text-[#297EFF] dark:text-[#4D8DFF] text-center hover:underline mt-4">
+                        <a 
+                          href="/network" 
+                          className="block text-[14px] text-[#297EFF] dark:text-[#4D8DFF] text-center hover:underline mt-4 py-3 sm:py-2"
+                        >
                           View all {immediateDownlines.length} downlines →
                         </a>
                       )}
@@ -525,7 +535,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Purchases Chart */}
             {isChartsLoading ? (
               <ChartCardSkeleton title="Purchases Activity" />
@@ -654,8 +664,8 @@ export default function DashboardPage() {
                           data={(charts as any)?.commissionSources || []}
                           cx="50%"
                           cy="50%"
-                          innerRadius={60}
-                          outerRadius={100}
+                          innerRadius={window.innerWidth < 640 ? 40 : 60}
+                          outerRadius={window.innerWidth < 640 ? 70 : 100}
                           paddingAngle={5}
                           dataKey="value"
                         >
@@ -665,10 +675,11 @@ export default function DashboardPage() {
                         </Pie>
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "#FFFFFF",
-                            border: "1px solid #2C2F3C",
+                            backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+                            border: `1px solid ${theme === "dark" ? "#2A2A2A" : "#E4E6EB"}`,
                             borderRadius: "8px",
-                            color: "#A0AFC0",
+                            padding: "12px",
+                            fontSize: "12px"
                           }}
                         />
                         <Legend
@@ -676,7 +687,8 @@ export default function DashboardPage() {
                           height={36}
                           wrapperStyle={{
                             color: theme === "dark" ? tickColors.gray : tickColors.purple,
-                            fontSize: "12px",
+                            fontSize: "10px",
+                            paddingTop: "8px"
                           }}
                         />
                       </RechartsPieChart>
@@ -688,7 +700,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Bottom Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Commission Breakdown Chart */}
             {isChartsLoading ? (
               <ChartCardSkeleton title="Commission Breakdown" />
@@ -718,52 +730,38 @@ export default function DashboardPage() {
                         <XAxis
                           dataKey="month"
                           stroke={theme === "dark" ? tickColors.gray : tickColors.green}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
+                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 10 }}
+                          interval="preserveStartEnd"
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                          tickMargin={20}
                         />
                         <YAxis
                           stroke={theme === "dark" ? tickColors.gray : tickColors.green}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 12 }}
+                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.green, fontSize: 10 }}
                           tickFormatter={formatShortNumber}
+                          width={45}
                         />
                         <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (active && payload && payload.length) {
-                              const c1Raw = payload.find(p => p.dataKey === 'c1')?.value ?? 0;
-                              const c2Raw = payload.find(p => p.dataKey === 'c2')?.value ?? 0;
-                              const c3Raw = payload.find(p => p.dataKey === 'c3')?.value ?? 0;
-                              const c1 = Math.floor(safeNumber(c1Raw));
-                              const c2 = Math.floor(safeNumber(c2Raw));
-                              const c3 = Math.floor(safeNumber(c3Raw));
-                              return (
-                                <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
-                                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                                    <span>C1:</span>
-                                    <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(c1))}</span>
-                                  </div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                                    <span>C2:</span>
-                                    <span style={{ color: '#00B28C', fontWeight: 600 }}>{formatThousands(Number(c2))}</span>
-                                  </div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                                    <span>C3:</span>
-                                    <span style={{ color: '#6F00FF', fontWeight: 600 }}>{formatThousands(Number(c3))}</span>
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return null;
+                          contentStyle={{
+                            backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+                            border: `1px solid ${theme === "dark" ? "#2A2A2A" : "#E4E6EB"}`,
+                            borderRadius: "8px",
+                            padding: "12px",
+                            fontSize: "12px"
                           }}
                         />
                         <Legend
                           wrapperStyle={{
                             color: theme === "dark" ? tickColors.gray : tickColors.green,
-                            fontSize: "12px",
+                            fontSize: "10px",
+                            paddingTop: "8px"
                           }}
                         />
-                        <Bar dataKey="c1" fill={chartColors.primary} name="C1" />
-                        <Bar dataKey="c2" fill={chartColors.secondary} name="C2" />
-                        <Bar dataKey="c3" fill={chartColors.tertiary} name="C3" />
+                        <Bar dataKey="c1" fill={chartColors.primary} name="C1" maxBarSize={40} />
+                        <Bar dataKey="c2" fill={chartColors.secondary} name="C2" maxBarSize={40} />
+                        <Bar dataKey="c3" fill={chartColors.tertiary} name="C3" maxBarSize={40} />
                       </BarChart>
                     </ResponsiveContainer>
                   )}
@@ -800,38 +798,36 @@ export default function DashboardPage() {
                         <XAxis
                           dataKey="date"
                           stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 10 }}
+                          interval="preserveStartEnd"
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                          tickMargin={20}
                         />
                         <YAxis
                           scale={useLogScaleGrowth ? "log" : "linear"}
                           domain={useLogScaleGrowth ? [1, 'auto'] : [0, 'auto']}
                           allowDataOverflow={useLogScaleGrowth}
                           stroke={theme === "dark" ? tickColors.gray : tickColors.blue}
-                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 12 }}
+                          tick={{ fill: theme === "dark" ? tickColors.gray : tickColors.blue, fontSize: 10 }}
                           tickFormatter={formatShortNumber}
+                          width={45}
                         />
                         <Tooltip
-                          content={({ active, payload, label }) => {
-                            if (active && payload && payload.length) {
-                              const totalMembersRaw = payload.find(p => p.dataKey === 'totalMembers')?.value ?? 0;
-                              const totalMembers = Math.floor(safeNumber(totalMembersRaw));
-                              return (
-                                <div style={{ backgroundColor: '#1A1E2D', border: '1px solid #2C2F3C', borderRadius: 8, color: '#A0AFC0', padding: 12 }}>
-                                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                                    <span>Total Members:</span>
-                                    <span style={{ color: '#0846A6', fontWeight: 600 }}>{formatThousands(Number(totalMembers))}</span>
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return null;
+                          contentStyle={{
+                            backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+                            border: `1px solid ${theme === "dark" ? "#2A2A2A" : "#E4E6EB"}`,
+                            borderRadius: "8px",
+                            padding: "12px",
+                            fontSize: "12px"
                           }}
                         />
                         <Legend
                           wrapperStyle={{
                             color: theme === "dark" ? tickColors.gray : tickColors.blue,
-                            fontSize: "12px",
+                            fontSize: "10px",
+                            paddingTop: "8px"
                           }}
                         />
                         <Line
@@ -839,8 +835,8 @@ export default function DashboardPage() {
                           dataKey="totalMembers"
                           stroke={chartColors.primary}
                           strokeWidth={2}
-                          dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }}
-                          activeDot={{ r: 6, stroke: chartColors.primary, strokeWidth: 2 }}
+                          dot={false}
+                          activeDot={{ r: 4, stroke: chartColors.primary, strokeWidth: 2 }}
                           name="Total Members"
                         />
                       </LineChart>
@@ -852,20 +848,20 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Right Details Panel */}
-        <div className="hidden xl:block w-[340px] bg-white dark:bg-[#1E1E1E] border-l border-[#E4E6EB] dark:border-[#2A2A2A]">
-          <div className="sticky top-0 p-6 space-y-6">
+        {/* Right Details Panel - Show below main content on mobile */}
+        <div className="lg:w-[340px] bg-white dark:bg-[#1E1E1E] border-t lg:border-t-0 lg:border-l border-[#E4E6EB] dark:border-[#2A2A2A]">
+          <div className="lg:sticky lg:top-0 p-6 space-y-6">
             {/* Quick Stats Section */}
             <div>
               <h3 className="text-[12px] font-medium uppercase tracking-wider text-[#5F6368] dark:text-[#A0A0A0] mb-4">
                 Quick Stats
               </h3>
-              <div className="space-y-3">
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 lg:gap-0 lg:space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">AllTime VP</span>
                   <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
                     {isStatsLoading ? (
-                      <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" />
+                      <Skeleton className="h-4 w-16 sm:w-20 dark:bg-[#2C2F3C] rounded" />
                     ) : (
                       `${formatThousands((stats as any)?.personalEarnings?.toFixed(0) ?? 0)} VP`
                     )}
@@ -875,7 +871,7 @@ export default function DashboardPage() {
                   <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">Active Downlines</span>
                   <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
                     {isNetworkGrowthLoading ? (
-                      <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
+                      <Skeleton className="h-4 w-12 sm:w-16 dark:bg-[#2C2F3C] rounded" />
                     ) : (
                       `${formatThousands((networkGrowthData as any)?.activeMembers?.toLocaleString() ?? 0)}/${formatThousands((networkGrowthData as any)?.totalDirectDownlines || 0)}`
                     )}
@@ -885,7 +881,7 @@ export default function DashboardPage() {
                   <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">Current Rank</span>
                   <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
                     {isStatsLoading ? (
-                      <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
+                      <Skeleton className="h-4 w-12 sm:w-16 dark:bg-[#2C2F3C] rounded" />
                     ) : (
                       <RankBadge rank={profileData?.rank || "Starter"} size="sm" showIcon={false} />
                     )}
@@ -895,7 +891,7 @@ export default function DashboardPage() {
                   <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">Own Turnover</span>
                   <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
                     {isStatsLoading ? (
-                      <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
+                      <Skeleton className="h-4 w-12 sm:w-16 dark:bg-[#2C2F3C] rounded" />
                     ) : (
                       formatThousands((stats as any)?.ownTurnover?.toFixed(2) ?? 0)
                     )}
@@ -910,19 +906,33 @@ export default function DashboardPage() {
                 Recent Activity
               </h3>
               <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="p-2 rounded-full bg-[#297EFF]/10">
-                    <Users className="h-4 w-4 text-[#297EFF]" />
+                {isActivityLoading ? (
+                  <>
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex items-start space-x-3">
+                        <Skeleton className="h-8 w-8 rounded-full dark:bg-[#2C2F3C]" />
+                        <div className="flex-1">
+                          <Skeleton className="h-4 w-3/4 dark:bg-[#2C2F3C] rounded mb-2" />
+                          <Skeleton className="h-3 w-1/2 dark:bg-[#2C2F3C] rounded" />
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <div className="flex items-start space-x-3">
+                    <div className="p-3 sm:p-2 rounded-full bg-[#297EFF]/10">
+                      <Users className="h-5 w-5 sm:h-4 sm:w-4 text-[#297EFF]" />
+                    </div>
+                    <div>
+                      <p className="text-[14px] text-[#202124] dark:text-[#E6E6E6]">
+                        New downline joined
+                      </p>
+                      <span className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0]">
+                        2 hours ago
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[14px] text-[#202124] dark:text-[#E6E6E6]">
-                      New downline joined
-                    </p>
-                    <span className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0]">
-                      2 hours ago
-                    </span>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

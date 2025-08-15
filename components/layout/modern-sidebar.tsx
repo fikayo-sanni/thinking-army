@@ -222,11 +222,11 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
         {/* Quick Actions Search */}
         {!isCollapsed && (
           <div className={quickActionsStyles.container}>
-            <div className={quickActionsStyles.searchBar}>
+            {/*<div className={quickActionsStyles.searchBar}>
               <Search className={quickActionsStyles.icon} />
               <span className={quickActionsStyles.text}>Quick actions</span>
               <span className={quickActionsStyles.shortcut}>⌘K</span>
-            </div>
+            </div>*/}
           </div>
         )}
 
@@ -351,11 +351,11 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
 
             {/* Quick Actions Search */}
             <div className={quickActionsStyles.container}>
-              <div className={quickActionsStyles.searchBar}>
+              {/*<div className={quickActionsStyles.searchBar}>
                 <Search className={quickActionsStyles.icon} />
                 <span className={quickActionsStyles.text}>Quick actions</span>
                 <span className={quickActionsStyles.shortcut}>⌘K</span>
-              </div>
+              </div>*/}
             </div>
 
             {/* Navigation */}

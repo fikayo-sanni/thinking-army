@@ -170,7 +170,7 @@ export function ModernHeader() {
       <div className="hidden lg:flex items-center justify-between w-full">
         {/* Search Section */}
         <div className="flex-1 max-w-md">
-          <div className="relative">
+          {/*<div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0]" />
             <Input
               placeholder="Search transactions, users, or NFTs..."
@@ -178,7 +178,7 @@ export function ModernHeader() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={searchInputStyles}
             />
-          </div>
+          </div>*/}
         </div>
 
         {/* Actions Section */}
@@ -232,7 +232,7 @@ export function ModernHeader() {
       {/* Mobile Search Overlay */}
       {showMobileSearch && (
         <div className="absolute top-full left-0 right-0 z-50 lg:hidden bg-white dark:bg-[#1E1E1E] border-b border-[#E4E6EB] dark:border-[#2A2A2A] p-4">
-          <div className="relative">
+          {/*<div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0]" />
             <Input
               placeholder="Search transactions, users, or NFTs..."
@@ -241,7 +241,7 @@ export function ModernHeader() {
               className={searchInputStyles}
               autoFocus
             />
-          </div>
+          </div>*/}
         </div>
       )}
     </header>

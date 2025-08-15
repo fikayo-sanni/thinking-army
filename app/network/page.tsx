@@ -157,7 +157,7 @@ export default function NetworkPage() {
           <div className="flex gap-2">
             <Button 
               onClick={copyInviteLink}
-              className="h-9 bg-[#297EFF] hover:bg-[#1D6FFF] text-white flex items-center gap-2"
+              variant="default"
               disabled={!canGenerateLink || loading || isProfileLoading}
             >
               {loading ? (

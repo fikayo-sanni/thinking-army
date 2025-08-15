@@ -225,9 +225,9 @@ export default function ProfileSettingsPage() {
                     {profileData.lastName[0]}
                   </AvatarFallback>
                 </Avatar>
-                <button className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-[#297EFF] hover:bg-[#1D6FFF] text-white flex items-center justify-center transition-colors">
+                {/*<button className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-[#297EFF] hover:bg-[#1D6FFF] text-white flex items-center justify-center transition-colors">
                   <Camera className="h-4 w-4" />
-                </button>
+                </button>*/}
               </div>
               <div className="text-center">
                 <h3 className="text-[#202124] dark:text-[#E6E6E6] font-medium text-lg">
@@ -331,7 +331,7 @@ export default function ProfileSettingsPage() {
                   />
                 </div>
 
-                <div className="flex justify-end">
+                {/*<div className="flex justify-end">
                   <Button
                     onClick={handleSave}
                     disabled={isLoading}
@@ -349,7 +349,7 @@ export default function ProfileSettingsPage() {
                       </>
                     )}
                   </Button>
-                </div>
+                </div>*/}
               </div>
             </div>
           </div>
