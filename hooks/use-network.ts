@@ -1,81 +1,106 @@
-import { useQuery } from '@tanstack/react-query'
-import { networkService } from '@/lib/services'
+'use client';
 
-export const useNetworkData = () => {
-  return useQuery({
-    queryKey: ['network', 'all'],
-    queryFn: () => networkService.getAllNetworkData(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  })
+import { useQuery } from '@tanstack/react-query';
+
+interface NetworkUser {
+  id: string;
+  nickname: string;
+  level: number;
+  totalReferrals: number;
+  isActive: boolean;
 }
 
-export const useNetworkStructure = () => {
+interface NetworkStructure {
+  currentUser: NetworkUser;
+  sponsor?: NetworkUser;
+}
+
+interface NetworkStats {
+  activeMembers: number;
+  totalDirectDownlines: number;
+  totalActiveDownlines: number;
+  totalDownlines: number;
+}
+
+// Mock data
+const mockNetworkStructure: NetworkStructure = {
+  currentUser: {
+    id: '1',
+    nickname: 'CurrentUser',
+    level: 1,
+    totalReferrals: 5,
+    isActive: true,
+  },
+  sponsor: {
+    id: '2',
+    nickname: 'Sponsor',
+    level: 0,
+    totalReferrals: 15,
+    isActive: true,
+  },
+};
+
+const mockNetworkStats: NetworkStats = {
+  activeMembers: 12,
+  totalDirectDownlines: 15,
+  totalActiveDownlines: 45,
+  totalDownlines: 50,
+};
+
+const mockDirectDownlines: NetworkUser[] = [
+  {
+    id: '3',
+    nickname: 'Member1',
+    level: 1,
+    totalReferrals: 3,
+    isActive: true,
+  },
+  {
+    id: '4',
+    nickname: 'Member2',
+    level: 1,
+    totalReferrals: 2,
+    isActive: true,
+  },
+  {
+    id: '5',
+    nickname: 'Member3',
+    level: 1,
+    totalReferrals: 0,
+    isActive: false,
+  },
+];
+
+export function useNetworkStructure() {
   return useQuery({
     queryKey: ['network', 'structure'],
-    queryFn: () => networkService.getStructure(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  })
+    queryFn: async () => {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return mockNetworkStructure;
+    },
+  });
 }
 
-export const useNetworkStats = (timeRange?: string, options?: any) => {
+export function useNetworkStats(timeRange: string) {
   return useQuery({
     queryKey: ['network', 'stats', timeRange],
-    queryFn: () => networkService.getStats(timeRange),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    ...options, // Allow overriding default options
-  })
+    queryFn: async () => {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return mockNetworkStats;
+    },
+  });
 }
 
-export const useSponsor = () => {
+export function useDirectDownlines(userId: string, level: number) {
   return useQuery({
-    queryKey: ['network', 'sponsor'],
-    queryFn: () => networkService.getSponsor(),
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    gcTime: 20 * 60 * 1000, // 20 minutes
-  })
-}
-
-export const useDownlines = (level?: number) => {
-  return useQuery({
-    queryKey: ['network', 'downlines', level],
-    queryFn: () => networkService.getDownlines(level),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  })
-}
-
-export const useNetworkWithPagination = (
-  page: number = 1,
-  limit: number = 20,
-  level?: number
-) => {
-  return useQuery({
-    queryKey: ['network', 'pagination', page, limit, level],
-    queryFn: () => networkService.getNetworkWithPagination(page, limit, level),
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
-  })
-}
-
-export const useSearchMembers = (query: string) => {
-  return useQuery({
-    queryKey: ['network', 'search', query],
-    queryFn: () => networkService.searchMembers(query),
-    enabled: query.length > 0,
-    staleTime: 1 * 60 * 1000, // 1 minute
-    gcTime: 2 * 60 * 1000, // 2 minutes
-  })
-} 
-
-export const useDirectDownlines = (parentId: string, level: number, page: number = 1, limit: number = 20) => {
-  return useQuery({
-    queryKey: ['network', 'direct-downlines', parentId, page, limit, level],
-    queryFn: () => networkService.getDirectDownlines(parentId, page, limit, level),
-    enabled: !!parentId || parentId === undefined, // allow root fetch if parentId is undefined
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
-  })
+    queryKey: ['network', 'downlines', userId, level],
+    queryFn: async () => {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return mockDirectDownlines;
+    },
+    enabled: !!userId, // Only run query if userId is provided
+  });
 } 

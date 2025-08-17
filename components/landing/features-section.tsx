@@ -1,36 +1,42 @@
 import { motion } from 'framer-motion';
-import { Star, Coins, Gamepad2, Blocks, TrendingUp, Gem } from 'lucide-react';
+import { Brain, Target, Sparkles, Workflow, Users, TrendingUp } from 'lucide-react';
 
 const features = [
   {
-    icon: Star,
-    title: 'Stars as NFTs',
-    description: 'Generate elements through staking with our innovative star NFTs, functioning like real stars to create valuable building blocks.',
+    icon: Brain,
+    title: 'Small Agents',
+    description: 'Entry-level AI workflows for specific business processes, starting at €50/month. Perfect for automating routine tasks.',
+    color: '#00B28C',
   },
   {
-    icon: Blocks,
-    title: 'Elemental Building Blocks',
-    description: 'Transform digital assets into elemental parts, breaking down boundaries between game worlds and creating infinite possibilities.',
+    icon: Target,
+    title: 'Big Sales',
+    description: 'Enterprise-grade AI transformation solutions for comprehensive sales automation and optimization.',
+    color: '#6F00FF',
   },
   {
-    icon: Coins,
-    title: 'GamesCoin Currency',
-    description: 'Access the gaming economy with GamesCoin, our in-game currency designed to power the future of gaming transactions.',
+    icon: Sparkles,
+    title: 'Meta-Agent',
+    description: 'AI-driven needs assessment and continuous optimization suggestions to maximize your return on investment.',
+    color: '#297EFF',
   },
   {
-    icon: Gamepad2,
-    title: 'True Ownership',
-    description: 'Take control as a gamer with true ownership of your games, digital assets, and in-game achievements.',
+    icon: Workflow,
+    title: 'Custom Workflows',
+    description: 'Build and customize AI-powered workflows tailored to your specific business needs and processes.',
+    color: '#FF6B6B',
+  },
+  {
+    icon: Users,
+    title: 'Team Integration',
+    description: 'Seamlessly integrate AI agents with your existing team structure and business operations.',
+    color: '#FFA500',
   },
   {
     icon: TrendingUp,
-    title: 'Growing Market',
-    description: 'Join a market larger than film, music, and sports combined, with 2.7 billion people spending over $300 billion annually.',
-  },
-  {
-    icon: Gem,
-    title: 'Crypto Integration',
-    description: 'Experience the perfect match between gaming and crypto assets, positioned for the upcoming bull run in gaming tokens.',
+    title: 'Measurable Impact',
+    description: 'Track and measure the direct impact of AI automation on your business metrics and bottom line.',
+    color: '#2AC769',
   },
 ];
 
@@ -46,10 +52,10 @@ export function FeaturesSection() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-semibold text-[#202124] dark:text-[#E6E6E6] mb-4">
-            The Essence of Success
+            AI-Powered Success
           </h2>
           <p className="text-lg text-[#5F6368] dark:text-[#A0A0A0] max-w-2xl mx-auto">
-            Gaming is at a turning point in its history. Gamers are being put at the center of power, creating unprecedented opportunities in the world's largest economy.
+            From small businesses to enterprise solutions, our AI agents deliver instant, measurable value across every industry and process.
           </p>
         </motion.div>
 
@@ -63,8 +69,16 @@ export function FeaturesSection() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="group bg-white dark:bg-[#1E1E1E] rounded-lg p-6 border border-[#E4E6EB] dark:border-[#2A2A2A] hover:border-[#297EFF] dark:hover:border-[#4D8DFF] transition-all duration-300 hover:shadow-lg"
             >
-              <div className="mb-4 p-3 rounded-lg bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10 w-fit group-hover:bg-[#297EFF]/20 dark:group-hover:bg-[#4D8DFF]/20 transition-colors">
-                <feature.icon className="w-6 h-6 text-[#297EFF] dark:text-[#4D8DFF]" />
+              <div 
+                className="mb-4 p-3 rounded-lg w-fit transition-colors"
+                style={{ 
+                  backgroundColor: `${feature.color}20`,
+                }}
+              >
+                <feature.icon 
+                  className="w-6 h-6"
+                  style={{ color: feature.color }}
+                />
               </div>
               <h3 className="text-xl font-semibold text-[#202124] dark:text-[#E6E6E6] mb-2">
                 {feature.title}

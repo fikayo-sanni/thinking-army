@@ -1,76 +1,42 @@
-import { useQuery } from '@tanstack/react-query'
-import { commissionService } from '@/lib/services'
+import { useQuery } from '@tanstack/react-query';
+import CommissionService from '@/lib/services/commission-service';
 
-export const useCommissionData = (timeRange: string = 'last-month') => {
-  return useQuery({
-    queryKey: ['commission', 'all', timeRange],
-    queryFn: () => commissionService.getAllCommissionData(timeRange),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  })
-}
+const commissionService = CommissionService.getInstance();
 
-export const useCommissionHistory = (
-  timeRange?: string,
+export function useCommissionHistory(
+  timeRange: string,
   type?: string,
   status?: string,
   page: number = 1,
-  limit: number = 20,
+  pageSize: number = 10,
   currency?: string
-) => {
+) {
   return useQuery({
-    queryKey: ['commission', 'history', timeRange, type, status, page, limit, currency],
-    queryFn: () => commissionService.getHistory(timeRange, type, status, page, limit, currency),
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
-  })
+    queryKey: ['commissionHistory', timeRange, type, status, page, pageSize, currency],
+    queryFn: () => commissionService.getCommissionHistory(timeRange, type, status, page, pageSize, currency),
+  });
 }
 
-export const useCommissionEarnings = (timeRange?: string) => {
+export function useCommissionStats(timeRange: string) {
   return useQuery({
-    queryKey: ['commission', 'earnings', timeRange],
-    queryFn: () => commissionService.getEarnings(timeRange),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  })
+    queryKey: ['commissionStats', timeRange],
+    queryFn: () => commissionService.getCommissionStats(timeRange),
+  });
 }
 
-export const usePendingCommissions = () => {
+// Alias for backward compatibility
+export const useCommissionEarnings = useCommissionStats;
+
+export function usePendingCommissions() {
   return useQuery({
-    queryKey: ['commission', 'pending'],
-    queryFn: () => commissionService.getPending(),
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
-  })
+    queryKey: ['pendingCommissions'],
+    queryFn: () => commissionService.getPendingCommissions(),
+  });
 }
 
-export const useCommissionStats = (timeRange?: string) => {
+export function useCommissionChartData(timeRange: string) {
   return useQuery({
-    queryKey: ['commission', 'stats', timeRange],
-    queryFn: () => commissionService.getStats(timeRange),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  })
-}
-
-export const useCommissionChartData = (timeRange: string = 'last-month') => {
-  return useQuery({
-    queryKey: ['commission', 'charts', timeRange],
+    queryKey: ['commissionChartData', timeRange],
     queryFn: () => commissionService.getChartData(timeRange),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  })
-}
-
-export const useWithdrawals = (
-  status?: string,
-  page: number = 1,
-  limit: number = 20
-) => {
-  return useQuery({
-    queryKey: ['commission', 'withdrawals', status, page, limit],
-    queryFn: () => commissionService.getWithdrawals(status, page, limit),
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
-  })
+  });
 } 

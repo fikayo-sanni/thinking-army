@@ -57,29 +57,15 @@ export default function NetworkPage() {
   const [activeTab, setActiveTab] = useState("downlines")
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { user, youreId } = useAuth()
+  const { user } = useAuth()
   
   // Check if user is authenticated and has required data
-  // Just need authToken since backend can determine user ID from the token
   const canGenerateLink = typeof window !== 'undefined' && localStorage.getItem('authToken')
   
-  // Debug auth state
-  console.log('Auth Debug:', { 
-    user: user ? { 
-      id_token: user.id_token ? 'present' : 'missing',
-      profile: user.profile 
-    } : null, 
-    youreId, 
-    userSub: user?.profile?.sub,
-    hasAuthToken: typeof window !== 'undefined' ? !!localStorage.getItem('authToken') : false,
-    authToken: typeof window !== 'undefined' ? localStorage.getItem('authToken')?.substring(0, 20) + '...' : null,
-    canGenerateLink
-  })
-  
   // 🚀 OPTIMIZED: Use individual hooks for parallel loading
-  const { data: networkStructure, isLoading: isStructureLoading, isError: isStructureError, refetch: refetchStructure } = useNetworkStructure()
-  const { data: statsData, isLoading: isStatsLoading, isError: isStatsError, refetch: refetchStats } = useNetworkStats('all-time')
-  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const { data: networkStructure, isLoading: isStructureLoading, isError: isStructureError, refetch: refetchStructure } = useNetworkStructure();
+  const { data: statsData, isLoading: isStatsLoading, isError: isStatsError, refetch: refetchStats } = useNetworkStats('all-time');
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile();
 
   // Always call the hook at the top level, passing currentUser?.id (may be undefined)
   // We'll get currentUser from networkStructure after loading
@@ -206,7 +192,7 @@ export default function NetworkPage() {
                   <div className={cardStyles.metric.container}>
                     <div>
                       <div className={cardStyles.metric.value}>
-                        {formatThousands((statsData as NetworkStats).activeMembers)}/{formatThousands((statsData as NetworkStats).totalDirectDownlines)}
+                        {formatThousands(statsData.activeMembers)}/{formatThousands(statsData.totalDirectDownlines)}
                       </div>
                       <div className={cardStyles.metric.label}>
                         Direct Downlines
@@ -232,7 +218,7 @@ export default function NetworkPage() {
                   <div className={cardStyles.metric.container}>
                     <div>
                       <div className={cardStyles.metric.value}>
-                        {formatThousands((statsData as NetworkStats).totalActiveDownlines)}/{formatThousands((statsData as NetworkStats).totalDownlines)}
+                        {formatThousands(statsData.totalActiveDownlines)}/{formatThousands(statsData.totalDownlines)}
                       </div>
                       <div className={cardStyles.metric.label}>
                         Total Network
@@ -267,17 +253,11 @@ export default function NetworkPage() {
                   {networkStructure?.currentUser ? (
                     <div className="w-full max-w-4xl">
                       <NetworkNode 
-                        user={{
-                          ...networkStructure.currentUser,
-                          directReferrals: networkStructure.currentUser.totalReferrals || 0
-                        } as any} 
-                        sponsor={networkStructure.sponsor ? {
-                          ...networkStructure.sponsor,
-                          directReferrals: networkStructure.sponsor.totalReferrals || 0
-                        } as any : undefined} 
-                        totalReferrals={networkStructure.currentUser.totalReferrals || 0} 
-                        direction="down" 
-                        isExpanded={true} 
+                        user={networkStructure.currentUser}
+                        sponsor={networkStructure.sponsor}
+                        totalReferrals={networkStructure.currentUser.totalReferrals}
+                        direction="down"
+                        isExpanded={true}
                       />
                     </div>
                   ) : (
@@ -310,7 +290,7 @@ export default function NetworkPage() {
                     {isStatsLoading ? (
                       <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" />
                     ) : (
-                      formatThousands((statsData as NetworkStats)?.activeMembers || 0)
+                      formatThousands(statsData?.activeMembers || 0)
                     )}
                   </span>
                 </div>
@@ -320,7 +300,7 @@ export default function NetworkPage() {
                     {isStatsLoading ? (
                       <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
                     ) : (
-                      formatThousands((statsData as NetworkStats)?.totalDownlines || 0)
+                      formatThousands(statsData?.totalDownlines || 0)
                     )}
                   </span>
                 </div>
@@ -330,7 +310,7 @@ export default function NetworkPage() {
                     {isStatsLoading ? (
                       <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
                     ) : (
-                      formatThousands((statsData as NetworkStats)?.totalDirectDownlines || 0)
+                      formatThousands(statsData?.totalDirectDownlines || 0)
                     )}
                   </span>
                 </div>
@@ -343,7 +323,7 @@ export default function NetworkPage() {
                 Recent Activity
               </h3>
               <div className="space-y-4">
-                {rootDownlines.slice(0, 5).map((downline: any) => (
+                {networkStructure?.currentUser?.children?.slice(0, 5).map((downline) => (
                   <div key={downline.id} className="flex items-start space-x-3">
                     <div className="p-2 rounded-full bg-[#297EFF]/10">
                       <User className="h-4 w-4 text-[#297EFF]" />
@@ -358,7 +338,7 @@ export default function NetworkPage() {
                     </div>
                   </div>
                 ))}
-                {rootDownlines.length === 0 && !isLoadingRootDownlines && (
+                {(!networkStructure?.currentUser?.children || networkStructure.currentUser.children.length === 0) && !isStructureLoading && (
                   <div className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0] text-center">
                     No recent activity
                   </div>

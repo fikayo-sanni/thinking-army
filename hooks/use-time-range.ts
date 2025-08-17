@@ -1,32 +1,27 @@
-import { useState, useEffect } from "react";
+'use client';
 
-const STORAGE_KEY = "dashboardTimeRange";
+import { useState, useEffect } from 'react';
 
-export function useTimeRange(defaultValue = "this-week") {
-  const [timeRange, setTimeRange] = useState<string>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(STORAGE_KEY) || defaultValue;
-    }
-    return defaultValue;
-  });
+type TimeRange = 'all-time' | 'this-week' | 'this-month' | 'this-quarter' | 'last-week' | 'last-month' | 'last-quarter';
 
-  // Update localStorage when timeRange changes
+export function useTimeRange(defaultRange: TimeRange = 'this-week'): [TimeRange, (range: TimeRange) => void] {
+  const [timeRange, setTimeRange] = useState<TimeRange>(defaultRange);
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, timeRange);
+    const stored = localStorage.getItem('timeRange');
+    if (stored && isValidTimeRange(stored)) {
+      setTimeRange(stored as TimeRange);
     }
-  }, [timeRange]);
-
-  // Listen for storage changes (from other components or tabs)
-  useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY && event.newValue) {
-        setTimeRange(event.newValue);
-      }
-    };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  return [timeRange, setTimeRange] as const;
+  const updateTimeRange = (range: TimeRange) => {
+    setTimeRange(range);
+    localStorage.setItem('timeRange', range);
+  };
+
+  return [timeRange, updateTimeRange];
+}
+
+function isValidTimeRange(range: string): range is TimeRange {
+  return ['all-time', 'this-week', 'this-month', 'this-quarter', 'last-week', 'last-month', 'last-quarter'].includes(range);
 } 

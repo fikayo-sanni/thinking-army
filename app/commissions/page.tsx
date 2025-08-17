@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight, Coins, AlertTriangle, Plus, Users, Trophy } from "lucide-react"
 import {
   useCommissionHistory,
-  useCommissionEarnings,
+  useCommissionStats as useCommissionEarnings,
   useCommissionStats,
   usePendingCommissions,
   useCommissionChartData
@@ -294,33 +294,45 @@ export default function CommissionsPage() {
                   </div>
                 </div>
                 <div className={cardStyles.content}>
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[
-                      { type: 'c1', color: '#297EFF', value: c1Total },
-                      { type: 'c2', color: '#00B28C', value: c2Total },
-                      { type: 'c3', color: '#6F00FF', value: c3Total }
-                    ].map(({ type, color, value }) => (
-                      <div 
+                      { type: 'c1', label: 'Direct Commission', color: '#297EFF', icon: <Users className="w-4 h-4" /> },
+                      { type: 'c2', label: 'Team Commission', color: '#00B28C', icon: <Users className="w-4 h-4" /> },
+                      { type: 'c3', label: 'Leadership Commission', color: '#6F00FF', icon: <Trophy className="w-4 h-4" /> }
+                    ].map(({ type, label, color, icon }) => (
+                      <div
                         key={type}
                         className="p-4 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-[#F8F9FB] dark:bg-[#1A2B45]"
                         style={{ borderLeft: `3px solid ${color}` }}
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <Badge 
-                              variant="outline"
-                              className="border-transparent text-[14px] font-medium"
-                              style={{ 
-                                backgroundColor: `${color}10`,
-                                color: color
-                              }}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2">
+                            <div
+                              className="w-8 h-8 rounded-lg flex items-center justify-center"
+                              style={{ backgroundColor: `${color}10` }}
                             >
-                              {type.toUpperCase()}
-                            </Badge>
+                              <div style={{ color }}>{icon}</div>
+                            </div>
+                            <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
+                              {label}
+                            </span>
                           </div>
-                          <div className="text-[24px] font-semibold" style={{ color }}>
-                            {formatThousands(Number(value).toFixed(0))} {currency}
-                          </div>
+                          <Badge
+                            variant="outline"
+                            className="border-transparent"
+                            style={{
+                              backgroundColor: `${color}10`,
+                              color: color
+                            }}
+                          >
+                            {type.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <div className="text-[24px] font-semibold" style={{ color }}>
+                          {formatThousands(statsData?.[type] || 0)}
+                        </div>
+                        <div className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0] mt-1">
+                          Total earnings
                         </div>
                       </div>
                     ))}

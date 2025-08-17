@@ -1,29 +1,27 @@
-"use client"
+'use client';
 
-import React, { useState, useEffect } from 'react';
-import { PageTitleContext } from '@/hooks/use-page-title';
+import React, { createContext, useContext, useState } from 'react';
 
-interface PageTitleProviderProps {
-  children: React.ReactNode;
-  defaultTitle?: string;
+interface PageTitleContextType {
+  title: string;
+  setTitle: (title: string) => void;
 }
 
-export function PageTitleProvider({ children, defaultTitle = "Gamescoin" }: PageTitleProviderProps) {
-  const [title, setTitle] = useState<string>(defaultTitle);
+const PageTitleContext = createContext<PageTitleContextType | undefined>(undefined);
 
-  useEffect(() => {
-    // Update document title when title changes
-    document.title = title;
-  }, [title]);
+export function usePageTitle() {
+  const context = useContext(PageTitleContext);
+  if (!context) {
+    throw new Error('usePageTitle must be used within a PageTitleProvider');
+  }
+  return context;
+}
 
-  const updateTitle = (newTitle: string) => {
-    // You can customize the title format here
-    const formattedTitle = newTitle === defaultTitle ? defaultTitle : `${newTitle} | ${defaultTitle}`;
-    setTitle(formattedTitle);
-  };
+export function PageTitleProvider({ children }: { children: React.ReactNode }) {
+  const [title, setTitle] = useState('');
 
   return (
-    <PageTitleContext.Provider value={{ title, setTitle: updateTitle }}>
+    <PageTitleContext.Provider value={{ title, setTitle }}>
       {children}
     </PageTitleContext.Provider>
   );
