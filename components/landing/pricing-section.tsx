@@ -44,7 +44,7 @@ const plans = [
 
 export function PricingSection() {
   return (
-    <section className="py-24 bg-white dark:bg-[#1E1E1E]">
+    <section className="py-24 bg-white ">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

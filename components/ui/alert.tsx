@@ -8,7 +8,7 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-[#E4E6EB] bg-[#F8F9FB] text-[#202124] dark:border-[#2A2A2A] dark:bg-[#1E1E1E] dark:text-[#E6E6E6] [&>svg]:text-[#9AA0A6] dark:[&>svg]:text-[#A0A0A0]",
+        default: "border-[#E4E6EB] bg-[#F8F9FB] text-[#202124] dark:border-[#2A2A2A]  dark:text-[#E6E6E6] [&>svg]:text-[#9AA0A6] dark:[&>svg]:text-[#A0A0A0]",
         info: "border-[#297EFF]/20 bg-[#297EFF]/5 text-[#297EFF] dark:border-[#4D8DFF]/20 dark:bg-[#4D8DFF]/5 dark:text-[#4D8DFF] [&>svg]:text-[#297EFF] dark:[&>svg]:text-[#4D8DFF]",
         success: "border-emerald-500/20 bg-emerald-500/5 text-emerald-500 dark:border-emerald-400/20 dark:bg-emerald-400/5 dark:text-emerald-400 [&>svg]:text-emerald-500 dark:[&>svg]:text-emerald-400",
         warning: "border-amber-500/20 bg-amber-500/5 text-amber-500 dark:border-amber-400/20 dark:bg-amber-400/5 dark:text-amber-400 [&>svg]:text-amber-500 dark:[&>svg]:text-amber-400",

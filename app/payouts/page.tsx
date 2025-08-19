@@ -59,7 +59,7 @@ import {
 
 // Add card styles
 const cardStyles = {
-  base: "bg-white dark:bg-[#1E1E1E] border border-[#E4E6EB] dark:border-[#2A2A2A] rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-all duration-150 hover:border-[#DADCE0] dark:hover:border-[#3A3A3A] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.3)]",
+  base: "bg-white  border border-[#E4E6EB] dark:border-[#2A2A2A] rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-all duration-150 hover:border-[#DADCE0] dark:hover:border-[#3A3A3A] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.3)]",
   header: "flex items-center justify-between p-4 border-b border-[#E4E6EB] dark:border-[#2A2A2A]",
   headerLeft: "flex items-center space-x-3",
   iconContainer: "flex items-center justify-center w-8 h-8 rounded-lg bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10",
@@ -218,7 +218,7 @@ export default function PayoutsPage() {
           </h1>
           <div className="flex items-center space-x-3">
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
+              <SelectTrigger className="h-9 bg-white  border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
                 <CalendarDays className="mr-2 h-4 w-4 text-[#5F6368] dark:text-[#A0A0A0]" />
                 <SelectValue placeholder="Select time period" />
               </SelectTrigger>
@@ -357,7 +357,7 @@ export default function PayoutsPage() {
             <div className={cardStyles.content}>
               <div className="flex flex-wrap gap-4">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
+                  <SelectTrigger className="h-9 bg-white  border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
                     <SelectValue placeholder="Status filter" />
                   </SelectTrigger>
                   <SelectContent>
@@ -508,7 +508,7 @@ export default function PayoutsPage() {
         </div>
 
         {/* Right Details Panel */}
-        <div className="hidden xl:block w-[340px] flex-shrink-0 bg-white dark:bg-[#1E1E1E] border-l border-[#E4E6EB] dark:border-[#2A2A2A]">
+        <div className="hidden xl:block w-[340px] flex-shrink-0 bg-white  border-l border-[#E4E6EB] dark:border-[#2A2A2A]">
           <div className="sticky top-0 p-6 space-y-6">
             {/* Quick Stats Section */}
             <div>

@@ -38,7 +38,7 @@ interface ModernSidebarProps {
 
 // Update the sidebar styles
 const sidebarStyles = {
-  base: "bg-[#F8F9FB] dark:bg-[#1E1E1E] border-r border-[#E4E6EB] dark:border-[#2A2A2A]",
+  base: "bg-[#F8F9FB]  border-r border-[#E4E6EB] dark:border-[#2A2A2A]",
   desktop: "w-60 transition-all duration-150 ease-in-out fixed left-0 top-0 h-screen",
   collapsed: "w-14",
   mobile: "w-60",
@@ -52,7 +52,7 @@ const workspaceHeaderStyles = {
 
 const quickActionsStyles = {
   container: "mb-4 px-3",
-  searchBar: "h-9 w-full bg-[#F1F3F4] dark:bg-[#1E1E1E] rounded-md flex items-center px-3 hover:shadow-sm transition-shadow duration-150 cursor-pointer group",
+  searchBar: "h-9 w-full bg-[#F1F3F4]  rounded-md flex items-center px-3 hover:shadow-sm transition-shadow duration-150 cursor-pointer group",
   icon: "h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0] group-hover:text-[#202124] dark:group-hover:text-[#E6E6E6] transition-colors duration-150",
   text: "ml-2 text-[#9AA0A6] dark:text-[#A0A0A0] text-sm italic flex-1",
   shortcut: "text-xs text-[#9AA0A6] dark:text-[#A0A0A0] bg-white/50 dark:bg-[#2A2A2A] px-1.5 py-0.5 rounded",
@@ -78,13 +78,13 @@ const navigationStyles = {
   },
   badge: {
     wrapper: "ml-auto",
-    default: "bg-[#F1F3F4] text-[#9AA0A6] dark:bg-[#1E1E1E] dark:text-[#A0A0A0]",
+    default: "bg-[#F1F3F4] text-[#9AA0A6]  dark:text-[#A0A0A0]",
     new: "bg-[#297EFF]/10 text-[#297EFF] dark:bg-[#4D8DFF]/10 dark:text-[#4D8DFF]",
   },
   indicator: "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#297EFF] dark:bg-[#4D8DFF] rounded-r",
 };
 
-const collapseButtonStyles = "w-full justify-center bg-[#F8F9FB] hover:bg-[#EAF3FF] hover:text-[#297EFF] dark:bg-[#1E1E1E] dark:hover:bg-[#1A2B45] dark:hover:text-[#4D8DFF] border border-[#E4E6EB] dark:border-[#2A2A2A] text-[#9AA0A6] dark:text-[#A0A0A0]";
+const collapseButtonStyles = "w-full justify-center bg-[#F8F9FB] hover:bg-[#EAF3FF] hover:text-[#297EFF]  dark:hover:bg-[#1A2B45] dark:hover:text-[#4D8DFF] border border-[#E4E6EB] dark:border-[#2A2A2A] text-[#9AA0A6] dark:text-[#A0A0A0]";
 
 export function ModernSidebar({ children }: ModernSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -297,7 +297,7 @@ export function ModernSidebar({ children }: ModernSidebarProps) {
             variant="outline"
             size="sm"
             onClick={handleToggleCollapse}
-            className="w-full justify-center bg-white hover:bg-[#F1F3F4] dark:bg-[#1E1E1E] dark:hover:bg-[#1A2B45] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#9AA0A6] dark:text-[#A0A0A0] h-8"
+            className="w-full justify-center bg-white hover:bg-[#F1F3F4]  dark:hover:bg-[#1A2B45] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#9AA0A6] dark:text-[#A0A0A0] h-8"
           >
             <ChevronRight
               className={cn(

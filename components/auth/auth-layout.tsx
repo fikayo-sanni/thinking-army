@@ -18,7 +18,7 @@ export function AuthLayout({ children, title, description, maxWidth = "md", foot
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#1E1E1E] flex flex-col">
+    <div className="min-h-screen bg-white  flex flex-col">
       {/* Header with Logo */}
       <header className="w-full py-6 px-8 border-b border-[#E4E6EB] dark:border-[#2A2A2A]">
         <AuthLogo />

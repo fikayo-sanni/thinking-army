@@ -85,7 +85,7 @@ export function NetworkNode({ user, sponsor, totalReferrals, direction = 'down',
   return (
     <div className="w-full">
       {/* Node Container */}
-      <div className="flex items-center gap-4 p-4 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-white dark:bg-[#1E1E1E] shadow-sm">
+      <div className="flex items-center gap-4 p-4 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-white  shadow-sm">
         {/* Expand/Collapse Button */}
         <Button
           variant="ghost"

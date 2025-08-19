@@ -27,7 +27,7 @@ function Calendar({
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-9 w-9 bg-white hover:bg-[#F8F9FB] dark:bg-[#1E1E1E] dark:hover:bg-[#1E1E1E] border-[#E4E6EB] hover:border-[#297EFF] dark:border-[#2A2A2A] dark:hover:border-[#4D8DFF] p-0"
+          "h-9 w-9 bg-white hover:bg-[#F8F9FB]  dark:hover:bg-[#1E1E1E] border-[#E4E6EB] hover:border-[#297EFF] dark:border-[#2A2A2A] dark:hover:border-[#4D8DFF] p-0"
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
@@ -52,7 +52,7 @@ function Calendar({
           "dark:hover:bg-[#4D8DFF] dark:hover:text-white",
           "focus:bg-[#297EFF] focus:text-white dark:focus:bg-[#4D8DFF] dark:focus:text-white"
         ),
-        day_today: "bg-[#F8F9FB] dark:bg-[#1E1E1E] text-[#297EFF] dark:text-[#4D8DFF]",
+        day_today: "bg-[#F8F9FB]  text-[#297EFF] dark:text-[#4D8DFF]",
         day_outside: cn(
           "day-outside text-[#9AA0A6] dark:text-[#A0A0A0] aria-selected:bg-[#EAF3FF]/50",
           "dark:aria-selected:bg-[#1A2B45]/50 aria-selected:text-[#9AA0A6] dark:aria-selected:text-[#A0A0A0]"

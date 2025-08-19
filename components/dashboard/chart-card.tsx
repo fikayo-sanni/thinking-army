@@ -12,7 +12,7 @@ interface ChartCardProps {
 export function ChartCard({ title, description, children, className }: ChartCardProps) {
   return (
     <Card className={cn(
-      "bg-white dark:bg-[#1E1E1E] border border-[#E4E6EB] dark:border-[#2A2A2A] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)]",
+      "bg-white  border border-[#E4E6EB] dark:border-[#2A2A2A] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)]",
       className
     )}>
       <CardContent className="p-4">

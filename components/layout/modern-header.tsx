@@ -50,19 +50,19 @@ const notifications = [
 ]
 
 // First, let's update the header background and border styles
-const headerStyles = "flex items-center justify-between py-3 px-4 sm:py-4 sm:px-6 bg-white dark:bg-[#1E1E1E] border-b border-[#E4E6EB] dark:border-[#2A2A2A]";
+const headerStyles = "flex items-center justify-between py-3 px-4 sm:py-4 sm:px-6 bg-white  border-b border-[#E4E6EB] dark:border-[#2A2A2A]";
 
 // Update the button styles for consistent look
-const iconButtonStyles = "h-9 w-9 rounded-md bg-white hover:bg-[#F8F9FB] dark:bg-[#1E1E1E] dark:hover:bg-[#1E1E1E] border border-[#E4E6EB] hover:border-[#297EFF] dark:border-[#2A2A2A] dark:hover:border-[#4D8DFF]";
+const iconButtonStyles = "h-9 w-9 rounded-md bg-white hover:bg-[#F8F9FB]  dark:hover:bg-[#1E1E1E] border border-[#E4E6EB] hover:border-[#297EFF] dark:border-[#2A2A2A] dark:hover:border-[#4D8DFF]";
 
 // Update the icon colors
 const iconStyles = "h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0]";
 
 // Update the search input styles
-const searchInputStyles = "pl-10 bg-[#F8F9FB] dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] placeholder:text-[#9AA0A6] dark:placeholder:text-[#A0A0A0] focus:border-[#297EFF] focus:ring-2 focus:ring-[#297EFF]/10 dark:focus:border-[#4D8DFF] dark:focus:ring-[#4D8DFF]/10 h-9";
+const searchInputStyles = "pl-10 bg-[#F8F9FB]  border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] placeholder:text-[#9AA0A6] dark:placeholder:text-[#A0A0A0] focus:border-[#297EFF] focus:ring-2 focus:ring-[#297EFF]/10 dark:focus:border-[#4D8DFF] dark:focus:ring-[#4D8DFF]/10 h-9";
 
 // Update the dropdown styles
-const dropdownStyles = "w-56 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A]";
+const dropdownStyles = "w-56 bg-white  border-[#E4E6EB] dark:border-[#2A2A2A]";
 const dropdownItemStyles = "text-[#202124] dark:text-[#E6E6E6] hover:bg-[#F8F9FB] hover:text-[#297EFF] dark:hover:bg-[#1E1E1E] dark:hover:text-[#4D8DFF]";
 const dropdownSeparatorStyles = "bg-[#E4E6EB] dark:bg-[#2A2A2A]";
 
@@ -231,7 +231,7 @@ export function ModernHeader() {
 
       {/* Mobile Search Overlay */}
       {showMobileSearch && (
-        <div className="absolute top-full left-0 right-0 z-50 lg:hidden bg-white dark:bg-[#1E1E1E] border-b border-[#E4E6EB] dark:border-[#2A2A2A] p-4">
+        <div className="absolute top-full left-0 right-0 z-50 lg:hidden bg-white  border-b border-[#E4E6EB] dark:border-[#2A2A2A] p-4">
           {/*<div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9AA0A6] dark:text-[#A0A0A0]" />
             <Input

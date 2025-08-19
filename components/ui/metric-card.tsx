@@ -21,14 +21,14 @@ interface MetricCardProps {
 
 export function MetricCard({ title, value, icon, change, progress }: MetricCardProps) {
   return (
-    <Card className="bg-white border-[#E4E6EB] dark:bg-[#1E1E1E] dark:border-[#2A2A2A]">
+    <Card className="bg-white border-[#E4E6EB]  dark:border-[#2A2A2A]">
       <CardContent className="p-6">
         <MetricCardContent title={title} value={value} icon={icon} change={change}/>
         {progress && (
           <div className="mt-3">
             <Progress 
               value={progress.value} 
-              className="h-2 bg-[#F8F9FB] border-[#E4E6EB] dark:bg-[#1E1E1E] dark:border-[#2A2A2A]" 
+              className="h-2 bg-[#F8F9FB] border-[#E4E6EB]  dark:border-[#2A2A2A]" 
             />
             <div className="flex justify-between text-xs text-[#9AA0A6] dark:text-[#A0A0A0] mt-1">
               <span>{progress.label}</span>
@@ -52,7 +52,7 @@ export function MetricCardContent({ title, value, icon: Icon, change, progress }
                 ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/20 dark:bg-emerald-400/5 dark:text-emerald-400 dark:border-emerald-400/20"
                 : change.type === "negative"
                   ? "bg-red-500/5 text-red-500 border-red-500/20 dark:bg-red-400/5 dark:text-red-400 dark:border-red-400/20"
-                  : "bg-[#F8F9FB] text-[#9AA0A6] border-[#E4E6EB] dark:bg-[#1E1E1E] dark:text-[#A0A0A0] dark:border-[#2A2A2A]"
+                  : "bg-[#F8F9FB] text-[#9AA0A6] border-[#E4E6EB]  dark:text-[#A0A0A0] dark:border-[#2A2A2A]"
             }
           >
             {change.value}
@@ -72,7 +72,7 @@ export function MobileMetricCard({
   className = "" 
 }: MetricCardProps) {
   return (
-    <Card className={cn("bg-white border-[#E4E6EB] dark:bg-[#1E1E1E] dark:border-[#2A2A2A]", className)}>
+    <Card className={cn("bg-white border-[#E4E6EB]  dark:border-[#2A2A2A]", className)}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="p-2 rounded-lg bg-[#297EFF]/5 dark:bg-[#4D8DFF]/5 flex-shrink-0">
@@ -86,7 +86,7 @@ export function MobileMetricCard({
                   ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/20 dark:bg-emerald-400/5 dark:text-emerald-400 dark:border-emerald-400/20"
                   : change.type === "negative"
                   ? "bg-red-500/5 text-red-500 border-red-500/20 dark:bg-red-400/5 dark:text-red-400 dark:border-red-400/20"
-                  : "bg-[#F8F9FB] text-[#9AA0A6] border-[#E4E6EB] dark:bg-[#1E1E1E] dark:text-[#A0A0A0] dark:border-[#2A2A2A]"
+                  : "bg-[#F8F9FB] text-[#9AA0A6] border-[#E4E6EB]  dark:text-[#A0A0A0] dark:border-[#2A2A2A]"
               )}
             >
               {change.value}

@@ -206,7 +206,7 @@ const Sidebar = React.forwardRef<
           {/* Sidebar */}
           <div 
             className={cn(
-              "fixed inset-y-0 z-50 flex h-full w-[--sidebar-width] flex-col bg-white text-[#202124] transition-transform duration-300 ease-in-out dark:bg-[#1E1E1E] dark:text-[#E6E6E6]",
+              "fixed inset-y-0 z-50 flex h-full w-[--sidebar-width] flex-col bg-white text-[#202124] transition-transform duration-300 ease-in-out  dark:text-[#E6E6E6]",
               "border-r border-[#E4E6EB] dark:border-[#2A2A2A]",
               openMobile ? "translate-x-0" : "-translate-x-full",
               side === "right" ? "right-0" : "left-0"
@@ -247,7 +247,7 @@ const Sidebar = React.forwardRef<
         <div
           className={cn(
             "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
-            "bg-[#F8F9FB] text-[#202124] dark:bg-[#1E1E1E] dark:text-[#E6E6E6]",
+            "bg-[#F8F9FB] text-[#202124]  dark:text-[#E6E6E6]",
             "border-r border-[#E4E6EB] dark:border-[#2A2A2A]",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"

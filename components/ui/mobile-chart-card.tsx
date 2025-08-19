@@ -19,7 +19,7 @@ export function MobileChartCard({
 }: MobileChartCardProps) {
   return (
     <Card className={cn(
-      "bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] mobile-card",
+      "bg-white  border-[#E4E6EB] dark:border-[#2A2A2A] mobile-card",
       className
     )}>
       <CardHeader className="pb-3">

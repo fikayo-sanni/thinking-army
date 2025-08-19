@@ -29,7 +29,7 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-[#E4E6EB] bg-white text-[#202124] dark:border-[#2A2A2A] dark:bg-[#1E1E1E] dark:text-[#E6E6E6]",
+        default: "border-[#E4E6EB] bg-white text-[#202124] dark:border-[#2A2A2A]  dark:text-[#E6E6E6]",
         info: "border-[#297EFF]/20 bg-[#297EFF]/5 text-[#297EFF] dark:border-[#4D8DFF]/20 dark:bg-[#4D8DFF]/5 dark:text-[#4D8DFF]",
         success: "border-emerald-500/20 bg-emerald-500/5 text-emerald-500 dark:border-emerald-400/20 dark:bg-emerald-400/5 dark:text-emerald-400",
         warning: "border-amber-500/20 bg-amber-500/5 text-amber-500 dark:border-amber-400/20 dark:bg-amber-400/5 dark:text-amber-400",
@@ -64,7 +64,7 @@ const ToastAction = React.forwardRef<
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-[#E4E6EB] bg-white px-3 text-sm font-medium text-[#202124] transition-colors hover:bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#297EFF]/10 disabled:pointer-events-none disabled:opacity-50 dark:border-[#2A2A2A] dark:bg-[#1E1E1E] dark:text-[#E6E6E6] dark:hover:bg-[#2A2A2A] dark:focus:ring-[#4D8DFF]/10",
+      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-[#E4E6EB] bg-white px-3 text-sm font-medium text-[#202124] transition-colors hover:bg-[#F8F9FB] focus:outline-none focus:ring-2 focus:ring-[#297EFF]/10 disabled:pointer-events-none disabled:opacity-50 dark:border-[#2A2A2A]  dark:text-[#E6E6E6] dark:hover:bg-[#2A2A2A] dark:focus:ring-[#4D8DFF]/10",
       "group-[.destructive]:border-red-500/20 group-[.destructive]:hover:border-red-500/30 group-[.destructive]:hover:bg-red-500/5 group-[.destructive]:hover:text-red-500 group-[.destructive]:focus:ring-red-500/10 dark:group-[.destructive]:border-red-400/20 dark:group-[.destructive]:hover:border-red-400/30 dark:group-[.destructive]:hover:bg-red-400/5 dark:group-[.destructive]:hover:text-red-400 dark:group-[.destructive]:focus:ring-red-400/10",
       className
     )}

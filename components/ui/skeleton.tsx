@@ -7,7 +7,7 @@ function Skeleton({
   return (
     <div
       className={cn(
-        "animate-pulse rounded-md bg-[#F8F9FB] dark:bg-[#1E1E1E]",
+        "animate-pulse rounded-md bg-[#F8F9FB] ",
         "relative overflow-hidden",
         "after:absolute after:inset-0",
         "after:translate-x-[-100%]",

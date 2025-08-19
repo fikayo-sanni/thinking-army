@@ -83,11 +83,6 @@ const navigationItems: NavigationItem[] = [
         icon: Users,
       },
       {
-        name: 'Journeys',
-        href: '/crm/journeys',
-        icon: GitBranch,
-      },
-      {
         name: 'Templates',
         href: '/crm/templates',
         icon: FileText,
@@ -298,7 +293,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <main
         className={cn(
-          'flex-1 transition-all duration-300',
+          'flex-1 transition-all duration-300 container mx-auto p-6 space-y-8',
           isCollapsed ? 'lg:pl-14' : 'lg:pl-60'
         )}
       >

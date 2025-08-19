@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CalendarDays, Filter, TrendingUp, Clock, CheckCircle, ChevronLeft, ChevronRight, Coins, AlertTriangle, Plus, Users, Trophy } from "lucide-react"
 import {
   useCommissionHistory,
-  useCommissionStats as useCommissionEarnings,
+  useCommissionEarnings,
   useCommissionStats,
   usePendingCommissions,
   useCommissionChartData
@@ -29,7 +29,7 @@ import {
 } from "@/components/commissions/commissions-skeletons"
 import type { CommissionHistory } from "@/lib/services/commission-service"
 import { formatThousands, safeFormatDate } from "@/lib/utils"
-import { useSetPageTitle } from "@/hooks/use-page-title"
+import { usePageTitle } from '@/components/providers/page-title-provider';
 import { MobileTable } from "@/components/ui/mobile-table"
 import { MobileFilterControls } from "@/components/layout/mobile-filter-controls"
 import {
@@ -42,32 +42,61 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
-// Add card styles
+// Update card styles to match modern design
 const cardStyles = {
-  base: "bg-white dark:bg-[#1E1E1E] border border-[#E4E6EB] dark:border-[#2A2A2A] rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-all duration-150 hover:border-[#DADCE0] dark:hover:border-[#3A3A3A] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.3)]",
-  header: "flex items-center justify-between p-4 border-b border-[#E4E6EB] dark:border-[#2A2A2A]",
+  base: "bg-white dark:bg-[#1A1E2E] border border-[#E4E6EB] dark:border-[#2D3548] rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-all duration-150 hover:border-[#DADCE0] dark:hover:border-[#3D4663] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_2px_6px_rgba(0,0,0,0.3)]",
+  header: "flex items-center justify-between p-4 border-b border-[#E4E6EB] dark:border-[#2D3548]",
   headerLeft: "flex items-center space-x-3",
   iconContainer: "flex items-center justify-center w-8 h-8 rounded-lg bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10",
   icon: "w-5 h-5 text-[#297EFF] dark:text-[#4D8DFF]",
   title: "text-[15px] font-medium text-[#202124] dark:text-[#E6E6E6]",
-  subtitle: "text-[12px] text-[#5F6368] dark:text-[#A0A0A0] mt-0.5",
+  subtitle: "text-[12px] text-[#5F6368] dark:text-[#94A3B8] mt-0.5",
   content: "p-4",
   metric: {
-    container: "flex items-center justify-between p-3 rounded-md bg-[#F8F9FB] dark:bg-[#1A2B45] transition-colors duration-150",
-    label: "text-[14px] text-[#5F6368] dark:text-[#A0A0A0]",
+    container: "flex items-center justify-between p-3 rounded-md bg-[#F8F9FB] dark:bg-[#242B42] transition-colors duration-150",
+    label: "text-[14px] text-[#5F6368] dark:text-[#94A3B8]",
     value: "text-[20px] font-semibold text-[#202124] dark:text-[#E6E6E6]",
     change: {
       positive: "text-[12px] font-medium text-emerald-500 dark:text-emerald-400",
       negative: "text-[12px] font-medium text-red-500 dark:text-red-400",
-      neutral: "text-[12px] font-medium text-[#5F6368] dark:text-[#A0A0A0]",
+      neutral: "text-[12px] font-medium text-[#5F6368] dark:text-[#94A3B8]",
     },
   },
 };
 
+// Define types
+interface CommissionStats {
+  pendingAmount: number;
+  totalWithdrawals: number;
+  monthlyGrowth: number;
+  totalC1: number;
+  totalC2: number;
+  totalC3: number;
+}
+
+interface CommissionEarnings {
+  totalEarnings: number;
+  currency: string;
+}
+
+// Commission type mapping
+const commissionTypeMapping = {
+  'c1': 'totalC1',
+  'c2': 'totalC2',
+  'c3': 'totalC3',
+} as const;
+
+// Helper function to get commission value
+const getCommissionValue = (stats: CommissionStats | undefined, type: keyof typeof commissionTypeMapping) => {
+  if (!stats) return 0;
+  return stats[commissionTypeMapping[type]] ?? 0;
+};
+
 export default function CommissionsPage() {
   // Set page title
-  useSetPageTitle("Commissions");
+  usePageTitle();
 
   const [typeFilter, setTypeFilter] = useState("all")
   const [timeRange, setTimeRange] = useTimeRange("this-week")
@@ -87,14 +116,24 @@ export default function CommissionsPage() {
     isLoading: isEarningsLoading,
     isError: isEarningsError,
     refetch: refetchEarnings
-  } = useCommissionEarnings(timeRange)
+  } = useCommissionEarnings(timeRange) as { 
+    data: CommissionEarnings | undefined;
+    isLoading: boolean;
+    isError: boolean;
+    refetch: () => void;
+  };
 
   const {
     data: statsData,
     isLoading: isStatsLoading,
     isError: isStatsError,
     refetch: refetchStats
-  } = useCommissionStats(timeRange)
+  } = useCommissionStats(timeRange) as {
+    data: CommissionStats | undefined;
+    isLoading: boolean;
+    isError: boolean;
+    refetch: () => void;
+  };
 
   const {
     data: historyData,
@@ -127,15 +166,15 @@ export default function CommissionsPage() {
   const filteredCommissions = paginatedCommissions;
 
   // Calculate summary stats from individual data sources
-  const totalEarned = earningsData?.totalEarnings ?? 0
-  const pendingAmount = statsData?.pendingAmount ?? 0
-  const withdrawnAmount = statsData?.totalWithdrawals ?? 0
-  const c1Total = statsData?.totalC1 ?? 0
-  const c2Total = statsData?.totalC2 ?? 0
-  const c3Total = statsData?.totalC3 ?? 0
-  const currency = earningsData?.currency || 'VP'
-  const monthlyGrowth = statsData?.monthlyGrowth ?? 0
-  const monthlyGrowthRounded = `${monthlyGrowth >= 0 ? '+' : ''}${monthlyGrowth.toFixed(2)}`
+  const totalEarned = earningsData?.totalEarnings ?? 0;
+  const pendingAmount = statsData?.pendingAmount ?? 0;
+  const withdrawnAmount = statsData?.totalWithdrawals ?? 0;
+  const c1Total = statsData?.totalC1 ?? 0;
+  const c2Total = statsData?.totalC2 ?? 0;
+  const c3Total = statsData?.totalC3 ?? 0;
+  const currency = earningsData?.currency || 'VP';
+  const monthlyGrowth = statsData?.monthlyGrowth ?? 0;
+  const monthlyGrowthRounded = `${monthlyGrowth >= 0 ? '+' : ''}${monthlyGrowth.toFixed(2)}`;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -214,42 +253,45 @@ export default function CommissionsPage() {
   }
 
   return (
-    <>
+    <div className="container mx-auto p-4 space-y-6">
       {/* Page Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-[22px] font-semibold text-[#202124] dark:text-[#E6E6E6]">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-[#202124] dark:text-[#E6E6E6]">
             Commissions
           </h1>
-          <div className="flex items-center space-x-3">
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
-                <CalendarDays className="mr-2 h-4 w-4 text-[#5F6368] dark:text-[#A0A0A0]" />
-                <SelectValue placeholder="Select time period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all-time">All Time</SelectItem>
-                <SelectItem value="this-week">This Week</SelectItem>
-                <SelectItem value="this-month">This Month</SelectItem>
-                <SelectItem value="this-quarter">This Quarter</SelectItem>
-                <SelectItem value="last-week">Last Week</SelectItem>
-                <SelectItem value="last-month">Last Month</SelectItem>
-                <SelectItem value="last-quarter">Last Quarter</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <p className="text-[#5F6368] dark:text-[#94A3B8] mt-1">
+            Track and manage your commission earnings
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger className="h-9 bg-white dark:bg-[#242B42] border-[#E4E6EB] dark:border-[#2D3548] text-[#202124] dark:text-[#E6E6E6] w-48">
+              <CalendarDays className="mr-2 h-4 w-4 text-[#5F6368] dark:text-[#94A3B8]" />
+              <SelectValue placeholder="Select time period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-time">All Time</SelectItem>
+              <SelectItem value="this-week">This Week</SelectItem>
+              <SelectItem value="this-month">This Month</SelectItem>
+              <SelectItem value="this-quarter">This Quarter</SelectItem>
+              <SelectItem value="last-week">Last Week</SelectItem>
+              <SelectItem value="last-month">Last Month</SelectItem>
+              <SelectItem value="last-quarter">Last Quarter</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       {/* Main Content with Right Panel */}
-      <div className="flex gap-6">
+      <div className="flex gap-4">
         {/* Main Content Area */}
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 space-y-4">
           {/* Summary Stats */}
           {(isEarningsLoading || isStatsLoading) ? (
             <CommissionsSummaryCardsSkeleton />
           ) : (earningsData && statsData) ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Total Earned */}
               <div className={cardStyles.base}>
                 <div className={cardStyles.header}>
@@ -262,7 +304,12 @@ export default function CommissionsPage() {
                       <p className={cardStyles.subtitle}>All time earnings</p>
                     </div>
                   </div>
-                  <Badge className={monthlyGrowth >= 0 ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"}>
+                  <Badge className={cn(
+                    "transition-colors",
+                    monthlyGrowth >= 0 
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" 
+                      : "bg-red-500/10 text-red-400 border-red-500/30"
+                  )}>
                     {monthlyGrowthRounded}%
                   </Badge>
                 </div>
@@ -281,11 +328,11 @@ export default function CommissionsPage() {
               </div>
 
               {/* Commission Types Breakdown */}
-              <div className={cardStyles.base}>
+              <div className={cn(cardStyles.base, "lg:col-span-2")}>
                 <div className={cardStyles.header}>
                   <div className={cardStyles.headerLeft}>
                     <div className={cardStyles.iconContainer}>
-                      <TrendingUp className={cardStyles.icon} />
+                      <Users className={cardStyles.icon} />
                     </div>
                     <div>
                       <h3 className={cardStyles.title}>Commission Types</h3>
@@ -294,45 +341,34 @@ export default function CommissionsPage() {
                   </div>
                 </div>
                 <div className={cardStyles.content}>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-3">
                     {[
-                      { type: 'c1', label: 'Direct Commission', color: '#297EFF', icon: <Users className="w-4 h-4" /> },
-                      { type: 'c2', label: 'Team Commission', color: '#00B28C', icon: <Users className="w-4 h-4" /> },
-                      { type: 'c3', label: 'Leadership Commission', color: '#6F00FF', icon: <Trophy className="w-4 h-4" /> }
+                      { type: 'c1' as const, label: 'Direct Commission', color: '#297EFF', icon: <Users className="w-4 h-4" /> },
+                      { type: 'c2' as const, label: 'Team Commission', color: '#00B28C', icon: <Users className="w-4 h-4" /> },
+                      { type: 'c3' as const, label: 'Leadership Commission', color: '#6F00FF', icon: <Trophy className="w-4 h-4" /> }
                     ].map(({ type, label, color, icon }) => (
                       <div
                         key={type}
-                        className="p-4 rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] bg-[#F8F9FB] dark:bg-[#1A2B45]"
-                        style={{ borderLeft: `3px solid ${color}` }}
+                        className="p-3 rounded-lg border border-[#E4E6EB] dark:border-[#2D3548] bg-[#F8F9FB] dark:bg-[#242B42] relative overflow-hidden group hover:border-[#297EFF] dark:hover:border-[#4D8DFF] transition-all duration-300"
                       >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-2">
-                            <div
-                              className="w-8 h-8 rounded-lg flex items-center justify-center"
-                              style={{ backgroundColor: `${color}10` }}
-                            >
-                              <div style={{ color }}>{icon}</div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#297EFF]/5 to-transparent dark:from-[#4D8DFF]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="relative z-10 flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10">
+                              {icon}
                             </div>
-                            <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
-                              {label}
-                            </span>
+                            <div>
+                              <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
+                                {label}
+                              </span>
+                              <div className="text-[12px] text-[#5F6368] dark:text-[#94A3B8]">
+                                Total earnings
+                              </div>
+                            </div>
                           </div>
-                          <Badge
-                            variant="outline"
-                            className="border-transparent"
-                            style={{
-                              backgroundColor: `${color}10`,
-                              color: color
-                            }}
-                          >
-                            {type.toUpperCase()}
-                          </Badge>
-                        </div>
-                        <div className="text-[24px] font-semibold" style={{ color }}>
-                          {formatThousands(statsData?.[type] || 0)}
-                        </div>
-                        <div className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0] mt-1">
-                          Total earnings
+                          <div className="text-[20px] font-semibold text-[#297EFF] dark:text-[#4D8DFF]">
+                            {formatThousands(getCommissionValue(statsData, type))}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -368,7 +404,7 @@ export default function CommissionsPage() {
               </div>
             </div>
           ) : (
-            <div className="text-[#5F6368] dark:text-[#A0A0A0] text-center py-8">No commission data available.</div>
+            <div className="text-[#5F6368] dark:text-[#94A3B8] text-center py-8">No commission data available.</div>
           )}
 
           {/* Filter Controls */}
@@ -387,19 +423,19 @@ export default function CommissionsPage() {
             <div className={cardStyles.content}>
               <div className="flex flex-wrap gap-4">
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
+                  <SelectTrigger className="h-9 bg-white dark:bg-[#242B42] border-[#E4E6EB] dark:border-[#2D3548] text-[#202124] dark:text-[#E6E6E6] w-48">
                     <SelectValue placeholder="Commission type" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="C1">C1</SelectItem>
-                    <SelectItem value="C2">C2</SelectItem>
-                    <SelectItem value="C3">C3</SelectItem>
+                    <SelectItem value="C1">Direct (C1)</SelectItem>
+                    <SelectItem value="C2">Team (C2)</SelectItem>
+                    <SelectItem value="C3">Leadership (C3)</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-                  <SelectTrigger className="h-9 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] w-48">
+                  <SelectTrigger className="h-9 bg-white dark:bg-[#242B42] border-[#E4E6EB] dark:border-[#2D3548] text-[#202124] dark:text-[#E6E6E6] w-48">
                     <SelectValue placeholder="Currency" />
                   </SelectTrigger>
                   <SelectContent>
@@ -430,10 +466,10 @@ export default function CommissionsPage() {
                 </div>
               </div>
               <div className={cardStyles.content}>
-                <div className="rounded-lg border border-[#E4E6EB] dark:border-[#2A2A2A] overflow-hidden">
+                <div className="rounded-lg border border-[#E4E6EB] dark:border-[#2D3548] overflow-hidden">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-[#F8F9FB] dark:bg-[#1A2B45] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]">
+                      <TableRow className="bg-[#F8F9FB] dark:bg-[#242B42] hover:bg-[#F8F9FB] dark:hover:bg-[#242B42]">
                         <TableHead className="w-[120px] font-medium">Date</TableHead>
                         <TableHead className="font-medium">Type</TableHead>
                         <TableHead className="font-medium">Amount</TableHead>
@@ -447,29 +483,29 @@ export default function CommissionsPage() {
                         Array(5).fill(0).map((_, i) => (
                           <TableRow key={i}>
                             <TableCell>
-                              <Skeleton className="h-4 w-24 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                              <Skeleton className="h-4 w-24 bg-[#F8F9FB] dark:bg-[#242B42]" />
                             </TableCell>
                             <TableCell>
-                              <Skeleton className="h-4 w-16 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                              <Skeleton className="h-4 w-16 bg-[#F8F9FB] dark:bg-[#242B42]" />
                             </TableCell>
                             <TableCell>
-                              <Skeleton className="h-4 w-20 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                              <Skeleton className="h-4 w-20 bg-[#F8F9FB] dark:bg-[#242B42]" />
                             </TableCell>
                             <TableCell>
-                              <Skeleton className="h-4 w-16 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                              <Skeleton className="h-4 w-16 bg-[#F8F9FB] dark:bg-[#242B42]" />
                             </TableCell>
                             <TableCell>
-                              <Skeleton className="h-4 w-20 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                              <Skeleton className="h-4 w-20 bg-[#F8F9FB] dark:bg-[#242B42]" />
                             </TableCell>
                             <TableCell>
-                              <Skeleton className="h-4 w-32 bg-[#F8F9FB] dark:bg-[#2C2F3C]" />
+                              <Skeleton className="h-4 w-32 bg-[#F8F9FB] dark:bg-[#242B42]" />
                             </TableCell>
                           </TableRow>
                         ))
                       ) : filteredCommissions.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={6} className="h-32 text-center">
-                            <div className="flex flex-col items-center justify-center text-[#5F6368] dark:text-[#A0A0A0]">
+                            <div className="flex flex-col items-center justify-center text-[#5F6368] dark:text-[#94A3B8]">
                               <Coins className="h-8 w-8 mb-2 opacity-50" />
                               <p className="text-sm">No commissions found</p>
                             </div>
@@ -477,14 +513,14 @@ export default function CommissionsPage() {
                         </TableRow>
                       ) : (
                         filteredCommissions.map((commission) => (
-                          <TableRow key={commission.id}>
+                          <TableRow key={commission.id} className="hover:bg-[#F8F9FB] dark:hover:bg-[#242B42] transition-colors">
                             <TableCell className="font-medium">
                               {safeFormatDate(commission.date)}
                             </TableCell>
                             <TableCell>
                               <Badge
                                 variant="outline"
-                                className="capitalize bg-[#F8F9FB] dark:bg-[#1A2B45] border-[#E4E6EB] dark:border-[#2A2A2A]"
+                                className="capitalize bg-[#F8F9FB] dark:bg-[#242B42] border-[#E4E6EB] dark:border-[#2D3548]"
                               >
                                 {commissionTypeLabels[commission.type as keyof typeof commissionTypeLabels] || commission.type}
                               </Badge>
@@ -499,7 +535,7 @@ export default function CommissionsPage() {
                                   href={`https://polygonscan.com/nft/0x7681a8fba3b29533c7289dfab91dda24a48228ec/${commission.token_id}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[#297EFF] font-semibold underline hover:text-[#00B28C] transition"
+                                  className="text-[#297EFF] dark:text-[#4D8DFF] font-semibold underline hover:text-[#00B28C] transition"
                                 >
                                   #{commission.token_id}
                                 </a></span>}
@@ -521,7 +557,7 @@ export default function CommissionsPage() {
 
                 {/* Pagination */}
                 <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-6 px-4">
-                  <p className="text-sm text-[#5F6368] dark:text-[#A0A0A0]">
+                  <p className="text-sm text-[#5F6368] dark:text-[#94A3B8]">
                     Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalResults)} of {totalResults} entries
                   </p>
                   <div className="flex items-center gap-4">
@@ -530,7 +566,7 @@ export default function CommissionsPage() {
                       size="sm"
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
-                      className="h-10 px-6 text-[#5F6368] dark:text-[#A0A0A0] border-[#E4E6EB] dark:border-[#2A2A2A] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]"
+                      className="h-10 px-6 text-[#5F6368] dark:text-[#94A3B8] border-[#E4E6EB] dark:border-[#2D3548] hover:bg-[#F8F9FB] dark:hover:bg-[#242B42]"
                     >
                       Previous
                     </Button>
@@ -539,7 +575,7 @@ export default function CommissionsPage() {
                       size="sm"
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
-                      className="h-10 px-6 text-[#5F6368] dark:text-[#A0A0A0] border-[#E4E6EB] dark:border-[#2A2A2A] hover:bg-[#F8F9FB] dark:hover:bg-[#1A2B45]"
+                      className="h-10 px-6 text-[#5F6368] dark:text-[#94A3B8] border-[#E4E6EB] dark:border-[#2D3548] hover:bg-[#F8F9FB] dark:hover:bg-[#242B42]"
                     >
                       Next
                     </Button>
@@ -551,39 +587,39 @@ export default function CommissionsPage() {
         </div>
 
         {/* Right Details Panel */}
-        <div className="hidden xl:block w-[340px] bg-white dark:bg-[#1E1E1E] border-l border-[#E4E6EB] dark:border-[#2A2A2A]">
+        <div className="hidden xl:block w-[340px] bg-white dark:bg-[#1A1E2E] border-l border-[#E4E6EB] dark:border-[#2D3548]">
           <div className="sticky top-0 p-6 space-y-6">
             {/* Quick Stats Section */}
             <div>
-              <h3 className="text-[12px] font-medium uppercase tracking-wider text-[#5F6368] dark:text-[#A0A0A0] mb-4">
+              <h3 className="text-[12px] font-medium uppercase tracking-wider text-[#5F6368] dark:text-[#94A3B8] mb-4">
                 Quick Stats
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">Total Earned</span>
+                  <span className="text-[14px] text-[#5F6368] dark:text-[#94A3B8]">Total Earned</span>
                   <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
                     {isEarningsLoading ? (
-                      <Skeleton className="h-4 w-16 dark:bg-[#2C2F3C] rounded" />
+                      <Skeleton className="h-4 w-16 dark:bg-[#242B42] rounded" />
                     ) : (
                       `${formatThousands(Number(totalEarned).toFixed(0))} ${currency}`
                     )}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">Pending</span>
+                  <span className="text-[14px] text-[#5F6368] dark:text-[#94A3B8]">Pending</span>
                   <span className="text-[14px] font-medium text-[#202124] dark:text-[#E6E6E6]">
                     {isStatsLoading ? (
-                      <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
+                      <Skeleton className="h-4 w-12 dark:bg-[#242B42] rounded" />
                     ) : (
                       `${formatThousands(Number(pendingAmount).toFixed(0))} ${currency}`
                     )}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0]">Monthly Growth</span>
-                  <span className={`text-[14px] font-medium ${monthlyGrowth >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                  <span className="text-[14px] text-[#5F6368] dark:text-[#94A3B8]">Monthly Growth</span>
+                  <span className={`text-[14px] font-medium ${monthlyGrowth >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
                     {isStatsLoading ? (
-                      <Skeleton className="h-4 w-12 dark:bg-[#2C2F3C] rounded" />
+                      <Skeleton className="h-4 w-12 dark:bg-[#242B42] rounded" />
                     ) : (
                       monthlyGrowthRounded + '%'
                     )}
@@ -594,30 +630,30 @@ export default function CommissionsPage() {
 
             {/* Pending Commissions Section */}
             <div>
-              <h3 className="text-[12px] font-medium uppercase tracking-wider text-[#5F6368] dark:text-[#A0A0A0] mb-4">
+              <h3 className="text-[12px] font-medium uppercase tracking-wider text-[#5F6368] dark:text-[#94A3B8] mb-4">
                 Pending Commissions
               </h3>
               <div className="space-y-4">
                 {isPendingLoading ? (
-                  <Skeleton className="h-20 w-full dark:bg-[#2C2F3C] rounded" />
+                  <Skeleton className="h-20 w-full dark:bg-[#242B42] rounded" />
                 ) : pendingData && pendingData.length > 0 ? (
                   pendingData.slice(0, 5).map((commission) => (
-                    <div key={commission.id} className="flex items-start space-x-3">
-                      <div className="p-2 rounded-full bg-[#297EFF]/10">
-                        <Clock className="h-4 w-4 text-[#297EFF]" />
+                    <div key={commission.id} className="flex items-start space-x-3 p-3 rounded-lg bg-[#F8F9FB] dark:bg-[#242B42] border border-[#E4E6EB] dark:border-[#2D3548] hover:border-[#297EFF] dark:hover:border-[#4D8DFF] transition-all duration-300">
+                      <div className="p-2 rounded-full bg-[#297EFF]/10 dark:bg-[#4D8DFF]/10">
+                        <Clock className="h-4 w-4 text-[#297EFF] dark:text-[#4D8DFF]" />
                       </div>
                       <div>
                         <p className="text-[14px] text-[#202124] dark:text-[#E6E6E6]">
                           {formatThousands(commission.amount)} {commission.currency} {commission.type}
                         </p>
-                        <span className="text-[12px] text-[#5F6368] dark:text-[#A0A0A0]">
+                        <span className="text-[12px] text-[#5F6368] dark:text-[#94A3B8]">
                           From: {commission.source}
                         </span>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-[14px] text-[#5F6368] dark:text-[#A0A0A0] text-center">
+                  <div className="text-[14px] text-[#5F6368] dark:text-[#94A3B8] text-center p-4 rounded-lg bg-[#F8F9FB] dark:bg-[#242B42] border border-[#E4E6EB] dark:border-[#2D3548]">
                     No pending commissions
                   </div>
                 )}
@@ -626,6 +662,6 @@ export default function CommissionsPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -81,7 +81,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isSubmitting}
-                className="h-9 pl-10 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
+                className="h-9 pl-10 bg-white  border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
               />
             </div>
             {errors.email && (
@@ -105,7 +105,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isSubmitting}
-                className="h-9 pl-10 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
+                className="h-9 pl-10 bg-white  border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
               />
             </div>
             {errors.password && (
@@ -129,7 +129,7 @@ export default function LoginPage() {
                 value={youre_id}
                 onChange={(e) => setYoureId(e.target.value)}
                 disabled={isSubmitting}
-                className="h-9 pl-10 bg-white dark:bg-[#1E1E1E] border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
+                className="h-9 pl-10 bg-white  border-[#E4E6EB] dark:border-[#2A2A2A] text-[#202124] dark:text-[#E6E6E6] focus:border-[#297EFF] focus:ring-[#297EFF]/10"
               />
             </div>
             {errors.youre_id && (

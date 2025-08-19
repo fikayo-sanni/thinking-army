@@ -1,27 +1,58 @@
+import { notFound } from 'next/navigation';
+import AgentService from '@/lib/services/agent.service';
 import AgentDetailsClient from './client';
 
 // This is a server component that handles static params and data fetching
 export async function generateStaticParams() {
-  // Include all possible static paths
-  return [
-    { id: '1' },
-    { id: '2' },
-    { id: '3' },
-    { id: 'new' },
-    { id: 'templates' },
-  ];
+  try {
+    const agents = await AgentService.getInstance().getAgents();
+    // Include all agent IDs plus special routes
+    return [
+      ...agents.map(agent => ({ id: agent.id })),
+      { id: 'new' },
+      { id: 'templates' },
+    ];
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [
+      { id: 'new' },
+      { id: 'templates' },
+    ];
+  }
 }
 
-export default function AgentDetailsPage({ params }: { params: { id: string } }) {
-  // If it's a special route, render the appropriate component
-  if (params.id === 'new') {
+// Get static props for the page
+async function getAgentData(id: string) {
+  if (id === 'new' || id === 'templates') {
+    return { type: id };
+  }
+
+  try {
+    const agent = await AgentService.getInstance().getAgentById(id);
+    if (!agent) {
+      return null;
+    }
+    return { type: 'agent', agent };
+  } catch (error) {
+    console.error('Error fetching agent data:', error);
+    return null;
+  }
+}
+
+export default async function AgentDetailsPage({ params }: { params: { id: string } }) {
+  const data = await getAgentData(params.id);
+
+  if (!data) {
+    notFound();
+  }
+
+  if (data.type === 'new') {
     return <div>New Agent Page</div>;
   }
 
-  if (params.id === 'templates') {
+  if (data.type === 'templates') {
     return <div>Templates Page</div>;
   }
 
-  // For regular agent IDs, render the client component
-  return <AgentDetailsClient id={params.id} />;
+  return <AgentDetailsClient agent={data.agent} />;
 } 

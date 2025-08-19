@@ -67,7 +67,7 @@ export function FeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group bg-white dark:bg-[#1E1E1E] rounded-lg p-6 border border-[#E4E6EB] dark:border-[#2A2A2A] hover:border-[#297EFF] dark:hover:border-[#4D8DFF] transition-all duration-300 hover:shadow-lg"
+              className="group bg-white  rounded-lg p-6 border border-[#E4E6EB] dark:border-[#2A2A2A] hover:border-[#297EFF] dark:hover:border-[#4D8DFF] transition-all duration-300 hover:shadow-lg"
             >
               <div 
                 className="mb-4 p-3 rounded-lg w-fit transition-colors"
